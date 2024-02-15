@@ -2483,13 +2483,12 @@ class approve_task(APIView):
                 if valid_profiles[-1] in portfolio_name:
                     return True,user_id
                 else:
-                    return False,''
+                    return False,user_id
         return False,''
 
     def approvable(self,field):
         update_field = {}
         response = json.loads(dowellconnection(*task_details_module, "fetch", field, update_field))
-        print(response["data"])
         if response["isSuccess"] is False or len(response["data"]) == 0:
             return False, 'No task is found','', 
         user_id =''
@@ -2547,6 +2546,7 @@ class approve_task(APIView):
                 check_approvable, task_created_date, user_id = self.approvable(field)
                 if check_approvable is True:
                     validate_teamlead, lead_user_id = self.valid_teamlead(data.get("lead_username"))
+                    print(lead_user_id, "+++++++++++++++++++++++++++++++++", user_id)
                     if validate_teamlead is False:
                         return Response(
                             {
@@ -2564,25 +2564,38 @@ class approve_task(APIView):
                         u_r=[]
                         def call_update_report(*args):
                             res= update_user_Report_data(args[0],args[1],args[2],args[3],args[4],args[5])
+                            print(res)
                             u_r.append(res)
 
-                        update_response_thread = threading.Thread(
-                            target=call_update_report,
-                            args=(API_KEY,REPORT_DB_NAME, REPORT_UUID, lead_user_id, task_created_date, {
-                                                        'tasks_completed':True,
-                                                        'tasks_approved':True
-                                                        }))
-
-                        update_response_thread.start()
-
-                        update_response_thread_two = threading.Thread(
-                            target=call_update_report,
-                            args=(API_KEY,REPORT_DB_NAME, REPORT_UUID,user_id, task_created_date, {
-                                    'tasks_you_marked_as_complete':True,
-                                    'tasks_you_approved':True
-                                    }))
-
-                        update_response_thread_two.start()
+                        update_data ={
+                                    'tasks_completed':True,
+                                    'tasks_approved':True
+                                    }
+                                    
+                        if lead_user_id == user_id:
+                            update_data['tasks_you_marked_as_complete']=True
+                            update_data['tasks_you_approved']=True
+                            update_response_thread = threading.Thread(
+                                target=call_update_report,
+                                args=(API_KEY,REPORT_DB_NAME, REPORT_UUID, user_id, task_created_date, update_data))
+                            update_response_thread.start()
+                        
+                        else:
+                            update_response_thread = threading.Thread(
+                                target=call_update_report,
+                                args=(API_KEY,REPORT_DB_NAME, REPORT_UUID, user_id, task_created_date, update_data))
+                            update_response_thread.start()
+                            
+                            update_response_thread_two = threading.Thread(
+                                target=call_update_report,
+                                args=(API_KEY,REPORT_DB_NAME, REPORT_UUID,lead_user_id, task_created_date, {
+                                        'tasks_you_marked_as_complete':True,
+                                        'tasks_you_approved':True
+                                        }))
+                            update_response_thread_two.start()
+                        
+                            update_response_thread.join()
+                            update_response_thread_two.join()
 
                         return Response(
                                 {
@@ -2702,8 +2715,8 @@ class task_module(APIView):
         else:
             return self.handle_error(request)
 
-    @verify_user_token
-    def add_task(self,request, user):
+    #@verify_user_token
+    def add_task(self,request):
         data = request.data
         payload = {
             "project": data.get("project"),
@@ -2788,6 +2801,7 @@ class task_module(APIView):
                     args=('none'))
 
                 update_response_thread.start()
+                create_response_thread.join()
 
                 error = ''
                 if (not create_response_thread.is_alive()):
@@ -2817,8 +2831,8 @@ class task_module(APIView):
             else:
                 return Response(
                     {
-                        "success": False,
-                        "message": "Failed to create task",
+                        "success": response["isSuccess"],
+                        "message": response["message"],
                     },
                     status.HTTP_400_BAD_REQUEST,
                 )
@@ -6828,7 +6842,6 @@ class Generate_Report(APIView):
                 "db_report_type": "report"
             }
             get_collection = json.loads(datacube_data_retrival_function(API_KEY,REPORT_DB_NAME,coll_name,query,10,0, False))
-            print(get_collection)
             if get_collection['success']==False:
                 return Response({'success':False,"message": f"This candidate has no report data collection created"},status=status.HTTP_204_NO_CONTENT)
             if len(get_collection['data']) <= 0:
