@@ -17,7 +17,6 @@ from .constant import *
 from .helper import (
     get_event_id,
     dowellconnection,
-    call_notification,
     save_image,
     set_finalize,
     update_number,
@@ -216,7 +215,6 @@ class Invoice_module(APIView):
         try:
             result_dict = json.loads(result)
         except json.Exception as e:
-            # Handle the case where the string is not valid JSON
             result_dict = {}
 
         if result_dict.get("success", True):
@@ -269,7 +267,6 @@ class Invoice_module(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Check if the collection exists for the user_id in the Payment Records database
         fetch_data = {"company_id": company_id, "user_id": user_id}
         response = datacube_data_retrival_function(
             api_key=API_KEY,
@@ -283,7 +280,6 @@ class Invoice_module(APIView):
         parsed_response = json.loads(response)
 
         if parsed_response.get("data"):
-            # Records already exist in the collection, return a message
             return Response(
                 {
                     "success": False,
@@ -294,7 +290,6 @@ class Invoice_module(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         else:
-            # Collection doesn't exist, create a new collection first and then save records
             data_to_add = datacube_add_collection(
                 api_key=API_KEY,
                 db_name=DB_PAYMENT_RECORDS,
@@ -304,7 +299,6 @@ class Invoice_module(APIView):
 
             if "success" in data_to_add:
                 print(f"Collection created for user_id: {user_id}")
-                # Now save records in the newly created collection
                 data_to_insert = {
                     "company_id": company_id,
                     "user_id": user_id,
@@ -357,7 +351,6 @@ class Invoice_module(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Fetch data using the provided function
         fetch_data = {"db_record_type": "payment_record"}
         response_data = datacube_data_retrival_function(
             api_key=API_KEY,
@@ -374,19 +367,15 @@ class Invoice_module(APIView):
         except json.Exception as e:
             result_dict = {}
 
-        # Check if "data" key exists.
         if response_data_dict.get("data", []):
             existing_record = response_data_dict["data"][0]
             previous_weekly_amounts = existing_record.get("previous_weekly_amounts", [])
 
-            # Concatenate the previous amount and currency into a string
             previous_amount_currency = f"{existing_record.get('weekly_payment_amount', '')}{existing_record.get('payment_currency', '')}"
 
-            # Append the new payment to previous weekly amounts
             new_payment = f"{weekly_payment_amount}{payment_currency}"
             previous_weekly_amounts.append(previous_amount_currency)
 
-            # Send the update request
             update_query = {"_id": existing_record["_id"]}
             update_data = {
                 "company_id": company_id,
@@ -557,17 +546,36 @@ class Invoice_module(APIView):
                 )
 
             if response_data.get("success") == True:
-                inserted_data = response_data["data"]
-
-                return Response(
-                    {
-                        "success": True,
-                        "message": f"Payment processed successfully for {payment_month} {payment_year}. Inserted ID: {inserted_data['inserted_id']}",
-                        "database_response": True,
-                        "response": response_data,
-                    },
-                    status=status.HTTP_200_OK,
+                inserted_data = datacube_data_retrival(
+                    api_key=API_KEY,
+                    database_name=DB_PAYMENT_RECORDS,
+                    collection_name=user_id,
+                    data={"_id": response_data["data"]["inserted_id"]},
+                    limit=1,
+                    offset=0,
                 )
+                json_inserted_response_data = json.loads(inserted_data)
+                if json_inserted_response_data.get("success") == True:
+                    inserted_data = json_inserted_response_data.get("data")[0]
+
+                    response = {
+                        "success": True,
+                        "message": f"Payment processed successfully for {payment_month} {payment_year}.",
+                        "database_response": True,
+                        "response": inserted_data,
+                    }
+
+                    return Response(response, status=status.HTTP_200_OK)
+                else:
+                    return Response(
+                        {
+                            "success": False,
+                            "message": "Failed to retrieve inserted data",
+                            "database_response": False,
+                            "response": "",
+                        },
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
             else:
                 return Response(
                     {
@@ -597,7 +605,6 @@ class Invoice_module(APIView):
         try:
             result_dict = json.loads(result)
         except json.Exception as e:
-            # Handle the case where the string is not valid JSON
             result_dict = {}
 
         if result_dict.get("success", False):
