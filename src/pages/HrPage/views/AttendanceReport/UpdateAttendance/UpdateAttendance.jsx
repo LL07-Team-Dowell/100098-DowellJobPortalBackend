@@ -111,7 +111,7 @@ const AttendanceUpdatePage = () => {
         // currentUser?.portfolio_info[0].org_id
 
         if (!userRemovalStatusChecked) return;
-        const hiredCandidates = allApplications.filter(candidate => candidate.status === candidateStatuses.ONBOARDING);
+        const hiredCandidates = allApplications.filter(candidate => candidate.status === candidateStatuses.ONBOARDING || candidate.status === candidateStatuses.RENEWCONTRACT);
 
         const candidatesInSelectedProject = hiredCandidates.filter(candidate =>
             candidate.project && candidate.project.includes(selectedProject?.value)
