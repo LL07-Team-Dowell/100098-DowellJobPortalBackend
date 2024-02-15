@@ -2585,7 +2585,7 @@ class approve_task(APIView):
                                 target=call_update_report,
                                 args=(API_KEY,REPORT_DB_NAME, REPORT_UUID, user_id, task_created_date, update_data))
                             update_response_thread.start()
-                            
+
                             update_response_thread_two = threading.Thread(
                                 target=call_update_report,
                                 args=(API_KEY,REPORT_DB_NAME, REPORT_UUID,lead_user_id, task_created_date, {
@@ -2594,8 +2594,6 @@ class approve_task(APIView):
                                         }))
                             update_response_thread_two.start()
                         
-                            update_response_thread.join()
-                            update_response_thread_two.join()
 
                         return Response(
                                 {
