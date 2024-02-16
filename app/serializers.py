@@ -728,7 +728,7 @@ class leaveapplyserializers(serializers.Serializer):
     data_type = serializers.ChoiceField(
         allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
     )
-    Leave_Approval=serializers.BooleanField(allow_null=False,default=False)
+    Leave_Approval = serializers.BooleanField(allow_null=False, default=False)
 
 
 class leaveapproveserializers(serializers.Serializer):
@@ -979,9 +979,21 @@ class PaymentSerializer(serializers.Serializer):
         ("December", "December"),
     )
     user_id = serializers.CharField(max_length=100)
-    # company_id = serializers.CharField(max_length=100)
     payment_month = serializers.ChoiceField(choices=PAYMENT_MONTH_CHOICE)
     payment_year = serializers.IntegerField(min_value=1)
     number_of_leave_days = serializers.IntegerField(min_value=0)
     approved_logs_count = serializers.IntegerField(min_value=0)
     total_logs_required = serializers.IntegerField(min_value=0)
+    payment_from = serializers.DateField(format="%Y-%m-%d")
+    payment_to = serializers.DateField(format="%Y-%m-%d")
+
+    def validate(self, data):
+        payment_from = data.get("payment_from")
+        payment_to = data.get("payment_to")
+
+        if payment_from and payment_to:
+            if payment_from >= payment_to:
+                raise serializers.ValidationError(
+                    "payment_from must be before payment_to."
+                )
+        return data

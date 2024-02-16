@@ -425,6 +425,8 @@ class Invoice_module(APIView):
         number_of_leave_days = request.data.get("number_of_leave_days")
         approved_logs_count = request.data.get("approved_logs_count")
         total_logs_required = request.data.get("total_logs_required")
+        payment_from = request.data.get("payment_from")
+        payment_to = request.data.get("payment_to")
 
         serializer = PaymentSerializer(data=request.data)
         if not serializer.is_valid():
@@ -516,7 +518,9 @@ class Invoice_module(APIView):
                 "requried_logs_count": total_logs_required,
                 "leave_days": number_of_leave_days,
                 "payment_approved": False,
-                "payment_made_on": " ",
+                "payment_approved_on": " ",
+                "payment_from": payment_from,
+                "payment_to": payment_to,
             }
             data_insert = datacube_data_insertion(
                 api_key=API_KEY,
@@ -680,11 +684,11 @@ class Invoice_module(APIView):
 
             existing_record = response_data_dict["data"][0]
             existing_record["payment_approved"] = True
-            existing_record["payment_made_on"] = datetime.now().isoformat()
+            existing_record["payment_approved_on"] = datetime.now().isoformat()
 
             update_data = {
                 "payment_approved": True,
-                "payment_made_on": existing_record["payment_made_on"],
+                "payment_approved_on": existing_record["payment_approved_on"],
             }
 
             response = datacube_data_update(
