@@ -3,7 +3,7 @@ import WeeklogsCount from "../../../components/WeeksLogCount/WeeklogsCount";
 import { useCurrentUserContext } from "../../../contexts/CurrentUserContext";
 import styles from './styles.module.css';
 import React, { useEffect, useState } from "react";
-import { calculateHoursOfLogs, formatDateAndTime, formatDateForAPI } from "../../../helpers/helpers";
+import { calculateHoursOfLogs, checkIfDateIsToday, formatDateAndTime, formatDateForAPI } from "../../../helpers/helpers";
 import useLoadLogsDates from "../../hooks/useLoadLogsDates";
 import CheckboxItem from "../../components/CheckboxItem/CheckboxItem";
 import { getCandidateTasksOfTheDayV2 } from "../../../services/candidateServices";
@@ -20,6 +20,7 @@ import BatchApproveModal from "../../../pages/TeamleadPage/components/CandidateT
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { toast } from "react-toastify";
 import { approveTask } from "../../../services/teamleadServices";
+import LogRequest from "./LogRequest/LogRequest";
 
 
 const UsersLogsScreen = ({ 
@@ -55,6 +56,8 @@ const UsersLogsScreen = ({
     const [ logsBeingApproved, setLogsBeingApproved ] = useState({});
     const [ showBatchApprovalModal, setShowBatchApprovalModal ] = useState(false);
     const [ batchApprovalLoading, setBatchApprovalLoading ] = useState(false);
+    const [ showLogRequestModal, setShowLogRequestModal ] = useState(false);
+
     const isSmallScreen = useMediaQuery('(max-width: 767px)');
 
     const [searchParams, setSearchParams] = useSearchParams();
@@ -506,6 +509,23 @@ const UsersLogsScreen = ({
                                 </div>
                                 <div className={styles.logs__Wrap}>
                                     {
+                                        (
+                                            !isApprovalView && 
+                                            
+                                            !checkIfDateIsToday(selectedDate) && 
+
+                                            logsToDisplay.filter(item => 
+                                                item.project === selectedProject    
+                                            ).length < 1
+                                        ) ? <>
+                                            <Button
+                                                text={"Request to update"}
+                                                icon={<AddCircleOutlineIcon fontSize="0.75rem" />}
+                                                handleClick={() => setShowLogRequestModal(true)}
+                                                className={`${styles.single__Approve__Btn} ${styles.request__Log__Btn}`}
+                                            />
+                                        </>
+                                        :
                                         React.Children.toArray(
                                             logsToDisplay.filter(item => 
                                                 item.project === selectedProject    
@@ -581,6 +601,15 @@ const UsersLogsScreen = ({
                     () => setShowBatchApprovalModal(false)
                 }
                 handleApproveSelected={handleApproveSelectedLogs}
+            />
+        }
+
+        {
+            showLogRequestModal &&
+            <LogRequest 
+                updatetaskdate={formatDateForAPI(selectedDate)}
+                projects={projects}
+                setShowModal={setShowLogRequestModal}
             />
         }
     </>

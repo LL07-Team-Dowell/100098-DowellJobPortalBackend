@@ -154,6 +154,11 @@
     font-size: 0.65rem;
 }
 
+.request__Log__Btn {
+    white-space: nowrap;
+    width: max-content;
+}
+
 .logs__Wrap {
     display: flex;
     flex-direction: column;

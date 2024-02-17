@@ -155,3 +155,15 @@ export const calculateHoursOfLogs = (logsPassed) => {
     const totalHours = Number(hourGapBetweenLogs.reduce((x, y) => x + y , 0)).toFixed(2)
     return totalHours
 }
+
+export const checkIfDateIsToday = (date) => {
+    const validDateFormat = new Date(date);
+
+    if ( validDateFormat == "Invalid Date" ) return false;
+
+    const today = new Date();
+
+    return today.getDate() === validDateFormat.getDate() &&
+      today.getMonth() === validDateFormat.getMonth() &&
+      today.getFullYear() === validDateFormat.getFullYear()
+}

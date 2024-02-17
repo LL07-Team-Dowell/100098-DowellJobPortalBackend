@@ -1,0 +1,116 @@
+.update_task {
+    box-shadow: 0px 2.79922px 15px rgba(0, 87, 52, 0.67);
+    padding: 3rem 1.5rem;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    min-width: 30%;
+    width: max-content;
+    background-color: white;
+    margin: 0 auto;
+    height: auto;
+    max-height: 40rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.update_task::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.update_task::-webkit-scrollbar-track {
+    background: #efefef;
+}
+
+.update_task::-webkit-scrollbar-thumb {
+    background: #b8b8b8;
+}
+
+.update_task::-webkit-scrollbar-thumb:hover {
+    background: #005734;
+}
+
+.update_task h3 {
+    font-weight: 500;
+    font-size: 1.2rem;
+    color: #005734;
+    margin-bottom: 1.5rem;
+}
+
+.update_task form {
+    width: 100%;
+}
+
+.update_task form .form__Item {
+    display: flex;
+    flex-direction: column;
+    margin: 0rem 0 1.5rem;
+    width: 100%;
+    gap: 0.3rem;
+}
+
+.update_task form .request_buttons {
+    display: flex;
+    flex-direction: row;
+}
+
+.request_buttons button {
+    border: none;
+    padding: 0.6rem 1.2rem !important;
+    border-radius: 0.2rem;
+    margin-right: 0.5rem !important;
+    background-color: rgb(2, 68, 2);
+    border: 1px solid rgb(2, 68, 2);
+    color: white;
+    font-size: 0.875rem !important;
+    transition: 0.3s ease-in-out;
+    cursor: pointer !important;
+}
+
+.request_buttons button:hover {
+    border: 1px solid rgb(2, 68, 2);
+    background-color: white;
+    color: black;
+}
+
+.request_buttons button.cancel {
+    background-color: transparent;
+    color: black;
+}
+
+.form__Item label {
+    font-size: 0.875rem;
+}
+
+.form__Item input,
+.form__Item textarea {
+    outline: none;
+    border: 1px solid #808080;
+    background: none;
+    font-family: 'Poppins', sans-serif;
+}
+
+.form__Item input {
+    width: max-content;
+    padding: 0.35rem 0.4rem;
+    max-width: 7rem;
+}
+
+.form__Item input:disabled, 
+.form__Item input[disabled],
+.form__Item textarea:disabled, 
+.form__Item textarea[disabled] {
+    cursor: not-allowed;
+}
+
+.react__Select {
+    width: 100%;
+    font-size: 0.875rem;
+}
