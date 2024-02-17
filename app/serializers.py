@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import *
-import json
+import json, re
+from bson import ObjectId
+
 
 DATA_TYPE_CHOICE = (
     ("Real_Data", "Real_Data"),
@@ -8,40 +10,111 @@ DATA_TYPE_CHOICE = (
     ("Testing_Data", "Testing_Data"),
     ("Archived_Data", "Archived_Data"),
 )
+JOB_CATEGORY_CHOICE = (
+    ("Freelancer", "Freelancer"),
+    ("Internship", "Internship"),
+    ("Employee", "Employee"),
+)
 
+STATUS_CATEGORY_CHOICE = (
+    ("hired", "hired"),
+    ("Removed", "Removed"),
+    ("shortlisted", "shortlisted"),
+    ("selected", "selected"),
+    ("rehired","rehired"),
+    ("Rejected","Rejected"),
+    ("Pending", "Pending"),
+    ("Guest_Pending", "Guest_Pending"),
+    ("renew_contract", "renew_contract"),
 
+    ("Onboarded","Onboarded"),
+    ("to_rehire", "to_rehire"),
+    ("teamlead_hire", "teamlead_hire"),
+    ("teamlead_rehire", "teamlead_rehire"),
+    
+    
+)
+
+class IDField(serializers.CharField):
+    def to_internal_value(self,value):
+        try:
+            ObjectId(value)
+            return value
+        except Exception as e:
+            raise serializers.ValidationError(e)   
+        
+class DateField(serializers.CharField):
+    def is_leap_year(self,year):
+        if year % 4 == 0:  # Check if the year is evenly divisible by 4
+            if year % 100 == 0:  # If divisible by 100, also check if divisible by 400
+                if year % 400 == 0:
+                    return True
+                else:
+                    return False
+            else:
+                return True
+        else:
+            return False
+        
+    def to_internal_value(self, value):
+        # Check if the value matches the YYYY-MM-DD format
+        if not re.match(r"\d{4}-\d{2}-\d{2}", value) or len(value) != 10:
+            raise serializers.ValidationError("Date must be in YYYY-MM-DD format")
+        
+        # Extract month part from the date string
+        year, month, day = map(int, value.split('-'))
+        
+        # Check if the month is within the range of 1 to 12
+        if not 1 <= month <= 12:
+            raise serializers.ValidationError("Month must be between 1 and 12")
+        if month in [1,3,5,7,8,10,12]:
+            if not 1 <= day <= 31:
+                raise serializers.ValidationError("Day must be between 1 and 31")
+        if month in [4,6,9,11]:
+            if not 1 <= day <= 30:
+                raise serializers.ValidationError("Day must be between 1 and 30")
+        if month in [2]:
+            if self.is_leap_year(year):
+                if not 1 <= day <= 29:
+                    raise serializers.ValidationError("Day must be between 1 and 29 for leap year")
+            else:
+                if not 1 <= day <= 28:
+                    raise serializers.ValidationError("Day must be between 1 and 28")
+        
+        return value
+    
 # account serializers__________________________________________________________________________
 class AccountSerializer(serializers.Serializer):
-
+    document_id = IDField(allow_null=False, allow_blank=False)
     applicant = serializers.CharField(allow_null=False, allow_blank=False)
     project = serializers.ListField(required=True, allow_empty=False)
     task = serializers.CharField(allow_null=False, allow_blank=False)
-    status = serializers.CharField(allow_null=False, allow_blank=False)
-    company_id = serializers.CharField(allow_null=False, allow_blank=False)
-    data_type = serializers.ChoiceField(
-        allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE
-    )
-    onboarded_on = serializers.CharField(allow_null=False, allow_blank=False)
+    status = serializers.ChoiceField(allow_null=False, allow_blank=False, choices=STATUS_CATEGORY_CHOICE)
+    company_id = IDField(allow_null=False, allow_blank=False)
+    data_type = serializers.ChoiceField(allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE)
+    onboarded_on = DateField(allow_null=False, allow_blank=False)
 
+class AccountUpdateSerializer(serializers.Serializer):
+    document_id = IDField(allow_null=False, allow_blank=False)
+    project = serializers.ListField(required=True, allow_empty=False)
+    payment = serializers.CharField(allow_null=False, allow_blank=False)
+
+class RehiredSerializer(serializers.Serializer):
+    document_id = IDField(allow_null=False, allow_blank=False)
+    rehired_on = DateField(allow_null=False, allow_blank=False)
 
 class RejectSerializer(serializers.Serializer):
-
-    JOB_CATEGORY_CHOICE = (
-        ("Freelancer", "Freelancer"),
-        ("Internship", "Internship"),
-        ("Employee", "Employee"),
-    )
-
-    document_id = serializers.CharField(allow_null=False, allow_blank=False)
+    document_id = IDField(allow_null=False, allow_blank=False)
     reject_remarks = serializers.CharField(allow_null=False, allow_blank=False)
     applicant = serializers.CharField(allow_null=False, allow_blank=False)
-    company_id = serializers.CharField(allow_null=False, allow_blank=False)
+    company_id = IDField(allow_null=False, allow_blank=False)
     data_type = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE
     )
-    rejected_on = serializers.CharField(allow_null=False, allow_blank=False)
+    rejected_on = DateField(allow_null=False, allow_blank=False)
     username = serializers.CharField(allow_null=False, allow_blank=False)
 
+#account serializers_________________________________________________________________________
 
 # admin serializers__________________________________________________________________________
 class AdminSerializer(serializers.Serializer):
