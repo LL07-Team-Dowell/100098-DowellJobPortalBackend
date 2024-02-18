@@ -385,6 +385,7 @@ const Payment = () => {
                 <th>Previous Weekly Pays</th>
                 <th>Payment Method</th>
                 <th>Last Payment date</th>
+                <th></th>
               </tr>
             </thead>
             {
@@ -392,9 +393,9 @@ const Payment = () => {
                 <></>
                 :
                 <tbody>
-                  {
-                    paymentRecord.map((record, index) => (
-                      record?.data ? (
+                  {paymentRecord.map((record, index) => (
+                    record?.data && !showUpdateModal ? (
+                      selectedUsers.find(user => user.value === record?.data?.response?.user_id) ? (
                         <tr key={index}>
                           <td>
                             {selectedUsers.find(user => user.value === record?.data?.response?.user_id)?.label || ''}
@@ -405,11 +406,14 @@ const Payment = () => {
                             {record?.data?.response?.previous_weekly_amounts && record?.data?.response?.previous_weekly_amounts.length > 0 ? record?.data?.response?.previous_weekly_amounts.join(', ') : '-'}
                           </td>
                           <td>{record?.data?.response?.payment_method}</td>
-                          <td>{record?.data?.response?.last_payment_date !== "" ? `${new Date(record?.data?.response?.last_payment_date).toDateString()}` : '-'}</td>
-                          <td><PiNotePencilDuotone color="#005734" className={styles.edit_icon} onClick={() => handleEditClick(index)} /></td>
+                          <td>
+                            {record?.data?.response?.last_payment_date !== "" ? `${new Date(record?.data?.response?.last_payment_date).toDateString()}` : '-'}
+                          </td>
+                          <td className={styles.icon_edit}><PiNotePencilDuotone color="#005734" className={styles.edit_icon} onClick={() => handleEditClick(index)} /></td>
                         </tr>
                       ) : null
-                    ))}
+                    ) : null
+                  ))}
                 </tbody>
             }
           </table>

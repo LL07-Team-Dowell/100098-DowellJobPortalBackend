@@ -208,7 +208,7 @@
 }
 
 .edit_icon {
-    font-size: 1.5em;
+    font-size: 1.8rem;
 }
 
 .loader_ {
@@ -223,13 +223,24 @@
     color: #cccccc;
 }
 
+.record_table .table_list .icon_edit {
+    padding: 0px;
+}
+
 @media screen and (max-width: 767px) {
     .main_wrap {
         width: 100%;
     }
 
+    .select_user {
+        width: 50%;
+    }
+
     .record_table .table_list .edit_icon {
-        font-size: 4rem;
+        font-size: 3rem;
+    }
+
+    .record_table .table_list .icon_edit {
         padding: 0px;
     }
 
@@ -243,5 +254,37 @@
 
     .no_data_found_modal {
         width: 60%;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    .selection_wrap {
+        flex-direction: column;
+    }
+
+    .select_user {
+        width: 100%;
+    }
+
+    .record_table .table_list .edit_icon {
+        font-size: 3rem;
+    }
+
+    .table_list td {
+        margin-right: 20px;
+        padding: 4px 10px;
+    }
+
+    .table_list {
+        margin-right: 10%;
+    }
+
+    .record_table .table_list .icon_edit {
+        padding: 0px;
+    }
+
+    .record_table {
+        width: 100%;
+        margin: 0px;
     }
 }
