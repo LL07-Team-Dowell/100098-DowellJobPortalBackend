@@ -12,11 +12,8 @@ urlpatterns = [
     path("accounts_update_project/", accounts_update_project.as_view()),
     path("accounts_rehire_candidate/", accounts_rehire_candidate.as_view()),
     path("accounts_reject_candidate/", accounts_reject_candidate.as_view()),
-    path("onboard_candidate/<str:document_id>",
-         accounts_onboard_candidate.as_view()),
-    path("update_project/", accounts_update_project.as_view()),
-    path("rehire_candidate/", accounts_rehire_candidate.as_view()),
-    path("reject_candidate/", accounts_reject_candidate.as_view()),
+
+
     # admin management-------------------------------------------
     path("admin_create_jobs/", admin_create_jobs.as_view()),
     path("regional_associate_jobs/", associate_job.as_view()),

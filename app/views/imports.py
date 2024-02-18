@@ -59,7 +59,7 @@ from ..helper import (
 from ..serializers import (
     AccountSerializer,
     AccountUpdateSerializer,
-    RehiredSerializer,
+    RehireSerializer,
     RejectSerializer,
     AdminSerializer,
     TaskApprovedBySerializer,

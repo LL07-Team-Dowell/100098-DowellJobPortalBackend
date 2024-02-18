@@ -19,14 +19,14 @@ class accounts_onboard_candidate(APIView):
             "_id": data.get("document_id"),
         }
         update_field = {
-            "status": "hired",# "hired" || "onboarded"
+            "status": "hired", 
             "onboarded_on": data.get("onboarded_on"),
         }
         insert_to_hr_report = {
             "event_id": get_event_id()["event_id"],
             "applicant": data.get("applicant"),
             "project": data.get("project"),
-            "status": "hired", # "hired" || "onboarded"
+            "status": "hired", 
             "company_id": data.get("company_id"),
             "data_type": data.get("data_type"),
             "onboarded_on": update_field['onboarded_on'],
@@ -116,7 +116,7 @@ class accounts_update_project(APIView):
             if json.loads(c_r[0])["isSuccess"] == True:
                 return  Response(success=True, message=success_message, response=json.loads(c_r[0]),status=status.HTTP_201_CREATED)   
         return Response(success=False, message=error_message, response=error,status=status.HTTP_400_BAD_REQUEST)
-        
+
 @method_decorator(csrf_exempt, name="dispatch")
 class accounts_rehire_candidate(APIView):
     def post(self, request):
@@ -126,7 +126,7 @@ class accounts_rehire_candidate(APIView):
         if not data:
             return Response(success=False, message=error_message, response="'request' parameters are not valid, they are None",status=status.HTTP_400_BAD_REQUEST)
             
-        serializer = RehiredSerializer(data=data)
+        serializer = RehireSerializer(data=data)
         if not serializer.is_valid():
             error = {field_name: field_errors[0] if isinstance(field_errors, list) else [field_errors] for field_name, field_errors in serializer.errors.items()}
             return Response(success=False, message=error_message, response=error,status=status.HTTP_400_BAD_REQUEST)
@@ -135,7 +135,7 @@ class accounts_rehire_candidate(APIView):
             "_id": data.get("document_id"),
         }
         update_field = {
-            "status": "rehired",
+            "status": "to_rehire",
             "rehired_on": data.get("rehired_on"),
         }
 

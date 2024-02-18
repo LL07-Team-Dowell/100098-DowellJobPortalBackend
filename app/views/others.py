@@ -5631,7 +5631,6 @@ class Generate_Report(APIView):
                     {"team_id": payload["team_id"]},
                     update_field,
                 )
-                print(tasks,"===")
 
                 comments = dowellconnection(
                     *comment_report_module, "fetch", {}, update_field

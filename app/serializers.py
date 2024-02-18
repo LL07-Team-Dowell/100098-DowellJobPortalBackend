@@ -21,18 +21,16 @@ STATUS_CATEGORY_CHOICE = (
     ("Removed", "Removed"),
     ("shortlisted", "shortlisted"),
     ("selected", "selected"),
-    ("rehired","rehired"),
+    ("rehire","rehire"),
     ("Rejected","Rejected"),
     ("Pending", "Pending"),
     ("Guest_Pending", "Guest_Pending"),
     ("renew_contract", "renew_contract"),
-
-    ("Onboarded","Onboarded"),
+    ("probationary","probationary"),
     ("to_rehire", "to_rehire"),
     ("teamlead_hire", "teamlead_hire"),
     ("teamlead_rehire", "teamlead_rehire"),
-    
-    
+    ("Leave","Leave")   
 )
 
 class IDField(serializers.CharField):
@@ -89,7 +87,6 @@ class AccountSerializer(serializers.Serializer):
     applicant = serializers.CharField(allow_null=False, allow_blank=False)
     project = serializers.ListField(required=True, allow_empty=False)
     task = serializers.CharField(allow_null=False, allow_blank=False)
-    status = serializers.ChoiceField(allow_null=False, allow_blank=False, choices=STATUS_CATEGORY_CHOICE)
     company_id = IDField(allow_null=False, allow_blank=False)
     data_type = serializers.ChoiceField(allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE)
     onboarded_on = DateField(allow_null=False, allow_blank=False)
@@ -99,7 +96,7 @@ class AccountUpdateSerializer(serializers.Serializer):
     project = serializers.ListField(required=True, allow_empty=False)
     payment = serializers.CharField(allow_null=False, allow_blank=False)
 
-class RehiredSerializer(serializers.Serializer):
+class RehireSerializer(serializers.Serializer):
     document_id = IDField(allow_null=False, allow_blank=False)
     rehired_on = DateField(allow_null=False, allow_blank=False)
 
