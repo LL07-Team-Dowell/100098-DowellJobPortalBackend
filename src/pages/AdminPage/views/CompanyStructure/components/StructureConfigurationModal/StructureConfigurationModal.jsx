@@ -373,8 +373,16 @@ export default function StructureConfigurationModal ({
                                             }
                                             options={
                                                 onboardedUsers?.map(user => {
+
+                                                    const leadsForCurrentProject = [
+                                                        copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.project_lead,
+                                                        copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead,
+                                                    ]
+
+                                                    if (leadsForCurrentProject?.includes(user?.username)) return null;
+
                                                     return { label: user?.applicant, value: user?.username }
-                                                })
+                                                }).filter(val => val !== null)
                                             }
                                             onChange={(val) => handleUpdateProjectDetail(val.map(item => item.value), selectedProject, projectDetailUpdateType.member_update)}  
                                             isMulti

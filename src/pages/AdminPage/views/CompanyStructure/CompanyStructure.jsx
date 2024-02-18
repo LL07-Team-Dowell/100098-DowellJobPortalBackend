@@ -265,7 +265,7 @@ const CompanyStructurePage = () => {
                 const projectExistsInStructure = companyStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject));
                 const projectDetails = copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject);
                 
-                if (projectDetails?.team_lead?.length < 1) return toast.warn("Please provide a value for the 'Select team lead' field");
+                // if (projectDetails?.team_lead?.length < 1) return toast.warn("Please provide a value for the 'Select team lead' field");
                 
                 try {
                     setDataLoading(true);
