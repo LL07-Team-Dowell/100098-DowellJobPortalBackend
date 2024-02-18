@@ -2,7 +2,6 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useCurrentUserContext } from "./CurrentUserContext";
 import { useJobContext } from "./Jobs";
 import { getCompanyStructure } from "../services/adminServices";
-import { testCompanyData } from "../pages/AdminPage/views/CompanyStructure/utils/testData";
 
 const CompanyStructureContext = createContext({})
 

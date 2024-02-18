@@ -24,7 +24,7 @@ import { useJobContext } from "../../../../contexts/Jobs";
 import { toast } from "react-toastify";
 import SearchBar from "../../../../components/SearchBar/SearchBar";
 import { useCompanyStructureContext } from "../../../../contexts/CompanyStructureContext";
-import { labelColors } from "../CompanyStructure/utils/utils";
+import { labelColors } from "../../../../common/screens/CompanyStructure/utils/utils";
 
 const ProjectEdit = () => {
   const navigate = useNavigate();

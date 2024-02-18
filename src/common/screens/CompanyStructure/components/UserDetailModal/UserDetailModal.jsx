@@ -1,18 +1,14 @@
 import { AiOutlineClose } from "react-icons/ai";
-import Overlay from "../../../../../../components/Overlay"
 import styles from "./styles.module.css";
 import Avatar from "react-avatar";
-import { useJobContext } from "../../../../../../contexts/Jobs";
+import Overlay from "../../../../../components/Overlay";
 
 
 export default function UserDetailModal ({
+    applications=[],
     currentSelectedUser,
     handleCloseSingleUserModal,
 }) {
-    
-    const {
-        applications,
-    } = useJobContext();
 
     return <>
         <Overlay>
@@ -64,7 +60,10 @@ export default function UserDetailModal ({
                     <div className={styles.user__Project__Details}>
                         <p>Project: {currentSelectedUser?.project}</p>
                         <p>Subprojects: {currentSelectedUser?.subprojects?.join(', ')}</p>
-                        <p>Team Members: {currentSelectedUser?.members?.join(', ')}</p>
+                        <p>Team Members: {currentSelectedUser?.members?.map(member => {
+                            if (applications?.find(application => application.username === member)?.applicant) return applications?.find(application => application.username === member)?.applicant;
+                            return member;
+                        })?.join(', ')}</p>
                     </div>
                 </div>
             </div>

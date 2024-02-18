@@ -3,6 +3,7 @@ import { FiHome } from "react-icons/fi";
 import { GiNotebook } from "react-icons/gi";
 import { ImStack } from "react-icons/im";
 import { IoCalendarOutline } from "react-icons/io5";
+import { PiTreeStructure } from "react-icons/pi";
 import { TfiAgenda } from "react-icons/tfi";
 
 export const hrNavigationLinks = [
@@ -40,5 +41,10 @@ export const hrNavigationLinks = [
         linkAddress: "/attendance-",
         icon: <IoCalendarOutline />,
         text: "Attendance",
+    },
+    {
+        linkAddress: "/company-structure",
+        icon: <PiTreeStructure />,
+        text: "Structure",
     },
 ]

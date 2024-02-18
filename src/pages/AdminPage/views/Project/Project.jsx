@@ -11,8 +11,8 @@ import { dowellProjects } from "../../../../utils/utils";
 import { getProjectTime } from "../../../../services/projectTimeServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-import UserIconsInfo from "../CompanyStructure/components/UsersIconsInfo/UserIconsInfo";
 import SearchBar from "../../../../components/SearchBar/SearchBar";
+import UserIconsInfo from "../../../../common/screens/CompanyStructure/components/UsersIconsInfo/UserIconsInfo";
 
 const Project = ({ _id }) => {
   const navigate = useNavigate();

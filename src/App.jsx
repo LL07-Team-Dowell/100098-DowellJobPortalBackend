@@ -92,6 +92,7 @@ import HrAgendaReport from "./pages/HrPage/views/Agenda/HrAgendaReport/HrAgendaR
 import UsersLogsScreen from "./common/screens/UserLogsScreen/UserLogsScreen";
 import TeamleadLogApprovalScreen from "./pages/TeamleadPage/views/LogApprovalScreen/TeamleadLogApprovalScreen";
 import GroupleadLogApprovalScreen from "./pages/GroupLeadPage/views/LogApprovalScreen/GroupleadLogApprovalScreen";
+import HRCompanyStructure from "./pages/HrPage/views/CompanyStructure/HrCompanyStructure";
 
 function App() {
   // console.log = () => { };
@@ -681,6 +682,17 @@ function App() {
             <HrJobScreenAllTasksContextProvider>
               <ValuesProvider>
                 <HrAllApplicationsScreen />
+              </ValuesProvider>
+            </HrJobScreenAllTasksContextProvider>
+          }
+        />
+
+        <Route 
+          path="/company-structure"
+          element={
+            <HrJobScreenAllTasksContextProvider>
+              <ValuesProvider>
+                <HRCompanyStructure />
               </ValuesProvider>
             </HrJobScreenAllTasksContextProvider>
           }
