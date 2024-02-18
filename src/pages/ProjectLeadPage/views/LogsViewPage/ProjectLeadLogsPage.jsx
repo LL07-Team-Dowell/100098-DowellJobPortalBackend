@@ -21,6 +21,7 @@ const ProjectLeadLogsPage = () => {
                 />
                 <UsersLogsScreen
                     isApprovalView={true} 
+                    limitProjectsAllowedToView={true}
                 />
             </div>
         </StaffJobLandingLayout>

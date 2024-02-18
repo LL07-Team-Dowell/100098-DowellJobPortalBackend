@@ -57,6 +57,7 @@ const UsersLogsScreen = ({
     const [ showBatchApprovalModal, setShowBatchApprovalModal ] = useState(false);
     const [ batchApprovalLoading, setBatchApprovalLoading ] = useState(false);
     const [ showLogRequestModal, setShowLogRequestModal ] = useState(false);
+    const [ limitedProjects, setLimitedProjects ] = useState([]);
 
     const isSmallScreen = useMediaQuery('(max-width: 767px)');
 
@@ -124,13 +125,25 @@ const UsersLogsScreen = ({
             const parentTaskOfTheDay = res.data?.task_details?.find(task => task.task_created_date === selectedDate);
             if (!parentTaskOfTheDay) return;
 
-            setLogsData(
-                res.data?.task?.filter(
-                    task => task.task_id === parentTaskOfTheDay?._id &&
-                    task.is_active && 
-                    task.is_active === true
-                )
+            const logsMatchingParentLog = res.data?.task?.filter(
+                task => task.task_id === parentTaskOfTheDay?._id &&
+                task.is_active && 
+                task.is_active === true
             );
+
+            setLogsData(logsMatchingParentLog);
+
+            const limitedProjectsToShow = [...new Set(logsMatchingParentLog.map(log => log.project))];
+            setLimitedProjects(limitedProjectsToShow);
+
+            if (isApprovalView && projectPassed) {
+                if (logsMatchingParentLog.filter(log => log.project === projectPassed).length < 1 && limitedProjectsToShow.length > 0) {
+                    return setSelectedProject(limitedProjectsToShow[0]);
+                }
+
+                setSelectedProject(projectPassed);
+            }
+
         }).catch(err => {
             console.log(err?.response?.data);
             setLogsLoading(false);
@@ -141,7 +154,7 @@ const UsersLogsScreen = ({
     useEffect(() => {
         if (projectsLoading) return setSelectedProject('None selected') 
 
-        if (isApprovalView && projectPassed) return setSelectedProject(projectPassed);
+        if (isApprovalView && projectPassed) return;
         
         if (currentUser?.candidateAssignmentDetails?.assignedProjects && !isLeadUser) return setSelectedProject(currentUser?.candidateAssignmentDetails?.assignedProjects?.flat()[0]);
         
@@ -233,13 +246,24 @@ const UsersLogsScreen = ({
             const parentTaskOfTheDay = res?.task_details?.find(task => task.task_created_date === formatDateForAPI(daySelected));
             if (!parentTaskOfTheDay) return;
 
-            setLogsData(
-                res?.task?.filter(
-                    task => task.task_id === parentTaskOfTheDay?._id &&
-                    task.is_active && 
-                    task.is_active === true
-                )
+            const logsMatchingParentLog = res?.task?.filter(
+                task => task.task_id === parentTaskOfTheDay?._id &&
+                task.is_active && 
+                task.is_active === true
             );
+
+            setLogsData(logsMatchingParentLog);
+
+            const limitedProjectsToShow = [...new Set(logsMatchingParentLog.map(log => log.project))];
+            setLimitedProjects(limitedProjectsToShow);
+
+            if (isApprovalView && projectPassed) {
+                if (logsMatchingParentLog.filter(log => log.project === projectPassed).length < 1 && limitedProjectsToShow.length > 0) {
+                    return setSelectedProject(limitedProjectsToShow[0]);
+                }
+
+                setSelectedProject(projectPassed);
+            }
         } catch (error) {
             setLogsLoading(false);
         }
@@ -445,10 +469,11 @@ const UsersLogsScreen = ({
                                         } 
                                         selections={
                                             limitProjectsAllowedToView ?
-                                                [projectPassed] 
+                                                limitedProjects.sort((a, b) => a.localeCompare(b))
                                             :
                                             projects.sort((a, b) => a.localeCompare(b))
                                         } 
+                                        disabled={projectsLoading}
                                         handleSelectionClick={(project) => setSelectedProject(project)}
                                         className={styles.select__Project}
                                         selectionsDropDownClassName={styles.project__Listing}
@@ -483,7 +508,10 @@ const UsersLogsScreen = ({
                                 <div className={styles.log__Heading}>
                                     <div>
                                         <p>Logs Added</p>
-                                        <p>
+                                        <p className={styles.sub__Log__Heading}>
+                                            {applicantPassed} added logs in a total of {limitedProjects?.length} projects
+                                        </p>
+                                        <p className={styles.sub__Log__Heading}>
                                             {
                                                 logsToDisplay.filter(item => 
                                                 item.project === selectedProject    
@@ -514,9 +542,7 @@ const UsersLogsScreen = ({
                                             
                                             !checkIfDateIsToday(selectedDate) && 
 
-                                            logsToDisplay.filter(item => 
-                                                item.project === selectedProject    
-                                            ).length < 1
+                                            logsToDisplay.length < 1
                                         ) ? <>
                                             <Button
                                                 text={"Request to update"}
