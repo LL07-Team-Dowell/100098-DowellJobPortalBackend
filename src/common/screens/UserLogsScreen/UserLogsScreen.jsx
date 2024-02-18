@@ -102,7 +102,7 @@ const UsersLogsScreen = ({
         updateLogDatesData: (valPassed) => handleUpdateDatesWithLogsInfo('dates', valPassed),
         updateDataLoaded: (valPassed) => handleUpdateDatesWithLogsInfo('datesLoaded', valPassed),
         updateDataLoading: (valPassed) => handleUpdateDatesWithLogsInfo('datesLoading', valPassed),
-        useOtherUserID: true,
+        useOtherUserID: userIdPassed ? true : false,
         otherUserID: userIdPassed,
     })
 
@@ -217,10 +217,11 @@ const UsersLogsScreen = ({
         // Add class to tiles in month view only
         if (view === "month") {
           // Check if a date React-Calendar wants to check is on the list of dates to add class to
-          if (datesWithLogsInfo.datesLoading) return ''
+          if (datesWithLogsInfo.datesLoading) return styles.log__Date__Tile;
           if (datesWithLogsInfo?.dates?.find((dDate) => formatDateForAPI(dDate) === formatDateForAPI(date))) {
-            return styles.active__Task__Tile;
+            return `${styles.active__Task__Tile} ${styles.log__Date__Tile}`;
           }
+          return styles.log__Date__Tile;
         }
     };
 
@@ -394,6 +395,23 @@ const UsersLogsScreen = ({
                     tileClassName={tileClassName}
                     onClickDay={(day) => handleSelectDate(day)}
                     value={selectedDate}
+                    tileContent={
+                        ({ activeStartDate, date, view }) => {
+                            if (
+                                view === 'month' && 
+                                logsToDisplay.filter(item => 
+                                    item.project === selectedProject    
+                                )?.find(
+                                    log => 
+                                        formatDateForAPI(date) === formatDateForAPI(log?.task_created_date) &&
+                                        (
+                                            log?.approved === false || log?.approval === false
+                                        )
+                                )
+                            ) return <div className={styles.pending__Indicator}></div>
+                            return null
+                        }
+                    }
                 />
                 <div className={styles.filters__Wrap}>
                     <h3>Filters</h3>
@@ -508,9 +526,12 @@ const UsersLogsScreen = ({
                                 <div className={styles.log__Heading}>
                                     <div>
                                         <p>Logs Added</p>
-                                        <p className={styles.sub__Log__Heading}>
-                                            {applicantPassed} added logs in a total of {limitedProjects?.length} projects
-                                        </p>
+                                        {
+                                            isApprovalView &&
+                                            <p className={styles.sub__Log__Heading}>
+                                                {applicantPassed} added logs in a total of {limitedProjects?.length} projects
+                                            </p>
+                                        }
                                         <p className={styles.sub__Log__Heading}>
                                             {
                                                 logsToDisplay.filter(item => 

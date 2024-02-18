@@ -12,6 +12,20 @@
     color: #fff;
 }
 
+.log__Date__Tile {
+    position: relative;
+}
+
+.pending__Indicator {
+    position: absolute;
+    background-color: #F6BE00;
+    width: 4.5px;
+    height: 4.5px;
+    border-radius: 50%;
+    top: 10%;
+    right: 4%;
+}
+
 .user__Filter_Wrap {
     width: max-content;
     position: relative;
