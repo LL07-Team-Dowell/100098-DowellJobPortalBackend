@@ -20,6 +20,7 @@ import {
 } from "../../../../../../services/adminServices";
 import { Link } from "react-router-dom";
 import useClickOutside from "../../../../../../hooks/useClickOutside";
+import { getDaysDifferenceBetweenDates } from "../../../../../../helpers/helpers";
 
 export default function FullApplicationCardItem({ application, activeStatus }) {
   const [showEditOptions, setShowEditOptions] = useState(false);
@@ -213,10 +214,11 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
       return toast.info('Please enter both start and end dates');
     }
 
-    if (start_Date >= end_Date) {
+    // console.log('days difference', getDaysDifferenceBetweenDates(startDate, endDate));
+    if (getDaysDifferenceBetweenDates(startDate, endDate) < 7) {
       setStartDate('');
       setEndDate('');
-      return toast.info('Start date should be less than end date');
+      return toast.info('Difference between start and end date should be greater than or equal to 7 days!');
     }
 
     const dataToPost = {
@@ -226,10 +228,10 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
     };
 
     try {
-      const res = await (await adminLeaveApplication('approved_leave', dataToPost)).data;
-      console.log("set leave application responseeeeeeeeeeeeeeeeeeeee: ", res);
+      await (await adminLeaveApplication('approved_leave', dataToPost)).data;
+      toast.success('Leave assigned successfully.')
     } catch (error) {
-      console.log("err setting leave");
+      toast.error('Unable to set leave. Please try again.')
     }
   }
 
@@ -271,7 +273,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
           </p>
           <p>Job: {application.job_title}</p>
           {application.project && Array.isArray(application.project) && (
-            <p>Project: {application.project[0]}</p>
+            <p>Project: {`${application.project.join(', ')}`}</p>
           )}
         </div>
         {showEditOptions && (

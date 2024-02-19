@@ -10,8 +10,11 @@ import Overlay from '../../../../components/Overlay';
 import CreatableSelect from 'react-select/creatable';
 import { Toast, toast } from 'react-toastify';
 import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
+import { IoChevronBack } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 
 const Payment = () => {
+  const navigate = useNavigate();
   const { currentUser } = useCurrentUserContext();
   const currencyList = [
     { label: "US Dollar (USD)", value: "USD" },
@@ -346,8 +349,9 @@ const Payment = () => {
       accountView={true}
       hideSearchBar={true}
     >
+      <div className="att_title"><div className={styles.back_icon} onClick={() => navigate(-1)}><IoChevronBack /></div><h3>Payment Records</h3></div>
       <div className={styles.main_wrap}>
-        <h3>Payment Records</h3>
+        {/* <h3>Payment Records</h3> */}
         <div className={styles.selection_wrap}>
           <div className={styles.select_user}>
             <p>Select User:</p>
