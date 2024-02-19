@@ -395,23 +395,23 @@ const UsersLogsScreen = ({
                     tileClassName={tileClassName}
                     onClickDay={(day) => handleSelectDate(day)}
                     value={selectedDate}
-                    tileContent={
-                        ({ activeStartDate, date, view }) => {
-                            if (
-                                view === 'month' && 
-                                logsToDisplay.filter(item => 
-                                    item.project === selectedProject    
-                                )?.find(
-                                    log => 
-                                        formatDateForAPI(date) === formatDateForAPI(log?.task_created_date) &&
-                                        (
-                                            log?.approved === false || log?.approval === false
-                                        )
-                                )
-                            ) return <div className={styles.pending__Indicator}></div>
-                            return null
-                        }
-                    }
+                    // tileContent={
+                    //     ({ activeStartDate, date, view }) => {
+                    //         if (
+                    //             view === 'month' && 
+                    //             logsToDisplay.filter(item => 
+                    //                 item.project === selectedProject    
+                    //             )?.find(
+                    //                 log => 
+                    //                     formatDateForAPI(date) === formatDateForAPI(log?.task_created_date) &&
+                    //                     (
+                    //                         log?.approved === false || log?.approval === false
+                    //                     )
+                    //             )
+                    //         ) return <div className={styles.pending__Indicator}></div>
+                    //         return null
+                    //     }
+                    // }
                 />
                 <div className={styles.filters__Wrap}>
                     <h3>Filters</h3>

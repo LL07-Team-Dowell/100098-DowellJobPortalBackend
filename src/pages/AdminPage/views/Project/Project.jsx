@@ -252,7 +252,9 @@ const Project = ({ _id }) => {
               )
             ) : (
               React.Children.toArray(
-                projectsAdded[0]?.project_list.map((project) => {
+                projectsAdded[0]?.project_list
+                .sort((a, b) => a.localeCompare(b))
+                .map((project) => {
                   return (
                     <div className={styles.project__card}>
                       <div className={styles.project__card__header}>

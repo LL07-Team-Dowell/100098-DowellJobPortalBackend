@@ -23,3 +23,9 @@ export const updateProjectTimeEnabled = async (data) => {
     data
   );
 };
+
+export const getSingleProjectTime = async (documentId) => {
+  return await currentBackendAxiosInstance.get(
+    `get_project_time/${documentId}/`
+  );
+}
