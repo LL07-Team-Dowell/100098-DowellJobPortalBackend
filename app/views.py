@@ -319,7 +319,7 @@ ISSUES_MAIL = """
   </body>
 </html>
 """
-
+DATACUBE_LIMIT = 100
 # api for job portal begins here---------------------------
 @method_decorator(csrf_exempt, name="dispatch")
 class serverStatus(APIView):
@@ -10579,7 +10579,7 @@ class Company_Structure(APIView):
         company_id = request.data.get("company_id")
         company_name = request.data.get("company_name")
         ceo = request.data.get("ceo")
-        c_l = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,{"ceo":ceo},10,0,False))
+        c_l = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,{"ceo":ceo},DATACUBE_LIMIT,0,False))
         if len(c_l['data']) >0:
             return Response({
                         "success":False,
@@ -10592,7 +10592,7 @@ class Company_Structure(APIView):
             "company_name":company_name,
             "data_type":"Real_Data"
         }
-        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,DATACUBE_LIMIT,0,False))
         #if ceo exists update else insert it
         if res['success'] == False and res['message']==f"Collection '{coll_name}' does not exist in Datacube database":
             """create the collection if the is no content----------------------"""
@@ -10640,7 +10640,7 @@ class Company_Structure(APIView):
             "data_type":"Real_Data"
         }
         coll_name = 'ceo'
-        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,DATACUBE_LIMIT,0,False))
         if res['success'] == True:
             return Response(res,status=status.HTTP_200_OK)
         else:
@@ -10665,7 +10665,7 @@ class Company_Structure(APIView):
             "data_type":"Real_Data",
             "ceo":previous_ceo,
         }
-        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,DATACUBE_LIMIT,0,False))
         #if ceo exists update else insert it
         if res['success'] == False:
             return Response(res,status=status.HTTP_404_NOT_FOUND)
@@ -10702,7 +10702,7 @@ class Company_Structure(APIView):
             })
         company_id = request.data.get("company_id")
         project_lead = request.data.get("project_lead")
-        p_l = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,{"project_lead":project_lead},10,0,False))
+        p_l = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,{"project_lead":project_lead},DATACUBE_LIMIT,0,False))
         if len(p_l['data']) >0:
             return Response({
                     "success":False,
@@ -10739,7 +10739,7 @@ class Company_Structure(APIView):
             "project_lead_id":project_lead_id,
             "data_type":data_type
         }
-        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,DATACUBE_LIMIT,0,False))
         
         if res['success'] == False and res['message']==f"Collection '{coll_name}' does not exist in Datacube database":
             """create the collection if the is no content----------------------"""
@@ -10780,7 +10780,7 @@ class Company_Structure(APIView):
                 current_projects_managed={}
                 current_coded_projects_managed={}
                 _pleads=[]
-                check_projects_managed = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,'project_leads',pq,10,0,False))
+                check_projects_managed = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,'project_leads',pq,DATACUBE_LIMIT,0,False))
                 if check_projects_managed['success']==True:
                     for p in check_projects_managed['data']:
                         if p["projects_managed"]!=None and len(p["projects_managed"])>0:
@@ -10831,7 +10831,7 @@ class Company_Structure(APIView):
             "data_type":"Real_Data"
         }
         coll_name = 'project_leads'
-        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,DATACUBE_LIMIT,0,False))
         if res['success'] == True:
             return Response(res,status=status.HTTP_200_OK)
         else:
@@ -10880,7 +10880,7 @@ class Company_Structure(APIView):
             'project_lead':project_lead,
             'data_type':data_type
         }
-        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,DATACUBE_LIMIT,0,False))
         #if ceo exists update else insert it
         if res['success'] == False :
             return Response(res,status=status.HTTP_404_NOT_FOUND)
@@ -10898,7 +10898,7 @@ class Company_Structure(APIView):
                 current_projects_managed={}
                 current_coded_projects_managed={}
                 _pleads=[]
-                check_projects_managed = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,'project_leads',pq,10,0,False))
+                check_projects_managed = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,'project_leads',pq,DATACUBE_LIMIT,0,False))
                 if check_projects_managed['success']==True:
                     for p in check_projects_managed['data']:
                         if p["projects_managed"]!=None and len(p["projects_managed"])>0:
@@ -10951,7 +10951,7 @@ class Company_Structure(APIView):
         company_id = request.data.get("company_id")
         project = request.data.get("project")
         _coded_project = self.rearrange(project.lower())
-        _project = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{'company_id':company_id},10,0,False))
+        _project = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{'company_id':company_id},DATACUBE_LIMIT,0,False))
         
         for p in _project['data']:
             if p['_coded_project'] == _coded_project:
@@ -10970,7 +10970,7 @@ class Company_Structure(APIView):
                 },status=status.HTTP_404_NOT_FOUND)
         #checking if team lead reports to is in dowell------------------------
         teamlead_reports_to = []
-        res_proj = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{'company_id':company_id},10,0,False))
+        res_proj = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{'company_id':company_id},DATACUBE_LIMIT,0,False))
         if res_proj['success'] == True and len(res_proj['data']) >=1 :
             for project_leads in res_proj['data']:
                 if "_coded_projects_managed" in project_leads.keys():
@@ -10998,8 +10998,7 @@ class Company_Structure(APIView):
             "_coded_project":_coded_project,
             "data_type":"Real_Data"
         }
-        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
-        #if ceo exists update else insert it
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,DATACUBE_LIMIT,0,False))
         
         if res['success'] == False and res['message']==f"Collection '{coll_name}' does not exist in Datacube database":
             """create the collection if the is no content----------------------"""
@@ -11053,7 +11052,8 @@ class Company_Structure(APIView):
             "data_type":"Real_Data"
         }
         coll_name = type_request.replace("get_","")
-        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,DATACUBE_LIMIT,0,False))
+        
         if res['success'] == True:
             return Response(res,status=status.HTTP_200_OK)
         else:
@@ -11073,13 +11073,13 @@ class Company_Structure(APIView):
         company_id = request.data.get("company_id")
         team_lead = request.data.get("team_lead")
         teamlead_reports_to = []
-        res_projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{'company_id':company_id},10,0,False))
+        res_projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{'company_id':company_id},DATACUBE_LIMIT,0,False))
         if not (res_projects['success'] == True and len(res_projects['data']) >=1) :
             return Response({
                 "success":False,
                 "message":f"No date to update for this '{project}'"
             },status=status.HTTP_404_NOT_FOUND)
-        res_proj = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{'company_id':company_id},10,0,False))
+        res_proj = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{'company_id':company_id},DATACUBE_LIMIT,0,False))
         #print(res_proj, "===============",len(res_proj['data']))
         if res_proj['success'] == True and len(res_proj['data']) >=1 :
             for project_leads in res_proj['data']:
@@ -11139,7 +11139,7 @@ class Company_Structure(APIView):
             "company_id":company_id,
             "data_type":"Real_Data",
         }
-        ceo = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"ceo",search_query,10,0, False))
+        ceo = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"ceo",search_query,DATACUBE_LIMIT,0, False))
         if len(ceo['data']) >0:
             _x = ceo['data'][-1]
             data['ceo'] =_x['ceo']
@@ -11149,7 +11149,7 @@ class Company_Structure(APIView):
                 'company_id':company_id,
                 "data_type":"Real_Data"
             }
-            project_leads = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",plq,10,0,False))
+            project_leads = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",plq,DATACUBE_LIMIT,0,False))
             
             for y in project_leads['data']:
                 _y ={
@@ -11163,7 +11163,7 @@ class Company_Structure(APIView):
                     'company_id':company_id,
                     "data_type":"Real_Data"
                 }
-                projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",pq,10,0,False))
+                projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",pq,DATACUBE_LIMIT,0,False))
         
                 if len(projects['data'])>0:
                     
@@ -11243,7 +11243,7 @@ class DowellEvents(APIView):
                     ATTENDANCE_DB,
                     Events_collection,
                     check_field,
-                    0,
+                    DATACUBE_LIMIT,
                     0,
                     False
                 )
@@ -11393,7 +11393,7 @@ class DowellEvents(APIView):
         try:
             fetch_collection = json.loads(
                 datacube_data_retrival_function(
-                    API_KEY, ATTENDANCE_DB, Events_collection, data, 0, 0, False
+                    API_KEY, ATTENDANCE_DB, Events_collection, data, DATACUBE_LIMIT, 0, False
                 )
             )
 
