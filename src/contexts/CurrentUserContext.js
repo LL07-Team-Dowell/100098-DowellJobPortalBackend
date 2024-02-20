@@ -31,7 +31,7 @@ export const CurrentUserContextProvider = ({ children }) => {
   const [currentUserHiredApplications, setCurrentUserHiredApplications] = useState([]);
   const [currentUserHiredApplicationsLoaded, setCurrentUserHiredApplicationsLoaded] = useState(false);
   const [applicationsWithoutUserIdUpdated, setApplicationsWithoutUserIdUpdated] = useState(false);
-  const [allApplications, setAllApplications] = useState([]);
+  const [allCompanyApplications, setAllCompanyApplications] = useState([]);
 
   return (
     <CurrentUserContext.Provider value={{
@@ -79,8 +79,8 @@ export const CurrentUserContextProvider = ({ children }) => {
       setCurrentUserHiredApplicationsLoaded,
       applicationsWithoutUserIdUpdated,
       setApplicationsWithoutUserIdUpdated,
-      allApplications,
-      setAllApplications,
+      allCompanyApplications,
+      setAllCompanyApplications,
     }}>
       {children}
     </CurrentUserContext.Provider>

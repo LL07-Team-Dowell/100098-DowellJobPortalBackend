@@ -3,7 +3,7 @@ import WeeklogsCount from "../../../components/WeeksLogCount/WeeklogsCount";
 import { useCurrentUserContext } from "../../../contexts/CurrentUserContext";
 import styles from './styles.module.css';
 import React, { useEffect, useState } from "react";
-import { calculateHoursOfLogs, formatDateAndTime, formatDateForAPI } from "../../../helpers/helpers";
+import { calculateHoursOfLogs, checkIfDateIsToday, formatDateAndTime, formatDateForAPI } from "../../../helpers/helpers";
 import useLoadLogsDates from "../../hooks/useLoadLogsDates";
 import CheckboxItem from "../../components/CheckboxItem/CheckboxItem";
 import { getCandidateTasksOfTheDayV2 } from "../../../services/candidateServices";
@@ -20,6 +20,7 @@ import BatchApproveModal from "../../../pages/TeamleadPage/components/CandidateT
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { toast } from "react-toastify";
 import { approveTask } from "../../../services/teamleadServices";
+import LogRequest from "./LogRequest/LogRequest";
 
 
 const UsersLogsScreen = ({ 
@@ -55,6 +56,9 @@ const UsersLogsScreen = ({
     const [ logsBeingApproved, setLogsBeingApproved ] = useState({});
     const [ showBatchApprovalModal, setShowBatchApprovalModal ] = useState(false);
     const [ batchApprovalLoading, setBatchApprovalLoading ] = useState(false);
+    const [ showLogRequestModal, setShowLogRequestModal ] = useState(false);
+    const [ limitedProjects, setLimitedProjects ] = useState([]);
+
     const isSmallScreen = useMediaQuery('(max-width: 767px)');
 
     const [searchParams, setSearchParams] = useSearchParams();
@@ -98,7 +102,7 @@ const UsersLogsScreen = ({
         updateLogDatesData: (valPassed) => handleUpdateDatesWithLogsInfo('dates', valPassed),
         updateDataLoaded: (valPassed) => handleUpdateDatesWithLogsInfo('datesLoaded', valPassed),
         updateDataLoading: (valPassed) => handleUpdateDatesWithLogsInfo('datesLoading', valPassed),
-        useOtherUserID: true,
+        useOtherUserID: userIdPassed ? true : false,
         otherUserID: userIdPassed,
     })
 
@@ -121,13 +125,25 @@ const UsersLogsScreen = ({
             const parentTaskOfTheDay = res.data?.task_details?.find(task => task.task_created_date === selectedDate);
             if (!parentTaskOfTheDay) return;
 
-            setLogsData(
-                res.data?.task?.filter(
-                    task => task.task_id === parentTaskOfTheDay?._id &&
-                    task.is_active && 
-                    task.is_active === true
-                )
+            const logsMatchingParentLog = res.data?.task?.filter(
+                task => task.task_id === parentTaskOfTheDay?._id &&
+                task.is_active && 
+                task.is_active === true
             );
+
+            setLogsData(logsMatchingParentLog);
+
+            const limitedProjectsToShow = [...new Set(logsMatchingParentLog.map(log => log.project))];
+            setLimitedProjects(limitedProjectsToShow);
+
+            if (isApprovalView && projectPassed) {
+                if (logsMatchingParentLog.filter(log => log.project === projectPassed).length < 1 && limitedProjectsToShow.length > 0) {
+                    return setSelectedProject(limitedProjectsToShow[0]);
+                }
+
+                setSelectedProject(projectPassed);
+            }
+
         }).catch(err => {
             console.log(err?.response?.data);
             setLogsLoading(false);
@@ -138,7 +154,7 @@ const UsersLogsScreen = ({
     useEffect(() => {
         if (projectsLoading) return setSelectedProject('None selected') 
 
-        if (isApprovalView && projectPassed) return setSelectedProject(projectPassed);
+        if (isApprovalView && projectPassed) return;
         
         if (currentUser?.candidateAssignmentDetails?.assignedProjects && !isLeadUser) return setSelectedProject(currentUser?.candidateAssignmentDetails?.assignedProjects?.flat()[0]);
         
@@ -201,10 +217,11 @@ const UsersLogsScreen = ({
         // Add class to tiles in month view only
         if (view === "month") {
           // Check if a date React-Calendar wants to check is on the list of dates to add class to
-          if (datesWithLogsInfo.datesLoading) return ''
+          if (datesWithLogsInfo.datesLoading) return styles.log__Date__Tile;
           if (datesWithLogsInfo?.dates?.find((dDate) => formatDateForAPI(dDate) === formatDateForAPI(date))) {
-            return styles.active__Task__Tile;
+            return `${styles.active__Task__Tile} ${styles.log__Date__Tile}`;
           }
+          return styles.log__Date__Tile;
         }
     };
 
@@ -230,13 +247,24 @@ const UsersLogsScreen = ({
             const parentTaskOfTheDay = res?.task_details?.find(task => task.task_created_date === formatDateForAPI(daySelected));
             if (!parentTaskOfTheDay) return;
 
-            setLogsData(
-                res?.task?.filter(
-                    task => task.task_id === parentTaskOfTheDay?._id &&
-                    task.is_active && 
-                    task.is_active === true
-                )
+            const logsMatchingParentLog = res?.task?.filter(
+                task => task.task_id === parentTaskOfTheDay?._id &&
+                task.is_active && 
+                task.is_active === true
             );
+
+            setLogsData(logsMatchingParentLog);
+
+            const limitedProjectsToShow = [...new Set(logsMatchingParentLog.map(log => log.project))];
+            setLimitedProjects(limitedProjectsToShow);
+
+            if (isApprovalView && projectPassed) {
+                if (logsMatchingParentLog.filter(log => log.project === projectPassed).length < 1 && limitedProjectsToShow.length > 0) {
+                    return setSelectedProject(limitedProjectsToShow[0]);
+                }
+
+                setSelectedProject(projectPassed);
+            }
         } catch (error) {
             setLogsLoading(false);
         }
@@ -367,6 +395,23 @@ const UsersLogsScreen = ({
                     tileClassName={tileClassName}
                     onClickDay={(day) => handleSelectDate(day)}
                     value={selectedDate}
+                    // tileContent={
+                    //     ({ activeStartDate, date, view }) => {
+                    //         if (
+                    //             view === 'month' && 
+                    //             logsToDisplay.filter(item => 
+                    //                 item.project === selectedProject    
+                    //             )?.find(
+                    //                 log => 
+                    //                     formatDateForAPI(date) === formatDateForAPI(log?.task_created_date) &&
+                    //                     (
+                    //                         log?.approved === false || log?.approval === false
+                    //                     )
+                    //             )
+                    //         ) return <div className={styles.pending__Indicator}></div>
+                    //         return null
+                    //     }
+                    // }
                 />
                 <div className={styles.filters__Wrap}>
                     <h3>Filters</h3>
@@ -442,10 +487,11 @@ const UsersLogsScreen = ({
                                         } 
                                         selections={
                                             limitProjectsAllowedToView ?
-                                                [projectPassed] 
+                                                limitedProjects.sort((a, b) => a.localeCompare(b))
                                             :
                                             projects.sort((a, b) => a.localeCompare(b))
                                         } 
+                                        disabled={projectsLoading}
                                         handleSelectionClick={(project) => setSelectedProject(project)}
                                         className={styles.select__Project}
                                         selectionsDropDownClassName={styles.project__Listing}
@@ -480,7 +526,13 @@ const UsersLogsScreen = ({
                                 <div className={styles.log__Heading}>
                                     <div>
                                         <p>Logs Added</p>
-                                        <p>
+                                        {
+                                            isApprovalView &&
+                                            <p className={styles.sub__Log__Heading}>
+                                                {applicantPassed} added logs in a total of {limitedProjects?.length} projects
+                                            </p>
+                                        }
+                                        <p className={styles.sub__Log__Heading}>
                                             {
                                                 logsToDisplay.filter(item => 
                                                 item.project === selectedProject    
@@ -506,6 +558,21 @@ const UsersLogsScreen = ({
                                 </div>
                                 <div className={styles.logs__Wrap}>
                                     {
+                                        (
+                                            !isApprovalView && 
+                                            
+                                            !checkIfDateIsToday(selectedDate) && 
+
+                                            logsToDisplay.length < 1
+                                        ) ? <>
+                                            <Button
+                                                text={"Request to update"}
+                                                icon={<AddCircleOutlineIcon fontSize="0.75rem" />}
+                                                handleClick={() => setShowLogRequestModal(true)}
+                                                className={`${styles.single__Approve__Btn} ${styles.request__Log__Btn}`}
+                                            />
+                                        </>
+                                        :
                                         React.Children.toArray(
                                             logsToDisplay.filter(item => 
                                                 item.project === selectedProject    
@@ -581,6 +648,15 @@ const UsersLogsScreen = ({
                     () => setShowBatchApprovalModal(false)
                 }
                 handleApproveSelected={handleApproveSelectedLogs}
+            />
+        }
+
+        {
+            showLogRequestModal &&
+            <LogRequest 
+                updatetaskdate={formatDateForAPI(selectedDate)}
+                projects={projects}
+                setShowModal={setShowLogRequestModal}
             />
         }
     </>

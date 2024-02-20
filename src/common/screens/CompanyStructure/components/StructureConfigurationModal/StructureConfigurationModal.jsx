@@ -1,19 +1,22 @@
 import { AiOutlineClose } from "react-icons/ai";
-import Overlay from "../../../../../../components/Overlay";
 import styles from './styles.module.css';
-import { useCompanyStructureContext } from "../../../../../../contexts/CompanyStructureContext";
-import LoadingSpinner from "../../../../../../components/LoadingSpinner/LoadingSpinner";
-import { useJobContext } from "../../../../../../contexts/Jobs";
 import React, { useEffect, useState } from "react";
 import { projectDetailUpdateType, selectValuePreCursor } from "../../utils/utils";
 import Select from "react-select";
-import ProgressTracker from "../../../Landingpage/component/progressTracker";
 import { HiMiniArrowLongLeft, HiMiniArrowLongRight } from "react-icons/hi2";
-import { changeToTitleCase } from "../../../../../../helpers/helpers";
+import Overlay from "../../../../../components/Overlay";
+import LoadingSpinner from "../../../../../components/LoadingSpinner/LoadingSpinner";
+import { changeToTitleCase } from "../../../../../helpers/helpers";
+import ProgressTracker from "../../../../../pages/AdminPage/views/Landingpage/component/progressTracker";
 
 export default function StructureConfigurationModal ({
+    companyStructure={},
+    currentModalPage=1,
     copyOfExistingStructure,
     updateCopyOfExistingStructure,
+    applications=[],
+    projectsLoaded=false,
+    projectsAdded={},
     dataLoading,
     onboardedUsers,
     selectedProject,
@@ -22,16 +25,6 @@ export default function StructureConfigurationModal ({
     handleGoBackward,
     handleCloseStructureModal,
 }) {
-    const {
-        companyStructure,
-        currentModalPage,
-    } = useCompanyStructureContext();
-
-    const {
-        applications,
-        projectsLoaded,
-        projectsAdded,
-    } = useJobContext();
 
     const [ currentProjectItemFromStructure, setCurrentProjectItemFromStructure ] = useState(null);
 
@@ -373,8 +366,16 @@ export default function StructureConfigurationModal ({
                                             }
                                             options={
                                                 onboardedUsers?.map(user => {
+
+                                                    const leadsForCurrentProject = [
+                                                        copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.project_lead,
+                                                        copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead,
+                                                    ]
+
+                                                    if (leadsForCurrentProject?.includes(user?.username)) return null;
+
                                                     return { label: user?.applicant, value: user?.username }
-                                                })
+                                                }).filter(val => val !== null)
                                             }
                                             onChange={(val) => handleUpdateProjectDetail(val.map(item => item.value), selectedProject, projectDetailUpdateType.member_update)}  
                                             isMulti

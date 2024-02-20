@@ -31,7 +31,7 @@ const HrAllApplicationsScreen = () => {
         projectsLoading,
         setProjectsLoading,
     } = useHrJobScreenAllTasksContext();
-    const { currentUser } = useCurrentUserContext();
+    const { currentUser, allCompanyApplications } = useCurrentUserContext();
     const [ searchValue, setSearchValue ] = useState('');
     const [ projectAssignedFilter, setProjectAssignedFilter ] = useState([]);
     const [ currentApplicationCategory, setCurrentApplicationCategory ] = useState([]);
@@ -42,18 +42,8 @@ const HrAllApplicationsScreen = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!applicationsLoaded) {
-            getCandidateApplicationsForHr(currentUser?.portfolio_info[0]?.org_id).then(res => {
-                const applicationsFetched = res?.data?.response?.data?.filter(
-                    (item) => currentUser?.portfolio_info[0]?.data_type === item.data_type
-                )?.reverse()
-
-                setApplications(applicationsFetched);
-                setApplicationsLoaded(true);
-            }).catch(err => {
-                console.log('Failed to get applications for admin');
-            })
-        }
+        setApplications(allCompanyApplications);
+        setApplicationsLoaded(true);
 
         if (!projectsLoaded) {
             setProjectsLoading(true);
@@ -104,6 +94,7 @@ const HrAllApplicationsScreen = () => {
     return <>
         <StaffJobLandingLayout
             hrView={true}
+            hideSearchBar={true}
         >
             <div className={styles.wrapper}>
                 <div className={styles.header__item}>

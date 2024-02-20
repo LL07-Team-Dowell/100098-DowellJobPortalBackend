@@ -2,7 +2,6 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useCurrentUserContext } from "./CurrentUserContext";
 import { useJobContext } from "./Jobs";
 import { getCompanyStructure } from "../services/adminServices";
-import { testCompanyData } from "../pages/AdminPage/views/CompanyStructure/utils/testData";
 
 const CompanyStructureContext = createContext({})
 
@@ -17,7 +16,7 @@ export default function CompanyStructureContextProvider ({ children }) {
 
     const { 
         currentUser, 
-        allApplications, 
+        allCompanyApplications, 
         userRemovalStatusChecked 
     } = useCurrentUserContext();
     const {
@@ -32,7 +31,7 @@ export default function CompanyStructureContextProvider ({ children }) {
         if (!applicationsLoaded) {
             if (!userRemovalStatusChecked) return
 
-            setApplications(allApplications);
+            setApplications(allCompanyApplications);
             setApplicationsLoaded(true);
         }
 

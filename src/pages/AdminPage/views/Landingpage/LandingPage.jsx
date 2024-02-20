@@ -30,7 +30,7 @@ const LandingPage = ({ subAdminView }) => {
   const { 
     currentUser, 
     setCurrentUser,
-    allApplications,
+    allCompanyApplications,
     userRemovalStatusChecked,
   } = useCurrentUserContext();
 
@@ -119,7 +119,7 @@ const LandingPage = ({ subAdminView }) => {
 
     if (!userRemovalStatusChecked) return;
     
-    setlist(allApplications);
+    setlist(allCompanyApplications);
     setApplicationsLoaded(true);
   }, [userRemovalStatusChecked, currentUser]);
 

@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import {
   addProjectTime,
   getProjectTime,
+  getSingleProjectTime,
   updateProjectTime,
   updateProjectTimeEnabled,
 } from "../../../../services/projectTimeServices";
@@ -24,7 +25,7 @@ import { useJobContext } from "../../../../contexts/Jobs";
 import { toast } from "react-toastify";
 import SearchBar from "../../../../components/SearchBar/SearchBar";
 import { useCompanyStructureContext } from "../../../../contexts/CompanyStructureContext";
-import { labelColors } from "../CompanyStructure/utils/utils";
+import { labelColors } from "../../../../common/screens/CompanyStructure/utils/utils";
 
 const ProjectEdit = () => {
   const navigate = useNavigate();
@@ -83,46 +84,36 @@ const ProjectEdit = () => {
   };
 
   useEffect(() => {
-    const foundTeamlead = companyStructure?.project_leads
+    const foundProjectlead = companyStructure?.project_leads
       ?.find((item) =>
-        item?.projects?.find(
-          (structure) => structure?.project === params.get("project")
+        item?.projects_managed?.includes(
+          params.get("project")
         )
-      )
-      ?.projects?.find(
-        (item) => item.project === params.get("project")
-      )?.team_lead;
+      )?.project_lead;
+
+      console.log('found project lead -> ', foundProjectlead);
 
     const fetchProjectDetails = async () => {
       try {
         if (params.get("id") && params.get("id") !== "null") {
           setLoading(true);
 
-          const projectDetails = await getProjectTime(
-            currentUser.portfolio_info[0].org_id
-          );
+          // Find the specific proect time object based on passed id
+          const projectDetails = (await getSingleProjectTime(params.get("id"))).data?.data[0];
 
-          const editProjectData = projectDetails?.data?.data;
-          // console.log(projectDetails?.data?.data)
-
-          // Find the object with the specific id
-          const editDetails = editProjectData.find(
-            (item) => item["_id"] === params.get("id")
-          );
-
-          if (editDetails) {
+          if (projectDetails) {
             setProjectTimeDetail((prevDetails) => {
               return {
                 ...prevDetails,
-                ...editDetails,
-                lead_name: foundTeamlead,
+                ...projectDetails,
+                lead_name: foundProjectlead,
               };
             });
             setCopyOfProjectTimeDetail((prevDetails) => {
               return {
                 ...prevDetails,
-                ...editDetails,
-                lead_name: foundTeamlead,
+                ...projectDetails,
+                lead_name: foundProjectlead,
               };
             });
           }
@@ -130,10 +121,10 @@ const ProjectEdit = () => {
           setLoading(false);
         } else {
           setProjectTimeDetail((prevDetail) => {
-            return { ...prevDetail, lead_name: foundTeamlead };
+            return { ...prevDetail, lead_name: foundProjectlead };
           });
           setCopyOfProjectTimeDetail((prevDetail) => {
-            return { ...prevDetail, lead_name: foundTeamlead };
+            return { ...prevDetail, lead_name: foundProjectlead };
           });
         }
       } catch (error) {
@@ -348,9 +339,8 @@ const ProjectEdit = () => {
                       </div>
                       {companyStructure?.project_leads
                         ?.find((item) =>
-                          item?.projects?.find(
-                            (structure) =>
-                              structure?.project === params.get("project")
+                          item?.projects_managed?.includes(
+                            params.get("project")
                           )
                         )
                         ?.projects?.find(
@@ -359,9 +349,8 @@ const ProjectEdit = () => {
                       Array.isArray(
                         companyStructure?.project_leads
                           ?.find((item) =>
-                            item?.projects?.find(
-                              (structure) =>
-                                structure?.project === params.get("project")
+                            item?.projects_managed?.includes(
+                              params.get("project")
                             )
                           )
                           ?.projects?.find(
@@ -371,9 +360,8 @@ const ProjectEdit = () => {
                         React.Children.toArray(
                           companyStructure?.project_leads
                             ?.find((item) =>
-                              item?.projects?.find(
-                                (structure) =>
-                                  structure?.project === params.get("project")
+                              item?.projects_managed?.includes(
+                                params.get("project")
                               )
                             )
                             ?.projects?.find(
@@ -494,9 +482,8 @@ const ProjectEdit = () => {
                         <div className={styles.userss__Wrap}>
                           {companyStructure?.project_leads
                             ?.find((item) =>
-                              item?.projects?.find(
-                                (structure) =>
-                                  structure?.project === params.get("project")
+                              item?.projects_managed?.includes(
+                                params.get("project")
                               )
                             )
                             ?.projects?.find(
@@ -505,9 +492,8 @@ const ProjectEdit = () => {
                           Array.isArray(
                             companyStructure?.project_leads
                               ?.find((item) =>
-                                item?.projects?.find(
-                                  (structure) =>
-                                    structure?.project === params.get("project")
+                                item?.projects_managed?.includes(
+                                  params.get("project")
                                 )
                               )
                               ?.projects?.find(
@@ -517,10 +503,8 @@ const ProjectEdit = () => {
                             React.Children.toArray(
                               companyStructure?.project_leads
                                 ?.find((item) =>
-                                  item?.projects?.find(
-                                    (structure) =>
-                                      structure?.project ===
-                                      params.get("project")
+                                  item?.projects_managed?.includes(
+                                    params.get("project")
                                   )
                                 )
                                 ?.projects?.find(
@@ -620,7 +604,7 @@ const ProjectEdit = () => {
                       <>
                         <div className={styles.job__details}>
                           <label htmlFor="lead_name">
-                            Teamlead Username (edit in company structure)
+                            Project lead username (edit in company structure)
                           </label>
                           <input
                             type="text"
@@ -658,7 +642,7 @@ const ProjectEdit = () => {
                       <>
                         <div className={styles.job__details}>
                           <label htmlFor="lead_name">
-                            Teamlead Username (edit in company structure)
+                            Project lead username (edit in company structure)
                           </label>
                           <input
                             type="text"

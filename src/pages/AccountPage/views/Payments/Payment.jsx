@@ -10,8 +10,11 @@ import Overlay from '../../../../components/Overlay';
 import CreatableSelect from 'react-select/creatable';
 import { Toast, toast } from 'react-toastify';
 import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
+import { IoChevronBack } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 
 const Payment = () => {
+  const navigate = useNavigate();
   const { currentUser } = useCurrentUserContext();
   const currencyList = [
     { label: "US Dollar (USD)", value: "USD" },
@@ -41,6 +44,7 @@ const Payment = () => {
     isLoading: false,
     isAddRecordLoading: false,
     isUpdateRecordLoading: false,
+    displayingUpdateRecord: false,
   });
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [weeklyPayList, setWeeklyPayList] = useState([]);
@@ -82,10 +86,6 @@ const Payment = () => {
 
     try {
       const promises = selectedUsers.map(async (user) => {
-        // const dataToPost = {
-        //   "user_id": user.value,
-        //   // "company_id": currentUser?.portfolio_info[0]?.org_id
-        // };
         return getPaymentRecord(user.value);
       });
 
@@ -93,25 +93,36 @@ const Payment = () => {
       console.log('record>>>>>>>', record);
       if (record.length > 0) {
         setPaymentRecord(record);
+
+        const userIDs = record
+          .filter(data => data && data.data && data.data.response && data.data.response.user_id)
+          .map(data => data.data.response.user_id);
+
+        const firstUnmatchedUser = selectedUsers.find(user => !userIDs.some(id => id === user.value));
+
+        if (firstUnmatchedUser) {
+          settingUserForUpdatingRecord(firstUnmatchedUser.value);
+          setNoDatafoundModal(true);
+        }
         toast.success('Payment record(s) retrieved successfully!');
       }
-      setLoading({ ...Loading, isLoading: false });
+      setLoading({ ...Loading, isLoading: false, displayingUpdateRecord: false });
     } catch (error) {
       setLoading({ ...Loading, isLoading: false });
       console.error('Error occurred while fetching payment records:', error.response.data.message);
       toast.error('Unable to retrieve payment record(s)');
-      const errorMessage = error?.response?.data?.response?.message;
-      const collectionIdPattern = /'([^']+)'/;
-      const match = collectionIdPattern.exec(errorMessage);
-      // console.log(match[1]);
-      if (match && match.length > 1) {
-        settingUserForUpdatingRecord(match[1]);
-        setNoDatafoundModal(true);
-      } else {
-        console.error("Error message does not match expected pattern:", errorMessage);
-      }
-      settingUserForUpdatingRecord(match[1]);
-      setNoDatafoundModal(true);
+      // const errorMessage = error?.response?.data?.response?.message;
+      // const collectionIdPattern = /'([^']+)'/;
+      // const match = collectionIdPattern.exec(errorMessage);
+      // // console.log(match[1]);
+      // if (match && match.length > 1) {
+      //   settingUserForUpdatingRecord(match[1]);
+      //   setNoDatafoundModal(true);
+      // } else {
+      //   console.error("Error message does not match expected pattern:", errorMessage);
+      // }
+      // settingUserForUpdatingRecord(match[1]);
+      // setNoDatafoundModal(true);
     }
   }
 
@@ -127,7 +138,8 @@ const Payment = () => {
     setWeeklyPay('');
     setSelectedCurrency([]);
     setSelectedUsers([]);
-    setSelectedCurrency([]);
+    setPaymentMethod([]);
+    setWeeklyPayList([]);
   }
 
   const closeModal = () => {
@@ -137,7 +149,6 @@ const Payment = () => {
     setAddEditModal(false);
   }
 
-  // ...........
   const closeUpdateModal = () => {
     // clearAllFields();
     // setPaymentRecord([]);
@@ -161,7 +172,10 @@ const Payment = () => {
   }
 
   const handleNoDataFoundAddRecordClick = () => {
-    clearAllFields();
+    setWeeklyPay('');
+    setSelectedCurrency([]);
+    setPaymentMethod([]);
+    setSelectedCurrency([]);
     setAddSingleUserRecord(true);
     visibilityOfModals();
   }
@@ -220,10 +234,6 @@ const Payment = () => {
       }
     });
 
-    console.log(updatedList);
-    console.log(updatedCurrencyList);
-    console.log(updatedPaymentMethodList);
-
     setWeeklyPayList(updatedList);
     setSelectedCurrency(updatedCurrencyList);
     setPaymentMethod(updatedPaymentMethodList);
@@ -238,28 +248,33 @@ const Payment = () => {
     if (!selectedUsers || !weeklyPayList || !selectedCurrency || !paymentMethod) {
       return toast.error('Please select User(s), Weekly Pay, Currency and Payment method!');
     }
+    // clearAllFields();
     setLoading({ ...Loading, isAddRecordLoading: true })
     if (addSingleUserRecord) {
       const dataToPost = {
         "company_id": currentUser?.portfolio_info[0]?.org_id,
         "user_id": userNotFound.value,
         "weekly_payment_amount": weeklyPay,
-        "currency": selectedCurrency.value
+        "currency": selectedCurrency.value,
+        "payment_method": paymentMethod.label,
       }
 
-      // console.log(dataToPost);
+      console.log(dataToPost);
       await savePaymentRecord(dataToPost).then(() => {
         toast.success(`Payment record added successfully!`);
         setAddEditModal(false);
+        handleGetRecordButtonClick();
       }).catch(error => {
         toast.error(`${error.response.data.message}, Please update the record!`);
       })
-      setLoading({ ...Loading, isAddRecordLoading: false })
+      setLoading({ ...Loading, isAddRecordLoading: false, displayingUpdateRecord: true })
     } else {
       try {
         const promises = selectedUsers.map((user, index) => {
           const weeklyPayEntry = weeklyPayList.find(entry => entry.value === user.value);
+          const paymentMethodEntry = paymentMethod.find(entry => entry.value === user.value);
 
+          // console.log(paymentMethodEntry.label);
           const currencyEntry = selectedCurrency[index];
 
           const dataToPost = {
@@ -267,6 +282,7 @@ const Payment = () => {
             "user_id": user.value,
             "weekly_payment_amount": weeklyPayEntry ? weeklyPayEntry.label : null,
             "currency": currencyEntry.value,
+            "payment_method": paymentMethodEntry.label,
           };
           // return dataToPost;
           return savePaymentRecord(dataToPost);
@@ -287,6 +303,7 @@ const Payment = () => {
         toast.error(`${error.response.data.message}, Please update the record!`);
       }
       setLoading({ ...Loading, isAddRecordLoading: false })
+
     }
     // clearAllFields();
   }
@@ -296,27 +313,34 @@ const Payment = () => {
     settingUserForUpdatingRecord(paymentRecord[index].data.response.user_id);
     setWeeklyPay(paymentRecord[index].data.response.weekly_payment_amount);
     setSelectedCurrency({ label: paymentRecord[index].data.response.payment_currency, value: paymentRecord[index].data.response.payment_currency })
+    setPaymentMethod({ label: paymentRecord[index].data.response.payment_method, value: paymentRecord[index].data.response.payment_method })
   }
 
   const handleUpdateRecordButtonClick = async () => {
     // console.log(userNotFound.value, userNotFound.label, weeklyPay, selectedCurrency.value);
     setLoading({ ...Loading, isUpdateRecordLoading: true });
+
     const dataToPost = {
       "company_id": currentUser?.portfolio_info[0]?.org_id,
       "user_id": userNotFound.value,
       "weekly_payment_amount": weeklyPay,
       "currency": selectedCurrency.value,
+      "payment_method": paymentMethod.label,
     }
 
+    // console.log(dataToPost);
     await updatePaymentRecord(dataToPost).then(() => {
       toast.success('Record Updated Successfully!');
       setShowUpdateModal(false);
+
+      handleGetRecordButtonClick();
+      // setLoading({ ...Loading})
       // setSelectedUsers([]);
-      setPaymentRecord([]);
+      // setPaymentRecord([]);
     }).catch(() => {
       toast.error('Unable to Update Record. Please try again!');
     })
-    setLoading({ ...Loading, isUpdateRecordLoading: false });
+    setLoading({ ...Loading, isUpdateRecordLoading: false, displayingUpdateRecord: true });
     // clearAllFields();
   }
 
@@ -325,8 +349,9 @@ const Payment = () => {
       accountView={true}
       hideSearchBar={true}
     >
+      <div className="att_title"><div className={styles.back_icon} onClick={() => navigate(-1)}><IoChevronBack /></div><h3>Payment Records</h3></div>
       <div className={styles.main_wrap}>
-        <h3>Payment Records</h3>
+        {/* <h3>Payment Records</h3> */}
         <div className={styles.selection_wrap}>
           <div className={styles.select_user}>
             <p>Select User:</p>
@@ -362,32 +387,53 @@ const Payment = () => {
                 <th>Weekly Pay</th>
                 <th>Currency</th>
                 <th>Previous Weekly Pays</th>
+                <th>Payment Method</th>
                 <th>Last Payment date</th>
+                <th></th>
               </tr>
             </thead>
-            <tbody>
-              {
-                paymentRecord.map((record, index) => (
-                  <tr key={index}>
-                    <td>
-                      {selectedUsers.find(user => user.value === record?.data?.response?.user_id)?.label || ''}
-                    </td>
-                    <td>{record?.data?.response?.weekly_payment_amount}</td>
-                    <td>{record?.data?.response?.payment_currency}</td>
-                    <td>
-                      {record?.data?.response?.previous_weekly_amounts && record?.data?.response?.previous_weekly_amounts.length > 0 ? record?.data?.response?.previous_weekly_amounts.join(', ') : '-'}
-                    </td>
-                    <td>{record?.data?.response?.last_payment_date !== "" ? `${new Date(record?.data?.response?.last_payment_date).toDateString()}` : '-'}</td>
-                    <td><PiNotePencilDuotone color="#005734" fontSize="1.5em" onClick={() => handleEditClick(index)} /></td>
-                  </tr>
-                ))}
-            </tbody>
+            {
+              Loading.displayingUpdateRecord ?
+                <></>
+                :
+                <tbody>
+                  {paymentRecord.map((record, index) => (
+                    record?.data && !showUpdateModal ? (
+                      selectedUsers.find(user => user.value === record?.data?.response?.user_id) ? (
+                        <tr key={index}>
+                          <td>
+                            {selectedUsers.find(user => user.value === record?.data?.response?.user_id)?.label || ''}
+                          </td>
+                          <td>{record?.data?.response?.weekly_payment_amount}</td>
+                          <td>{record?.data?.response?.payment_currency}</td>
+                          <td>
+                            {record?.data?.response?.previous_weekly_amounts && record?.data?.response?.previous_weekly_amounts.length > 0 ? record?.data?.response?.previous_weekly_amounts.join(', ') : '-'}
+                          </td>
+                          <td>{record?.data?.response?.payment_method}</td>
+                          <td>
+                            {record?.data?.response?.last_payment_date !== "" ? `${new Date(record?.data?.response?.last_payment_date).toDateString()}` : '-'}
+                          </td>
+                          <td className={styles.icon_edit}><PiNotePencilDuotone color="#005734" className={styles.edit_icon} onClick={() => handleEditClick(index)} /></td>
+                        </tr>
+                      ) : null
+                    ) : null
+                  ))}
+                </tbody>
+            }
           </table>
         </div>
-        <div className={styles.add_record} onClick={handleAddRecordClick}>
-          <IoAddCircleOutline color="#005734" fontSize="2em" />
-          <h6>Add Record</h6>
-        </div>
+        {
+          Loading.displayingUpdateRecord ?
+            <div className={styles.loader_}>
+              {/* <p>Crunching updated data for you</p> */}
+              <LoadingSpinner width={'3rem'} height={'3rem'} />
+            </div>
+            :
+            <div className={styles.add_record} onClick={handleAddRecordClick}>
+              <IoAddCircleOutline color="#005734" fontSize="2em" />
+              <h6>Add New Record</h6>
+            </div>
+        }
         {
           addEditModal &&
           <Overlay>
@@ -439,6 +485,10 @@ const Payment = () => {
                     </>
                     :
                     <>
+                      <div className={styles.record_info}>
+                        <h3 className={styles.add_edit_heading}>Add new record</h3>
+                        <p className={styles.add_edit_info}>Weekly pay, Currency and Payment Method can only be updated after record is created.</p>
+                      </div>
                       <div className={styles.select_input}>
                         <p>Select User(s):</p>
                         <Select
@@ -451,25 +501,29 @@ const Payment = () => {
 
                       </div>
                       <div className={styles.select_input}>
-                        <p>Weekly Pay:</p>
+                        <p className={styles.text_disabled}>Weekly Pay for user(s) selected:</p>
                         <Select
                           value={weeklyPayList}
                           isMulti={true}
+                          isDisabled={true}
+                          placeholder="Weekly Pay..."
                         />
                       </div>
                       <div className={styles.select_input}>
-                        <p>Payment Currency:</p>
+                        <p className={styles.text_disabled}>Payment Currency for user(s) selected:</p>
                         <Select
                           isMulti={true}
                           value={selectedCurrency}
+                          isDisabled={true}
                           placeholder="Currency..."
                         />
                       </div>
                       <div className={styles.select_input}>
-                        <p>Payment Method:</p>
+                        <p className={styles.text_disabled}>Payment Method for user(s) selected:</p>
                         <Select
                           isMulti={true}
                           value={paymentMethod}
+                          isDisabled={true}
                           placeholder="Payment method..."
                         />
                       </div>
@@ -521,6 +575,16 @@ const Payment = () => {
                     value={selectedCurrency}
                     onChange={handleCurrencyChange}
                     placeholder="Select a currency..."
+                  />
+                </div>
+                <div className={styles.select_input}>
+                  <p>Payment Method:</p>
+                  <Select
+                    options={paymentMethods}
+                    isMulti={false}
+                    value={paymentMethod}
+                    onChange={handlePaymentChange}
+                    placeholder="Select a payment method..."
                   />
                 </div>
                 <button className={`${styles.btn_get_record} ${styles.btn_add_record}`} onClick={handleUpdateRecordButtonClick}>

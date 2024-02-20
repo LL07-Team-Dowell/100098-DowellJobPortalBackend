@@ -26,32 +26,33 @@ const CreateTeam = ({ isAdmin }) => {
     setPortfolioLoaded,
     isNotOwnerUser,
     setIsNotOwnerUser,
+    allCompanyApplications,
   } = useCurrentUserContext();
   // DATA
   const { data, setdata } = useValues();
   const MembersCurrentUser = currentUser?.settings_for_profile_info
     ?.fakeSuperUserInfo
     ? currentUser?.userportfolio
-        ?.filter((user) => user.member_type !== "owner")
-        .map((v) =>
-          v.username.length !== 0
-            ? Array.isArray(v.username)
-              ? v.username[0]
-              : v.username
-            : null
-        )
-        .filter((v) => v !== null)
-        .map((v, i) => ({ member: v, id: i }))
+      ?.filter((user) => user.member_type !== "owner")
+      .map((v) =>
+        v.username.length !== 0
+          ? Array.isArray(v.username)
+            ? v.username[0]
+            : v.username
+          : null
+      )
+      .filter((v) => v !== null)
+      .map((v, i) => ({ member: v, id: i }))
     : currentUser?.selected_product?.userportfolio
-        .map((v) =>
-          v.username.length !== 0 && v.username[0] !== "owner"
-            ? Array.isArray(v.username)
-              ? v.username[0]
-              : v.username
-            : null
-        )
-        .filter((v) => v !== null)
-        .map((v, i) => ({ member: v, id: i }));
+      .map((v) =>
+        v.username.length !== 0 && v.username[0] !== "owner"
+          ? Array.isArray(v.username)
+            ? v.username[0]
+            : v.username
+          : null
+      )
+      .filter((v) => v !== null)
+      .map((v, i) => ({ member: v, id: i }));
   // States
   const [showCard, setshowCard] = useState(false);
   const [toggleCheckboxes, settoggleCheckboxes] = useState(false);
@@ -90,26 +91,26 @@ const CreateTeam = ({ isAdmin }) => {
       setDesplaidMembers(
         isNotOwnerUser
           ? currentUser?.selected_product?.userportfolio
-              .map((v) =>
-                v.username.length !== 0 && v.username[0] !== "owner"
-                  ? Array.isArray(v.username)
-                    ? v.username[0]
-                    : v.username
-                  : null
-              )
-              .filter((v) => v !== null)
-              .map((v, i) => ({ member: v, id: i }))
+            .map((v) =>
+              v.username.length !== 0 && v.username[0] !== "owner"
+                ? Array.isArray(v.username)
+                  ? v.username[0]
+                  : v.username
+                : null
+            )
+            .filter((v) => v !== null)
+            .map((v, i) => ({ member: v, id: i }))
           : currentUser?.userportfolio
-              ?.filter((user) => user.member_type !== "owner")
-              .map((v) =>
-                v.username.length !== 0
-                  ? Array.isArray(v.username)
-                    ? v.username[0]
-                    : v.username
-                  : null
-              )
-              .filter((v) => v !== null)
-              .map((v, i) => ({ member: v, id: i }))
+            ?.filter((user) => user.member_type !== "owner")
+            .map((v) =>
+              v.username.length !== 0
+                ? Array.isArray(v.username)
+                  ? v.username[0]
+                  : v.username
+                : null
+            )
+            .filter((v) => v !== null)
+            .map((v, i) => ({ member: v, id: i }))
       );
       return;
     }
@@ -134,16 +135,12 @@ const CreateTeam = ({ isAdmin }) => {
     ) {
       console.log("No team management product found for current user");
       setDesplaidMembers(
-        currentUser?.selected_product?.userportfolio
-          .map((v) =>
-            v.username.length !== 0 && v.username[0] !== "owner"
-              ? Array.isArray(v.username)
-                ? v.username[0]
-                : v.username
-              : null
-          )
-          .filter((v) => v !== null)
-          .map((v, i) => ({ member: v, id: i }))
+        allCompanyApplications.map(application => {
+          return {
+            member: application.username,
+            id: application._id,
+          }
+        })
       );
       setIsNotOwnerUser(true);
       return setPortfolioLoaded(true);
@@ -158,17 +155,12 @@ const CreateTeam = ({ isAdmin }) => {
       .then((res) => {
         setCurrentUser(res.data);
         setDesplaidMembers(
-          res.data?.userportfolio
-            ?.filter((user) => user.member_type !== "owner")
-            .map((v) =>
-              v.username.length !== 0
-                ? Array.isArray(v.username)
-                  ? v.username[0]
-                  : v.username
-                : null
-            )
-            .filter((v) => v !== null)
-            .map((v, i) => ({ member: v, id: i }))
+          allCompanyApplications.map(application => {
+            return {
+              member: application.username,
+              id: application._id,
+            }
+          })
         );
         setPortfolioLoaded(true);
         setIsNotOwnerUser(false);
@@ -307,7 +299,7 @@ const CreateTeam = ({ isAdmin }) => {
               <div className="members">
                 {[...new Map(displaidMembers.map((member) => [member.member, member])).values()]?.filter((f) => f.member.toLocaleLowerCase().includes(query.toLocaleLowerCase()))
                   .length > 0 ? (
-                    [...new Map(displaidMembers.map((member) => [member.member, member])).values()]
+                  [...new Map(displaidMembers.map((member) => [member.member, member])).values()]
                     ?.filter((f) => f.member.toLocaleLowerCase().includes(query.toLocaleLowerCase()))
                     ?.map((element) => (
                       <div

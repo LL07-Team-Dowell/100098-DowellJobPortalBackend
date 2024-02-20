@@ -48,6 +48,7 @@ const AddMemberPopup = ({
     setPortfolioLoaded,
     isNotOwnerUser,
     setIsNotOwnerUser,
+    allCompanyApplications,
   } = useCurrentUserContext();
 
   const AddedMember = (id) => {
@@ -106,24 +107,24 @@ const AddMemberPopup = ({
     if (portfolioLoaded) {
       const membersFromUserPortfolio = isNotOwnerUser
         ? currentUser?.selected_product?.userportfolio
-            .map((v) =>
-              v.username.length !== 0 && v.username[0] !== "owner"
-                ? Array.isArray(v.username)
-                  ? v.username[0]
-                  : v.username
-                : null
-            )
-            .filter((v) => v !== null)
+          .map((v) =>
+            v.username.length !== 0 && v.username[0] !== "owner"
+              ? Array.isArray(v.username)
+                ? v.username[0]
+                : v.username
+              : null
+          )
+          .filter((v) => v !== null)
         : currentUser?.userportfolio
-            ?.filter((user) => user.member_type !== "owner")
-            .map((v) =>
-              v.username.length !== 0
-                ? Array.isArray(v.username)
-                  ? v.username[0]
-                  : v.username
-                : null
-            )
-            .filter((v) => v !== null);
+          ?.filter((user) => user.member_type !== "owner")
+          .map((v) =>
+            v.username.length !== 0
+              ? Array.isArray(v.username)
+                ? v.username[0]
+                : v.username
+              : null
+          )
+          .filter((v) => v !== null);
 
       setDesplaidMembers(
         returnMissingMember(membersFromUserPortfolio, members)?.map(
@@ -153,16 +154,12 @@ const AddMemberPopup = ({
       !teamManagementProduct
     ) {
       console.log("No team management product found for current user");
-      const membersFromUserPortfolio =
-        currentUser?.selected_product?.userportfolio
-          .map((v) =>
-            v.username.length !== 0 && v.username[0] !== "owner"
-              ? Array.isArray(v.username)
-                ? v.username[0]
-                : v.username
-              : null
-          )
-          .filter((v) => v !== null);
+      const membersFromUserPortfolio = allCompanyApplications.map(application => {
+        return {
+          member: application.username,
+          id: application._id,
+        }
+      })
 
       setDesplaidMembers(
         returnMissingMember(membersFromUserPortfolio, members)?.map(
@@ -183,16 +180,12 @@ const AddMemberPopup = ({
     getUserInfoFromLoginAPI(dataToPost)
       .then((res) => {
         setCurrentUser(res.data);
-        const membersFromUserPortfolio = res.data?.userportfolio
-          ?.filter((user) => user.member_type !== "owner")
-          .map((v) =>
-            v.username.length !== 0
-              ? Array.isArray(v.username)
-                ? v.username[0]
-                : v.username
-              : null
-          )
-          .filter((v) => v !== null);
+        const membersFromUserPortfolio = allCompanyApplications.map(application => {
+          return {
+            member: application.username,
+            id: application._id,
+          }
+        })
 
         setDesplaidMembers(
           returnMissingMember(membersFromUserPortfolio, members)?.map(

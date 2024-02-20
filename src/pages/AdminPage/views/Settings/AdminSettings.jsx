@@ -46,7 +46,7 @@ const AdminSettings = () => {
   const { 
     currentUser, 
     setCurrentUser,
-    allApplications,
+    allCompanyApplications,
     userRemovalStatusChecked,
   } = useCurrentUserContext();
   console.log({ CURRENTUSER: currentUser })
@@ -255,7 +255,7 @@ const AdminSettings = () => {
 
     if (list?.length < 1) {
       if (!userRemovalStatusChecked) return
-      setlist(allApplications);  
+      setlist(allCompanyApplications);  
     }
   }, [userRemovalStatusChecked])
 

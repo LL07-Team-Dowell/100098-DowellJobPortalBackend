@@ -17,8 +17,8 @@ import { getSettingUserProject } from "../../../../services/hrServices";
 const ProjectLeadHomePage = () => {
     const { 
         currentUser,
-        allApplications,
-        setAllApplications,
+        allCompanyApplications,
+        setAllCompanyApplications,
         userRemovalStatusChecked,
     } = useCurrentUserContext();
     const { 
@@ -96,7 +96,7 @@ const ProjectLeadHomePage = () => {
             return
         }
 
-        const onboardingCandidates = allApplications
+        const onboardingCandidates = allCompanyApplications
         ?.filter(
         (application) =>
             application.data_type === currentUser?.portfolio_info[0].data_type &&
@@ -136,7 +136,7 @@ const ProjectLeadHomePage = () => {
             setFetchedOnboardingUsersLoaded(true);
             setLoading(false);
         })
-    }, [userRemovalStatusChecked, allApplications])
+    }, [userRemovalStatusChecked, allCompanyApplications])
 
     useEffect(() => {
         if (currentSelectedProjectForLead.length < 1) return
@@ -232,7 +232,7 @@ const ProjectLeadHomePage = () => {
                 (application) =>
                     application.data_type === currentUser?.portfolio_info[0]?.data_type
             )?.reverse()
-            setAllApplications(candidateDataFetched);
+            setAllCompanyApplications(candidateDataFetched);
 
             const onboardingCandidates = candidateDataFetched
             .filter(

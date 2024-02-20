@@ -33,7 +33,7 @@ const AllApplicationsScreen = () => {
     } = useJobContext();
     const { 
         currentUser,
-        allApplications, 
+        allCompanyApplications, 
         userRemovalStatusChecked,
     } = useCurrentUserContext();
     const [ searchValue, setSearchValue ] = useState('');
@@ -49,7 +49,7 @@ const AllApplicationsScreen = () => {
         if (!applicationsLoaded) {
             if (!userRemovalStatusChecked) return
             
-            setApplications(allApplications);
+            setApplications(allCompanyApplications);
             setApplicationsLoaded(true);
 
         }

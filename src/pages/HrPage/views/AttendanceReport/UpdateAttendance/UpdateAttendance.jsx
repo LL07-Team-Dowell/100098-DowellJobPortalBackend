@@ -23,7 +23,7 @@ import { candidateStatuses } from "../../../../CandidatePage/utils/candidateStat
 
 const AttendanceUpdatePage = () => {
     const navigate = useNavigate();
-    const { currentUser, allApplications, userRemovalStatusChecked } = useCurrentUserContext();
+    const { currentUser, allCompanyApplications, userRemovalStatusChecked } = useCurrentUserContext();
     const [projects, setProjects] = useState([]);
     const [selectedProject, setSelectedProject] = useState('');
     const [usersInSelectedProject, setUsersInSelectedProject] = useState([]);
@@ -111,7 +111,7 @@ const AttendanceUpdatePage = () => {
         // currentUser?.portfolio_info[0].org_id
 
         if (!userRemovalStatusChecked) return;
-        const hiredCandidates = allApplications.filter(candidate => candidate.status === candidateStatuses.ONBOARDING);
+        const hiredCandidates = allCompanyApplications.filter(candidate => candidate.status === candidateStatuses.ONBOARDING || candidate.status === candidateStatuses.RENEWCONTRACT);
 
         const candidatesInSelectedProject = hiredCandidates.filter(candidate =>
             candidate.project && candidate.project.includes(selectedProject?.value)

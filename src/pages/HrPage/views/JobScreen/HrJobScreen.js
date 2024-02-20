@@ -37,43 +37,43 @@ function fuzzySearch(query, text) {
 }
 
 function HrJobScreen() {
-  const { currentUser, userRolesLoaded, setUserRolesFromLogin, setRolesLoaded } = useCurrentUserContext();
+  const { currentUser, userRolesLoaded, setUserRolesFromLogin, setRolesLoaded, allCompanyApplications } = useCurrentUserContext();
   const { setQuestions, candidateResponses, setCandidateResponses } = useHrJobScreenAllTasksContext();
   const { section, sub_section, path } = useNavigationContext();
   const [jobs, setJobs] = useState([]);
-  const [ appliedJobs, setAppliedJobs ] = useState([]);
+  const [appliedJobs, setAppliedJobs] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
   const [jobSearchInput, setJobSearchInput] = useState("");
-  const [ searchActive, setSearchActive ] = useState(false);
-  const [ matchedJobs, setMatchedJobs ] = useState([]);
+  const [searchActive, setSearchActive] = useState(false);
+  const [matchedJobs, setMatchedJobs] = useState([]);
   const { candidateData, setCandidateData } = useHrCandidateContext();
-  const [ isLoading, setLoading ] = useState(true);
-  const [ currentProjects, setCurrentProjects ] = useState([]);
-  const { 
-    allTasks, 
+  const [isLoading, setLoading] = useState(true);
+  const [currentProjects, setCurrentProjects] = useState([]);
+  const {
+    allTasks,
     setAllTasks,
     setLoadedTasks,
   } = useHrJobScreenAllTasksContext();
-  const [ showAddTaskModal, setShowAddTaskModal ] = useState(false);
-  const [ hiredCandidates, setHiredCandidates ] = useState([]);
-  const [ showCurrentCandidateTask, setShowCurrentCandidateTask ] = useState(false);
-  const [ currentTeamMember, setCurrentTeamMember ] = useState({});
-  const [ editTaskActive, setEditTaskActive ] = useState(false);
-  const [ currentTaskToEdit, setCurrentTaskToEdit ] = useState({});
-  const [ currentCandidateProject, setCurrentCandidateProject ] = useState(null);
-  const [ currentSortOption, setCurrentSortOption ] = useState(null);
-  const [ sortResults, setSortResults ] = useState([]);
+  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  const [hiredCandidates, setHiredCandidates] = useState([]);
+  const [showCurrentCandidateTask, setShowCurrentCandidateTask] = useState(false);
+  const [currentTeamMember, setCurrentTeamMember] = useState({});
+  const [editTaskActive, setEditTaskActive] = useState(false);
+  const [currentTaskToEdit, setCurrentTaskToEdit] = useState({});
+  const [currentCandidateProject, setCurrentCandidateProject] = useState(null);
+  const [currentSortOption, setCurrentSortOption] = useState(null);
+  const [sortResults, setSortResults] = useState([]);
   // const [ showCurrentCandidateAttendance, setShowCurrentCandidateAttendance ] = useState(false);
-  const [ guestApplications, setGuestApplications ] = useState([]);
-  const [ currentActiveItem, setCurrentActiveItem ] = useState("Received");
-  const [ trackingProgress, setTrackingProgress ] = useState(false);
-  const [ showPublicAccountConfigurationModal, setShowPublicAccountConfigurationModal ] = useState(false);
-  const [ newPublicConfigurationLoading, setNewPublicConfigurationLoading ] = useState(false);
-  const [ newPublicAccountDetails, setNewPublicAccountDetails ] = useState(initialPublicAccountDetails);
-  const [ currentCandidateData, setCurrentCandidateData ] = useState(null);
-  const [ hideSideBar, setHideBar ] = useState(false);
-  
+  const [guestApplications, setGuestApplications] = useState([]);
+  const [currentActiveItem, setCurrentActiveItem] = useState("Received");
+  const [trackingProgress, setTrackingProgress] = useState(false);
+  const [showPublicAccountConfigurationModal, setShowPublicAccountConfigurationModal] = useState(false);
+  const [newPublicConfigurationLoading, setNewPublicConfigurationLoading] = useState(false);
+  const [newPublicAccountDetails, setNewPublicAccountDetails] = useState(initialPublicAccountDetails);
+  const [currentCandidateData, setCurrentCandidateData] = useState(null);
+  const [hideSideBar, setHideBar] = useState(false);
+
   const handleEditTaskBtnClick = (currentData) => {
     setEditTaskActive(true);
     setCurrentTaskToEdit(currentData);
@@ -86,15 +86,15 @@ function HrJobScreen() {
 
   const goToJobApplicationDetails = (candidateData) => {
     if (section === "guest-applications") return navigate(`/guest-applications/job/${candidateData[mutableNewApplicationStateNames.applicant]}`, { state: { candidate: candidateData } })
-  
+
     navigate(`/home/job/${candidateData[mutableNewApplicationStateNames.applicant]}`, { state: { candidate: candidateData } })
   };
 
   useEffect(() => {
 
-    if ( (sub_section !== undefined) && (section !== "hr-training") && (!location.state) ) return navigate("/home");
+    if ((sub_section !== undefined) && (section !== "hr-training") && (!location.state)) return navigate("/home");
 
-    if ( (path !== undefined) && (!location.state)) return navigate("/home");
+    if ((path !== undefined) && (!location.state)) return navigate("/home");
 
   }, [sub_section, path])
 
@@ -120,81 +120,80 @@ function HrJobScreen() {
     if (currentProjects.length > 0 && allTasks.length > 0 && jobs.length > 0) return
 
     Promise.all([
-      getCandidateApplicationsForHr(currentUser.portfolio_info[0].org_id),
-      getJobs2({company_id: currentUser.portfolio_info[0].org_id}),
+      getJobs2({ company_id: currentUser.portfolio_info[0].org_id }),
       getCandidateTask(currentUser?.portfolio_info[0]?.org_id),
       getSettingUserProject(),
       getTrainingManagementQuestions(currentUser.portfolio_info[0].org_id),
       getTrainingManagementResponses(currentUser.portfolio_info[0].org_id),
     ])
-    .then(async (res) => {
-      const filteredData = res[0]?.data?.response?.data?.filter(application => application.data_type === currentUser.portfolio_info[0].data_type)?.reverse();
-      setAppliedJobs(filteredData.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
-      setGuestApplications(filteredData.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION && !application.signup_mail_sent));
-      setCandidateData(filteredData.filter(application => application.status === candidateStatuses.SHORTLISTED));
-      setHiredCandidates(filteredData.filter(application => application.status === candidateStatuses.ONBOARDING));
+      .then(async (res) => {
+        // const filteredData = res[0]?.data?.response?.data?.filter(application => application.data_type === currentUser.portfolio_info[0].data_type)?.reverse();
+        setAppliedJobs(allCompanyApplications.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
+        setGuestApplications(allCompanyApplications.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION && !application.signup_mail_sent));
+        setCandidateData(allCompanyApplications.filter(application => application.status === candidateStatuses.SHORTLISTED));
+        setHiredCandidates(allCompanyApplications.filter(application => application.status === candidateStatuses.ONBOARDING));
 
-      setJobs(
-        res[1]?.data?.response?.data?.reverse()
-        ?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type && job.is_active)
-        .filter(job => !job.is_internal)
-      );
+        setJobs(
+          res[0]?.data?.response?.data?.reverse()
+            ?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type && job.is_active)
+            .filter(job => !job.is_internal)
+        );
 
 
-      const usersWithTasks = [
-        ...new Map(
-          res[2]?.data?.response?.data
-            ?.filter(
-              (j) => currentUser.portfolio_info[0].data_type === j.data_type
-            )
-            .map((task) => [task.applicant, task])
-        ).values()
-      ];
-      setLoadedTasks([]);
-      setAllTasks(usersWithTasks.reverse());
+        const usersWithTasks = [
+          ...new Map(
+            res[1]?.data?.response?.data
+              ?.filter(
+                (j) => currentUser.portfolio_info[0].data_type === j.data_type
+              )
+              .map((task) => [task.applicant, task])
+          ).values()
+        ];
+        setLoadedTasks([]);
+        setAllTasks(usersWithTasks.reverse());
 
-      const list = res[3]?.data
-      ?.filter(
-        (project) =>
-          project?.data_type === currentUser.portfolio_info[0].data_type &&
-          project?.company_id === currentUser.portfolio_info[0].org_id &&
-          project.project_list &&
-          project.project_list.every(
-            (listing) => typeof listing === "string"
+        const list = res[2]?.data
+          ?.filter(
+            (project) =>
+              project?.data_type === currentUser.portfolio_info[0].data_type &&
+              project?.company_id === currentUser.portfolio_info[0].org_id &&
+              project.project_list &&
+              project.project_list.every(
+                (listing) => typeof listing === "string"
+              )
+          ).reverse();
+        // console.log(list);
+        setCurrentProjects(
+          list.length < 1 ? []
+            :
+            list[0]?.project_list
+        );
+
+        setQuestions(
+          res[3]?.data?.response?.data?.filter(
+            (question) =>
+              question.data_type === currentUser.portfolio_info[0].data_type
           )
-      ).reverse();
-      // console.log(list);
-      setCurrentProjects(
-        list.length < 1  ? []
-        :
-        list[0]?.project_list
-      );
+        );
 
-      setQuestions(
-        res[4]?.data?.response?.data?.filter(
-          (question) =>
-            question.data_type === currentUser.portfolio_info[0].data_type
-        )
-      );
-      
-      setCandidateResponses(
-        res[5]?.data?.response?.data
-        ?.filter(response => 
-          response.data_type === currentUser.portfolio_info[0].data_type && 
-          response.submitted_on
-        )
-        ?.reverse()
-      );
-      setLoading(false);
-    }).catch(err => {
-      console.log(err);
-      setLoading(false);
-    })
-    
+        setCandidateResponses(
+          res[4]?.data?.response?.data
+            ?.filter(response =>
+              response.data_type === currentUser.portfolio_info[0].data_type &&
+              response.submitted_on
+            )
+            ?.reverse()
+        );
+        setLoading(false);
+      }).catch(err => {
+        console.log(err);
+        setLoading(false);
+      })
+
   }, [])
 
   useEffect(() => {
-    
+
     if (jobSearchInput.length < 1) return setSearchActive(false);
     console.log("zebiiiiiiiiiiiiiiiiiiiiiiiii")
     setSearchActive(true);
@@ -205,21 +204,21 @@ function HrJobScreen() {
   }, [jobSearchInput])
 
   useEffect(() => {
-        
+
     const foundCandidate = hiredCandidates.find(data => data.applicant === currentTeamMember);
-    
+
     if (!foundCandidate) return;
 
     const candidateProject = foundCandidate.others[mutableNewApplicationStateNames.assigned_project];
     setCurrentCandidateProject(candidateProject);
-    
+
   }, [currentTeamMember])
 
   useEffect(() => {
 
     setShowCurrentCandidateTask(false);
     const currentPath = location.pathname.split("/")[1];
-    
+
     if (location.state && location.state.candidate) setCurrentCandidateData(location.state.candidate);
 
     if (!currentPath) return setCurrentActiveItem("Received");
@@ -249,7 +248,7 @@ function HrJobScreen() {
 
         }
 
-        if (!categories.hasOwnProperty(task[`${propertyName}`])){
+        if (!categories.hasOwnProperty(task[`${propertyName}`])) {
           categories[`${task[propertyName]}`] = task[`${propertyName}`]
         }
       })
@@ -259,16 +258,16 @@ function HrJobScreen() {
       Object.keys(categories || {}).forEach(key => {
 
         if (key === "undefined") return;
-        
+
         if (date) {
           const matchingTasks = allTasks.filter(task => new Date(task[`${propertyName}`]).toDateString() === key);
           categoryObj.name = key;
           categoryObj.data = matchingTasks;
           newArray.push(categoryObj);
-          categoryObj = {};    
+          categoryObj = {};
           return
         }
-        
+
         const matchingTasks = allTasks.filter(task => task[`${propertyName}`] === key);
         categoryObj.name = key;
         categoryObj.data = matchingTasks;
@@ -299,7 +298,7 @@ function HrJobScreen() {
     if (item === "Guests") return navigate("/guest-applications");
     if (item === "Shortlisted") return navigate("/shortlisted");
     if (item === "Hr Training") return navigate("/hr-training");
-    
+
     navigate("/");
   }
 
@@ -328,8 +327,8 @@ function HrJobScreen() {
 
       setCandidateResponses(
         res[1].data.response.data
-        .filter(response => response.data_type === currentUser.portfolio_info[0].data_type && response.submitted_on)
-        .reverse()
+          .filter(response => response.data_type === currentUser.portfolio_info[0].data_type && response.submitted_on)
+          .reverse()
       );
 
       setLoading(false);
@@ -383,7 +382,7 @@ function HrJobScreen() {
 
   const handlePublicDetailChange = (name, value) => {
     setNewPublicAccountDetails((prevValue) => {
-      return { 
+      return {
         ...prevValue,
         [name]: value,
       }
@@ -400,10 +399,10 @@ function HrJobScreen() {
     copyOfPublicDetail.application_id = currentCandidateData._id;
     copyOfPublicDetail.org_name = currentUser?.portfolio_info[0]?.org_name;
     copyOfPublicDetail.org_id = currentCandidateData?.company_id;
-    copyOfPublicDetail.owner_name = currentUser?.settings_for_profile_info?.fakeSuperUserInfo ? 
-     currentUser?.userinfo?.username
-    :
-     currentUser?.portfolio_info[0]?.owner_name;
+    copyOfPublicDetail.owner_name = currentUser?.settings_for_profile_info?.fakeSuperUserInfo ?
+      currentUser?.userinfo?.username
+      :
+      currentUser?.portfolio_info[0]?.owner_name;
     copyOfPublicDetail.product = teamManagementProductName;
     copyOfPublicDetail.toemail = currentCandidateData?.applicant_email;
     copyOfPublicDetail.toname = currentCandidateData?.applicant;
@@ -418,7 +417,7 @@ function HrJobScreen() {
 
     const missingValueIndex = keysFilledStatus.findIndex(key => key === 'missing');
     if (missingValueIndex !== -1) return toast.info(`Please enter ${readablePublicAccountStateNames[copyOfPublicDetailKeys[missingValueIndex]]}`)
-    
+
     // console.log(copyOfPublicDetail);
     if (copyOfPublicDetail.portfolio_name === currentUser?.portfolio_info[0]?.portfolio_name) return toast.info('You cannot use the same portfolio name as yours');
     if (currentUser?.userportfolio?.find(item => item?.portfolio_name.toLocaleLowerCase() === copyOfPublicDetail.portfolio_name.toLocaleLowerCase())) return toast.info('A member of your organization already has this portfolio name');
@@ -434,18 +433,18 @@ function HrJobScreen() {
       // setCandidateData((prevCandidates) => {
       //   return [...prevCandidates, currentCandidateData];
       // });
-      
+
       setGuestApplications((prevApplications) => {
         return prevApplications.filter(
           (application) => application._id !== currentCandidateData._id
         );
       });
-      
+
       setNewPublicAccountDetails(initialPublicAccountDetails);
       setShowPublicAccountConfigurationModal(false);
 
       toast.success(response.message)
-  
+
       navigate('/guest-applications');
 
     } catch (error) {
@@ -456,37 +455,37 @@ function HrJobScreen() {
   }
 
   return (
-    <StaffJobLandingLayout 
+    <StaffJobLandingLayout
       hrView={true}
       // runExtraFunctionOnNavItemClick={hideTaskAndAttendaceView}
       hideSearchBar={
         sub_section === undefined && section === "user" ? true : false
       }
-      hideSideBar={showAddTaskModal || hideSideBar} 
-      searchValue={jobSearchInput} 
+      hideSideBar={showAddTaskModal || hideSideBar}
+      searchValue={jobSearchInput}
       setSearchValue={setJobSearchInput}
       showLoadingOverlay={trackingProgress}
-      modelDurationInSec={5.69} 
+      modelDurationInSec={5.69}
       searchPlaceHolder={
         section === "home" ?
-          "received" 
-        : 
-          section === "guest-applications" ? 
-          "guests" 
-        : 
-          section === "shortlisted" ? 
-          "shortlisted" 
-        : 
-          section === "hr-training" ? 
-          "hr-training" 
-        :
-          section === 'attendance' ?
-          "user"
-        :
-          section === 'tasks' ?
-          "work logs"
-        : 
           "received"
+          :
+          section === "guest-applications" ?
+            "guests"
+            :
+            section === "shortlisted" ?
+              "shortlisted"
+              :
+              section === "hr-training" ?
+                "hr-training"
+                :
+                section === 'attendance' ?
+                  "user"
+                  :
+                  section === 'tasks' ?
+                    "work logs"
+                    :
+                    "received"
       }
       showPublicAccountConfigurationModal={showPublicAccountConfigurationModal}
       handleClosePublicAccountConfigurationModal={() => setShowPublicAccountConfigurationModal(false)}
@@ -495,532 +494,532 @@ function HrJobScreen() {
       publicAccountDetailState={newPublicAccountDetails}
       handleChangeInPublicAccountState={handlePublicDetailChange}
     >
-    <div className="hr__Page__Container">
-    {
-      section !== 'new-task-screen' && 
-      <TitleNavigationBar 
-        className={
-          path === undefined ? "" : "view__Application__Navbar"
-        } 
-        title={
-          path === undefined ? 
-            section === "user" ? "Profile" 
-            : 
-            section === "tasks" ? "Work logs" 
-            :
-            section === "hr-training" ? "HR Training"
-            :
-            section === "guest-applications" ? "Guest Applications"
-            :
-            section === "shortlisted" ? "Shortlisted Applications"
-            :
-            sub_section !== undefined && section === "hr-training" ? 
-              sub_section ? sub_section : `${trainingCards.module}` 
-            : section === "attendance" ? "Attendance" 
-            : "Applications" : 
-            "Application Details" 
-        } 
-        hideBackBtn={
-          path === undefined && sub_section === undefined ? true : false
-        } 
-        handleBackBtnClick={() => navigate(-1)} 
-      />
-    }
-    { 
-      section !== "user" && section !== "attendance" && section !== "tasks" && section !== 'new-task-screen' && path === undefined && sub_section === undefined && section !== 'hr-training' && 
-      <TogglerNavMenuBar 
-        menuItems={["Received", "Guests", "Shortlisted"]} 
-        // menuItems={["Received", "Shortlisted" , "Hr Training"]} 
-        currentActiveItem={currentActiveItem} 
-        handleMenuItemClick={handleMenuItemClick} 
-      /> 
-    }
-    {
-      sub_section === undefined && section === "home" || section === undefined ? <>
-      <div className='hr__wrapper'>
-        <button className="refresh-container" onClick={handleRefreshForCandidateApplications}>
-          <div className='refresh-btn'>
-            <IoMdRefresh />
-            <p>Refresh</p>
-          </div>
-        </button>
+      <div className="hr__Page__Container">
+        {
+          section !== 'new-task-screen' &&
+          <TitleNavigationBar
+            className={
+              path === undefined ? "" : "view__Application__Navbar"
+            }
+            title={
+              path === undefined ?
+                section === "user" ? "Profile"
+                  :
+                  section === "tasks" ? "Work logs"
+                    :
+                    section === "hr-training" ? "HR Training"
+                      :
+                      section === "guest-applications" ? "Guest Applications"
+                        :
+                        section === "shortlisted" ? "Shortlisted Applications"
+                          :
+                          sub_section !== undefined && section === "hr-training" ?
+                            sub_section ? sub_section : `${trainingCards.module}`
+                            : section === "attendance" ? "Attendance"
+                              : "Applications" :
+                "Application Details"
+            }
+            hideBackBtn={
+              path === undefined && sub_section === undefined ? true : false
+            }
+            handleBackBtnClick={() => navigate(-1)}
+          />
+        }
+        {
+          section !== "user" && section !== "attendance" && section !== "tasks" && section !== 'new-task-screen' && path === undefined && sub_section === undefined && section !== 'hr-training' &&
+          <TogglerNavMenuBar
+            menuItems={["Received", "Guests", "Shortlisted"]}
+            // menuItems={["Received", "Shortlisted" , "Hr Training"]} 
+            currentActiveItem={currentActiveItem}
+            handleMenuItemClick={handleMenuItemClick}
+          />
+        }
+        {
+          sub_section === undefined && section === "home" || section === undefined ? <>
+            <div className='hr__wrapper'>
+              <button className="refresh-container" onClick={handleRefreshForCandidateApplications}>
+                <div className='refresh-btn'>
+                  <IoMdRefresh />
+                  <p>Refresh</p>
+                </div>
+              </button>
 
-          {
-            isLoading ? (<LoadingSpinner />) : ( 
-
-            <div className='job__wrapper'>
               {
-                searchActive ? matchedJobs.length === 0 ? <>No jobs found matching your query</> :
-                
-                React.Children.toArray(matchedJobs.map(job => {
-                  return <>
-                    <JobCard 
-                      job={job}
-                      subtitle={job.job_category}
-                      buttonText={"View"}
-                      viewJobApplicationDetails={true}
-                      applicationsCount={appliedJobs.filter(application => application.job_number === job.job_number).length}
-                      handleBtnClick={() => goToJobDetails(job, appliedJobs.filter(application => application.job_number === job.job_number))}
-                      showIndicatorForHR = {appliedJobs.filter(application => application.job_number === job.job_number).length > 0 ? true : false}
-                    />
-                  </>
-                })) :
+                isLoading ? (<LoadingSpinner />) : (
 
-                React.Children.toArray(jobs.map(job => {
-                  return <>
-                    <JobCard 
-                      job={job}
-                      subtitle={job.job_category}
-                      buttonText={"View"}
-                      viewJobApplicationDetails={true}
-                      applicationsCount={appliedJobs.filter(application => application.job_number === job.job_number).length}
-                      handleBtnClick={() => goToJobDetails(job, appliedJobs.filter(application => application.job_number === job.job_number))}
-                      showIndicatorForHR = {appliedJobs.filter(application => application.job_number === job.job_number).length > 0 ? true : false}
-                    />
-                  </>
-                }))
+                  <div className='job__wrapper'>
+                    {
+                      searchActive ? matchedJobs.length === 0 ? <>No jobs found matching your query</> :
+
+                        React.Children.toArray(matchedJobs.map(job => {
+                          return <>
+                            <JobCard
+                              job={job}
+                              subtitle={job.job_category}
+                              buttonText={"View"}
+                              viewJobApplicationDetails={true}
+                              applicationsCount={appliedJobs.filter(application => application.job_number === job.job_number).length}
+                              handleBtnClick={() => goToJobDetails(job, appliedJobs.filter(application => application.job_number === job.job_number))}
+                              showIndicatorForHR={appliedJobs.filter(application => application.job_number === job.job_number).length > 0 ? true : false}
+                            />
+                          </>
+                        })) :
+
+                        React.Children.toArray(jobs.map(job => {
+                          return <>
+                            <JobCard
+                              job={job}
+                              subtitle={job.job_category}
+                              buttonText={"View"}
+                              viewJobApplicationDetails={true}
+                              applicationsCount={appliedJobs.filter(application => application.job_number === job.job_number).length}
+                              handleBtnClick={() => goToJobDetails(job, appliedJobs.filter(application => application.job_number === job.job_number))}
+                              showIndicatorForHR={appliedJobs.filter(application => application.job_number === job.job_number).length > 0 ? true : false}
+                            />
+                          </>
+                        }))
+                    }
+                  </div>)
+
               }
-            </div> )
 
-          }
-          
-        </div>
-      </> :
-      
-      <>
-        
-        { 
-
-          isLoading ? <LoadingSpinner /> :
-
-          sub_section === undefined && section === "shortlisted" ? <>
-            <ShortlistedScreen 
-              shortlistedCandidates={candidateData} 
-              jobData={jobs} 
-              handleRefreshForCandidateApplications={handleRefreshForCandidateApplications}
-              candidateTrainingResponses={candidateResponses}
-              hideSideNavBar={setHideBar}
-              updateCandidateResponses={setCandidateResponses}
-            />
+            </div>
           </> :
 
-          isLoading ? <LoadingSpinner /> :
+            <>
 
-          sub_section === undefined && section === "hr-training" ? <>
-            <HrTrainingScreen trainingCards={trainingCards} setShowOverlay={setTrackingProgress} setQuestions={setQuestions} handleRefreshForTrainingManagemnt={handleRefreshForTrainingManagement}/>
-          </> :
+              {
 
-          sub_section !== undefined && section === "hr-training" ? <>
-            <HrTrainingQuestions />
-          </> :
+                isLoading ? <LoadingSpinner /> :
 
-          sub_section === undefined && section === "guest-applications" ?
+                  sub_section === undefined && section === "shortlisted" ? <>
+                    <ShortlistedScreen
+                      shortlistedCandidates={candidateData}
+                      jobData={jobs}
+                      handleRefreshForCandidateApplications={handleRefreshForCandidateApplications}
+                      candidateTrainingResponses={candidateResponses}
+                      hideSideNavBar={setHideBar}
+                      updateCandidateResponses={setCandidateResponses}
+                    />
+                  </> :
 
-          <>
-            {
-              isLoading ? <LoadingSpinner /> :
+                    isLoading ? <LoadingSpinner /> :
+
+                      sub_section === undefined && section === "hr-training" ? <>
+                        <HrTrainingScreen trainingCards={trainingCards} setShowOverlay={setTrackingProgress} setQuestions={setQuestions} handleRefreshForTrainingManagemnt={handleRefreshForTrainingManagement} />
+                      </> :
+
+                        sub_section !== undefined && section === "hr-training" ? <>
+                          <HrTrainingQuestions />
+                        </> :
+
+                          sub_section === undefined && section === "guest-applications" ?
+
+                            <>
+                              {
+                                isLoading ? <LoadingSpinner /> :
+
+                                  <div className='hr__wrapper'>
+                                    <button className="refresh-container" onClick={handleRefreshForCandidateApplications}>
+                                      <div className='refresh-btn'>
+                                        <IoMdRefresh />
+                                        <p>Refresh</p>
+                                      </div>
+                                    </button>
+
+                                    <div className='job__wrapper'>
+                                      {
+                                        searchActive ? matchedJobs.length === 0 ? <>No jobs found matching your query</> :
+
+                                          React.Children.toArray(matchedJobs.map(job => {
+                                            return <>
+                                              <JobCard
+                                                job={job}
+                                                subtitle={job.job_category}
+                                                buttonText={"View"}
+                                                viewJobApplicationDetails={true}
+                                                applicationsCount={guestApplications.filter(application => application.job_number === job.job_number).length}
+                                                handleBtnClick={() => goToGuestJobDetails(job, guestApplications.filter(application => application.job_number === job.job_number))}
+                                                showIndicatorForHR={guestApplications.filter(application => application.job_number === job.job_number).length > 0 ? true : false}
+                                              />
+                                            </>
+                                          })) :
+
+                                          React.Children.toArray(jobs.map(job => {
+                                            return <>
+                                              <JobCard
+                                                job={job}
+                                                subtitle={job.job_category}
+                                                buttonText={"View"}
+                                                viewJobApplicationDetails={true}
+                                                applicationsCount={guestApplications.filter(application => application.job_number === job.job_number).length}
+                                                handleBtnClick={() => goToGuestJobDetails(job, guestApplications.filter(application => application.job_number === job.job_number))}
+                                                showIndicatorForHR={guestApplications.filter(application => application.job_number === job.job_number).length > 0 ? true : false}
+                                              />
+                                            </>
+                                          }))
+                                      }
+                                    </div>
+
+                                  </div>
+                              }
+                            </> :
+
+                            sub_section === undefined && section === "attendance" ?
+
+                              isLoading ? <LoadingSpinner /> :
+
+                                // showCurrentCandidateAttendance ? <AttendanceScreen className="hr__Page" currentUser={currentTeamMember} assignedProject={currentCandidateProject} /> :
+
+                                <>
+
+                                  <SelectedCandidates
+                                    showTasks={true}
+                                    sortActive={currentSortOption ? true : false}
+                                    tasksCount={
+                                      currentSortOption ?
+                                        jobSearchInput.length > 0 ?
+                                          sortResults.filter(item => item.data.find(task => typeof task?.applicant === 'string' && task?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase()))).length
+                                          :
+                                          sortResults.length
+                                        :
+                                        jobSearchInput.length > 0 ?
+                                          allTasks.filter(dataitem => typeof dataitem?.applicant === 'string' && dataitem?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase())).length
+                                          :
+                                          allTasks.length
+                                    }
+                                    className={"hr__Page"}
+                                    title={"Attendance"}
+                                    hrAttendancePageActive={true}
+                                    handleSortOptionClick={(data) => setCurrentSortOption(data)}
+                                    handleRefresh={handleRefreshForCandidateTasks}
+                                    availableSortOptions={['date']}
+                                  />
+
+                                  {
+                                    currentSortOption ?
+
+                                      <>
+                                        {
+                                          sortResults.length === 0 ? <p className='sort__Title__Item'> No work logs found matching '{currentSortOption}' sort selection </p> :
+
+                                            <>
+                                              {
+                                                jobSearchInput.length > 0 ?
+                                                  React.Children.toArray(sortResults.filter(item => item.data.find(task => typeof task?.applicant === 'string' && task?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase()))).map(result => {
+                                                    return <>
+                                                      <p className='sort__Title__Item'><b>{result.name}</b></p>
+                                                      <>
+                                                        <div className="tasks-container hr__Page sort__Active">
+                                                          {
+                                                            React.Children.toArray(result.data.map(dataitem => {
+                                                              return <JobCard
+                                                                buttonText={"View"}
+                                                                candidateCardView={true}
+                                                                candidateData={dataitem}
+                                                                taskView={true}
+                                                                handleBtnClick={handleAttendanceItemClick}
+                                                              />
+                                                            }))
+                                                          }
+                                                        </div>
+                                                      </>
+                                                    </>
+                                                  }))
+                                                  :
+                                                  React.Children.toArray(sortResults.map(result => {
+                                                    return <>
+                                                      <p className='sort__Title__Item'><b>{result.name}</b></p>
+                                                      <>
+                                                        <div className="tasks-container hr__Page sort__Active">
+                                                          {
+                                                            React.Children.toArray(result.data.map(dataitem => {
+                                                              return <JobCard
+                                                                buttonText={"View"}
+                                                                candidateCardView={true}
+                                                                candidateData={dataitem}
+                                                                taskView={true}
+                                                                handleBtnClick={handleAttendanceItemClick}
+                                                              />
+                                                            }))
+                                                          }
+                                                        </div>
+                                                      </>
+                                                    </>
+                                                  }))
+                                              }
+                                              <div className='sort__Margin__Bottom'></div>
+                                            </>
+                                        }
+                                      </> :
+
+                                      <>
+                                        <div className="tasks-container hr__Page">
+                                          {
+                                            jobSearchInput.length > 0 ?
+                                              React.Children.toArray(allTasks.filter(dataitem => typeof dataitem?.applicant === 'string' && dataitem?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase())).map(dataitem => {
+                                                return <JobCard
+                                                  buttonText={"View"}
+                                                  candidateCardView={true}
+                                                  candidateData={dataitem}
+                                                  taskView={true}
+                                                  handleBtnClick={handleAttendanceItemClick}
+                                                />
+                                              }))
+                                              :
+                                              React.Children.toArray(allTasks.map(dataitem => {
+                                                return <JobCard
+                                                  buttonText={"View"}
+                                                  candidateCardView={true}
+                                                  candidateData={dataitem}
+                                                  taskView={true}
+                                                  handleBtnClick={handleAttendanceItemClick}
+                                                />
+                                              }))
+                                          }
+                                        </div>
+                                      </>
+                                  }
+                                </>
+                              :
+
+                              sub_section === undefined && section === "tasks" ?
+
+                                isLoading ? <LoadingSpinner /> :
+
+                                  <>
+                                    {
+                                      showAddTaskModal && <>
+                                        <AddTaskScreen
+                                          closeTaskScreen={() => setShowAddTaskModal(false)}
+                                          teamMembers={hiredCandidates}
+                                          updateTasks={setAllTasks}
+                                          editPage={editTaskActive}
+                                          setEditPage={setEditTaskActive}
+                                          taskToEdit={currentTaskToEdit}
+                                          hrPageActive={true}
+                                        />
+                                      </>
+                                    }
+
+                                    {
+                                      showCurrentCandidateTask ? <TaskScreen className="hr__Page" currentUser={currentTeamMember} handleAddTaskBtnClick={() => setShowAddTaskModal(true)} handleEditBtnClick={handleEditTaskBtnClick} assignedProject={currentCandidateProject} /> :
+
+                                        <>
+
+                                          <SelectedCandidates
+                                            showTasks={true}
+                                            sortActive={currentSortOption ? true : false}
+                                            tasksCount={
+                                              currentSortOption ?
+                                                jobSearchInput.length > 0 ?
+                                                  sortResults.filter(item => item.data.find(task => typeof task?.applicant === 'string' && task?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase()))).length
+                                                  :
+                                                  sortResults.length
+                                                :
+                                                jobSearchInput.length > 0 ?
+                                                  allTasks.filter(dataitem => typeof dataitem?.applicant === 'string' && dataitem?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase())).length
+                                                  :
+                                                  allTasks.length
+                                            }
+                                            className={"hr__Page"}
+                                            handleSortOptionClick={(data) => setCurrentSortOption(data)}
+                                            handleRefresh={handleRefreshForCandidateTasks}
+                                          />
+
+                                          {
+                                            currentSortOption ?
+
+                                              <>
+                                                {
+                                                  sortResults.length === 0 ? <p className='sort__Title__Item'> No work logs found matching '{currentSortOption}' sort selection </p> :
+
+                                                    <>
+                                                      {
+                                                        jobSearchInput.length > 0 ?
+                                                          React.Children.toArray(sortResults.filter(item => item.data.find(task => typeof task?.applicant === 'string' && task?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase()))).map(result => {
+                                                            return <>
+                                                              <p className='sort__Title__Item'><b>{result.name}</b></p>
+                                                              <>
+                                                                <div className="tasks-container hr__Page sort__Active">
+                                                                  {
+                                                                    React.Children.toArray(result.data.map(dataitem => {
+                                                                      return <JobCard
+                                                                        buttonText={"View"}
+                                                                        candidateCardView={true}
+                                                                        candidateData={dataitem}
+                                                                        taskView={true}
+                                                                        handleBtnClick={handleAttendanceItemClick}
+                                                                      />
+                                                                    }))
+                                                                  }
+                                                                </div>
+                                                              </>
+                                                            </>
+                                                          }))
+                                                          :
+                                                          React.Children.toArray(sortResults.map(result => {
+                                                            return <>
+                                                              <p className='sort__Title__Item'><b>{result.name}</b></p>
+                                                              <>
+                                                                <div className="tasks-container hr__Page sort__Active">
+                                                                  {
+                                                                    React.Children.toArray(result.data.map(dataitem => {
+                                                                      return <JobCard
+                                                                        buttonText={"View"}
+                                                                        candidateCardView={true}
+                                                                        candidateData={dataitem}
+                                                                        taskView={true}
+                                                                        handleBtnClick={handleTaskItemClick}
+                                                                      />
+                                                                    }))
+                                                                  }
+
+                                                                  {/* <Button text={"Add Task"} icon={<AddCircleOutlineIcon />} handleClick={() => setShowAddTaskModal(true)} /> */}
+                                                                </div>
+                                                              </>
+                                                            </>
+                                                          }))
+                                                      }
+                                                      <div className='sort__Margin__Bottom'></div>
+                                                    </>
+                                                }
+                                              </> :
+
+                                              <>
+                                                <div className="tasks-container hr__Page">
+                                                  {
+                                                    jobSearchInput.length > 0 ?
+                                                      React.Children.toArray(allTasks.filter(dataitem => typeof dataitem?.applicant === 'string' && dataitem?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase())).map(dataitem => {
+                                                        return <JobCard
+                                                          buttonText={"View"}
+                                                          candidateCardView={true}
+                                                          candidateData={dataitem}
+                                                          taskView={true}
+                                                          handleBtnClick={handleAttendanceItemClick}
+                                                        />
+                                                      }))
+                                                      :
+                                                      React.Children.toArray(allTasks.map(dataitem => {
+                                                        return <JobCard
+                                                          buttonText={"View"}
+                                                          candidateCardView={true}
+                                                          candidateData={dataitem}
+                                                          taskView={true}
+                                                          handleBtnClick={handleTaskItemClick}
+                                                        />
+                                                      }))
+                                                  }
+                                                  {/* <Button text={"Add Task"} icon={<AddCircleOutlineIcon />} handleClick={() => setShowAddTaskModal(true)} /> */}
+                                                </div>
+                                              </>
+                                          }
+                                        </>
+                                    }
+                                  </>
+                                // id
+                                :
+
+                                sub_section === undefined && section === "user" ? <UserScreen /> :
+
+                                  sub_section === undefined && section === "new-task-screen" ? <>
+                                    <HrTasks />
+                                  </>
+
+                                    :
+
+                                    sub_section === undefined &&
+                                    <><ErrorPage disableNav={true} /></>
+
+              }
+
+            </>
+        }
+
+        {
+          path === undefined && sub_section === "job" ?
+
+            <>
 
               <div className='hr__wrapper'>
-                <button className="refresh-container" onClick={handleRefreshForCandidateApplications}>
-                  <div className='refresh-btn'>
-                    <IoMdRefresh />
-                    <p>Refresh</p>
-                  </div>
-                </button>
+                <SelectedCandidates title={location.state.job.job_title} candidatesCount={location.state.appliedCandidates.length} hrPageActive={true} />
 
-                <div className='job__wrapper'>
-                  {
-                    searchActive ? matchedJobs.length === 0 ? <>No jobs found matching your query</> :
-                    
-                    React.Children.toArray(matchedJobs.map(job => {
-                      return <>
-                        <JobCard 
-                          job={job}
-                          subtitle={job.job_category}
-                          buttonText={"View"}
-                          viewJobApplicationDetails={true}
-                          applicationsCount={guestApplications.filter(application => application.job_number === job.job_number).length}
-                          handleBtnClick={() => goToGuestJobDetails(job, guestApplications.filter(application => application.job_number === job.job_number))}
-                          showIndicatorForHR = {guestApplications.filter(application => application.job_number === job.job_number).length > 0 ? true : false}
-                        />
-                      </>
-                    })) :
-
-                    React.Children.toArray(jobs.map(job => {
-                      return <>
-                        <JobCard 
-                          job={job}
-                          subtitle={job.job_category}
-                          buttonText={"View"}
-                          viewJobApplicationDetails={true}
-                          applicationsCount={guestApplications.filter(application => application.job_number === job.job_number).length}
-                          handleBtnClick={() => goToGuestJobDetails(job, guestApplications.filter(application => application.job_number === job.job_number))}
-                          showIndicatorForHR = {guestApplications.filter(application => application.job_number === job.job_number).length > 0 ? true : false}
-                        />
-                      </>
-                    }))
-                  }
-                </div>
-                
-              </div>
-            }
-          </>:
-
-          sub_section === undefined && section === "attendance" ? 
-
-          isLoading ? <LoadingSpinner /> :
-
-          // showCurrentCandidateAttendance ? <AttendanceScreen className="hr__Page" currentUser={currentTeamMember} assignedProject={currentCandidateProject} /> :
-          
-          <>
-
-            <SelectedCandidates 
-              showTasks={true} 
-              sortActive={currentSortOption ? true : false}
-              tasksCount={
-                currentSortOption ? 
-                  jobSearchInput.length > 0 ?
-                    sortResults.filter(item => item.data.find(task => typeof task?.applicant === 'string' && task?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase()))).length
-                  :
-                  sortResults.length 
-                : 
-                  jobSearchInput.length > 0 ?
-                    allTasks.filter(dataitem => typeof dataitem?.applicant === 'string' && dataitem?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase())).length
-                  :
-                allTasks.length
-              }
-              className={"hr__Page"}
-              title={"Attendance"}
-              hrAttendancePageActive={true}
-              handleSortOptionClick={(data) => setCurrentSortOption(data)}
-              handleRefresh={handleRefreshForCandidateTasks}
-              availableSortOptions={['date']}
-            />
-
-            {
-              currentSortOption ?
-
-              <>
                 {
-                  sortResults.length === 0 ? <p className='sort__Title__Item'> No work logs found matching '{currentSortOption}' sort selection </p>  :
-                  
-                  <>
+                  <div className='hr__Job__Tile__Container'>
                     {
-                      jobSearchInput.length > 0 ?
-                      React.Children.toArray(sortResults.filter(item => item.data.find(task => typeof task?.applicant === 'string' && task?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase()))).map(result => {
-                        return <>
-                          <p className='sort__Title__Item'><b>{result.name}</b></p>
-                          <>
-                            <div className="tasks-container hr__Page sort__Active">
-                              {
-                                React.Children.toArray(result.data.map(dataitem => {
-                                  return <JobCard
-                                    buttonText={"View"}
-                                    candidateCardView={true}
-                                    candidateData={dataitem}
-                                    taskView={true}
-                                    handleBtnClick={handleAttendanceItemClick}
-                                  />
-                                }))
-                              }
-                            </div>
-                          </>
-                        </>
-                      }))
-                      :
-                      React.Children.toArray(sortResults.map(result => {
-                        return <>
-                          <p className='sort__Title__Item'><b>{result.name}</b></p>
-                          <>
-                            <div className="tasks-container hr__Page sort__Active">
-                              {
-                                React.Children.toArray(result.data.map(dataitem => {
-                                  return <JobCard
-                                    buttonText={"View"}
-                                    candidateCardView={true}
-                                    candidateData={dataitem}
-                                    taskView={true}
-                                    handleBtnClick={handleAttendanceItemClick}
-                                  />
-                                }))
-                              }
-                            </div>
-                          </>
-                        </>
+                      React.Children.toArray(location.state.appliedCandidates.map(candidate => {
+                        return <JobCard
+                          buttonText={"View"}
+                          candidateCardView={true}
+                          candidateData={candidate}
+                          handleBtnClick={goToJobApplicationDetails}
+                          jobAppliedFor={jobs.find(job => job.job_number === candidate.job_number) ? jobs.find(job => job.job_number === candidate.job_number).job_title : ""}
+                        />
                       }))
                     }
-                    <div className='sort__Margin__Bottom'></div>
+                  </div>
+                }
+              </div>
+              {/* id */}
+            </> :
+
+            path !== undefined && sub_section === "job" ? <>
+              {
+                <div className='hr__Job__Tile__Container'>
+                  <>
+                    <SelectedCandidatesScreen
+                      hrPageActive={true}
+                      guestApplication={location.state.candidate.status === candidateStatuses.GUEST_PENDING_SELECTION ? true : false}
+                      selectedCandidateData={location.state.candidate}
+                      updateCandidateData={setCandidateData}
+                      updateAppliedData={section === "guest-applications" ? setGuestApplications : setAppliedJobs}
+                      jobTitle={jobs.find(job => job.job_number === location.state.candidate.job_number)?.job_title}
+                      setShowPublicAccountConfigurationModal={setShowPublicAccountConfigurationModal}
+                      updateInterviewTimeSelected={(valuePassed) => handlePublicDetailChange(mutablePublicAccountStateNames.date_time, valuePassed)}
+                      job={
+                        jobs.find(
+                          (job) => job.job_number === location.state.candidate.job_number
+                        ) ?
+                          jobs.find(
+                            (job) => job.job_number === location.state.candidate.job_number
+                          ) :
+                          null
+                      }
+                    />
                   </>
+                </div>
+              }
+            </> :
+
+              path !== undefined && sub_section === "after_initial_meet" ? <>
+                {
+                  <div className='hr__Job__Tile__Container'>
+                    <>
+                      <SelectedCandidatesScreen
+                        hrPageActive={true}
+                        initialMeet={true}
+                        selectedCandidateData={location.state.candidate}
+                        updateCandidateData={setCandidateData}
+                        availableProjects={currentProjects}
+                        job={
+                          jobs.find(
+                            (job) => job.job_number === location.state.candidate.job_number
+                          ) ?
+                            jobs.find(
+                              (job) => job.job_number === location.state.candidate.job_number
+                            ) :
+                            null
+                        }
+                      />
+                    </>
+                  </div>
                 }
               </> :
 
-              <>
-                <div className="tasks-container hr__Page">
-                  {
-                    jobSearchInput.length > 0 ?
-                    React.Children.toArray(allTasks.filter(dataitem => typeof dataitem?.applicant === 'string' && dataitem?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase())).map(dataitem => {
-                      return <JobCard
-                        buttonText={"View"}
-                        candidateCardView={true}
-                        candidateData={dataitem}
-                        taskView={true}
-                        handleBtnClick={handleAttendanceItemClick}
-                      />
-                    }))
-                    :
-                    React.Children.toArray(allTasks.map(dataitem => {
-                      return <JobCard
-                        buttonText={"View"}
-                        candidateCardView={true}
-                        candidateData={dataitem}
-                        taskView={true}
-                        handleBtnClick={handleAttendanceItemClick}
-                      />
-                    }))
-                  }
-                </div>
-              </>
-            }
-          </>
-          :
-
-          sub_section === undefined && section === "tasks" ? 
-
-          isLoading ? <LoadingSpinner /> :
-
-          <>
-            {
-              showAddTaskModal && <>
-                <AddTaskScreen 
-                  closeTaskScreen={() => setShowAddTaskModal(false)} 
-                  teamMembers={hiredCandidates} 
-                  updateTasks={setAllTasks} 
-                  editPage={editTaskActive} 
-                  setEditPage={setEditTaskActive} 
-                  taskToEdit={currentTaskToEdit} 
-                  hrPageActive={true} 
-                />
-              </>
-            }
-
-            {
-              showCurrentCandidateTask ? <TaskScreen className="hr__Page" currentUser={currentTeamMember} handleAddTaskBtnClick={() => setShowAddTaskModal(true)} handleEditBtnClick={handleEditTaskBtnClick} assignedProject={currentCandidateProject} /> :
-          
-              <>
-
-                <SelectedCandidates 
-                  showTasks={true} 
-                  sortActive={currentSortOption ? true : false}
-                  tasksCount={
-                    currentSortOption ? 
-                      jobSearchInput.length > 0 ?
-                        sortResults.filter(item => item.data.find(task => typeof task?.applicant === 'string' && task?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase()))).length
-                      :
-                      sortResults.length 
-                    : 
-                      jobSearchInput.length > 0 ?
-                        allTasks.filter(dataitem => typeof dataitem?.applicant === 'string' && dataitem?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase())).length
-                      :
-                    allTasks.length
-                  }
-                  className={"hr__Page"}
-                  handleSortOptionClick={(data) => setCurrentSortOption(data)}
-                  handleRefresh={handleRefreshForCandidateTasks}
-                />
-
-                {
-                  currentSortOption ?
-
-                  <>
-                    {
-                      sortResults.length === 0 ? <p className='sort__Title__Item'> No work logs found matching '{currentSortOption}' sort selection </p>  :
-                      
-                      <>
-                        {
-                          jobSearchInput.length > 0 ?
-                          React.Children.toArray(sortResults.filter(item => item.data.find(task => typeof task?.applicant === 'string' && task?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase()))).map(result => {
-                            return <>
-                              <p className='sort__Title__Item'><b>{result.name}</b></p>
-                              <>
-                                <div className="tasks-container hr__Page sort__Active">
-                                  {
-                                    React.Children.toArray(result.data.map(dataitem => {
-                                      return <JobCard
-                                        buttonText={"View"}
-                                        candidateCardView={true}
-                                        candidateData={dataitem}
-                                        taskView={true}
-                                        handleBtnClick={handleAttendanceItemClick}
-                                      />
-                                    }))
-                                  }
-                                </div>
-                              </>
-                            </>
-                          }))
-                          :
-                          React.Children.toArray(sortResults.map(result => {
-                            return <>
-                              <p className='sort__Title__Item'><b>{result.name}</b></p>
-                              <>
-                                <div className="tasks-container hr__Page sort__Active">
-                                  {
-                                    React.Children.toArray(result.data.map(dataitem => {
-                                      return <JobCard
-                                        buttonText={"View"}
-                                        candidateCardView={true}
-                                        candidateData={dataitem}
-                                        taskView={true}
-                                        handleBtnClick={handleTaskItemClick}
-                                      />
-                                    }))
-                                  }
-                                  
-                                  {/* <Button text={"Add Task"} icon={<AddCircleOutlineIcon />} handleClick={() => setShowAddTaskModal(true)} /> */}
-                                </div>
-                              </>
-                            </>
-                          }))
-                        }
-                        <div className='sort__Margin__Bottom'></div>
-                      </>
-                    }
-                  </> :
-
-                  <>
-                    <div className="tasks-container hr__Page">
-                      {
-                        jobSearchInput.length > 0 ?
-                        React.Children.toArray(allTasks.filter(dataitem => typeof dataitem?.applicant === 'string' && dataitem?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase())).map(dataitem => {
-                          return <JobCard
-                            buttonText={"View"}
-                            candidateCardView={true}
-                            candidateData={dataitem}
-                            taskView={true}
-                            handleBtnClick={handleAttendanceItemClick}
-                          />
-                        }))
-                        :
-                        React.Children.toArray(allTasks.map(dataitem => {
-                          return <JobCard
-                            buttonText={"View"}
-                            candidateCardView={true}
-                            candidateData={dataitem}
-                            taskView={true}
-                            handleBtnClick={handleTaskItemClick}
-                          />
-                        }))
-                      }
-                      {/* <Button text={"Add Task"} icon={<AddCircleOutlineIcon />} handleClick={() => setShowAddTaskModal(true)} /> */}
-                    </div>
-                  </>
-                }
-              </>
-            }
-          </>
-          // id
-          :
-
-          sub_section === undefined && section === "user" ? <UserScreen /> :
-
-          sub_section === undefined && section === "new-task-screen" ? <>
-            <HrTasks />
-          </> 
-          
-          :
-          
-          sub_section === undefined &&
-          <><ErrorPage disableNav={true} /></>
-
+                <></>
         }
-      
-      </>
-    }
 
-    {
-      path === undefined && sub_section === "job" ? 
-      
-      <>
-      
-        <div className='hr__wrapper'>
-          <SelectedCandidates title={location.state.job.job_title} candidatesCount={location.state.appliedCandidates.length} hrPageActive={true} />
-
-          {
-            <div className='hr__Job__Tile__Container'>
-              {
-                React.Children.toArray(location.state.appliedCandidates.map(candidate => {
-                  return <JobCard
-                    buttonText={"View"}
-                    candidateCardView={true}
-                    candidateData={candidate}
-                    handleBtnClick={goToJobApplicationDetails}
-                    jobAppliedFor={jobs.find(job => job.job_number === candidate.job_number) ? jobs.find(job => job.job_number === candidate.job_number).job_title : ""}
-                  />
-                }))
-              }
-            </div>
-          }
-        </div>
-        {/* id */}
-      </> : 
-      
-      path !== undefined && sub_section === "job" ? <>
-        {
-          <div className='hr__Job__Tile__Container'>
-            <>
-              <SelectedCandidatesScreen
-                hrPageActive={true}
-                guestApplication={location.state.candidate.status === candidateStatuses.GUEST_PENDING_SELECTION ? true : false}
-                selectedCandidateData={location.state.candidate}
-                updateCandidateData={setCandidateData}
-                updateAppliedData={section === "guest-applications" ? setGuestApplications : setAppliedJobs}
-                jobTitle={jobs.find(job => job.job_number === location.state.candidate.job_number)?.job_title}
-                setShowPublicAccountConfigurationModal={setShowPublicAccountConfigurationModal}
-                updateInterviewTimeSelected={(valuePassed) => handlePublicDetailChange(mutablePublicAccountStateNames.date_time, valuePassed)}
-                job={
-                  jobs.find(
-                    (job) => job.job_number === location.state.candidate.job_number
-                  ) ?
-                  jobs.find(
-                    (job) => job.job_number === location.state.candidate.job_number
-                  ) :
-                  null
-                }
-              />
-            </>
-          </div>
-        }
-      </> :
-
-      path !== undefined && sub_section === "after_initial_meet" ? <>
-        {
-          <div className='hr__Job__Tile__Container'>
-            <>
-              <SelectedCandidatesScreen
-                hrPageActive={true}
-                initialMeet={true}
-                selectedCandidateData={location.state.candidate}
-                updateCandidateData={setCandidateData}
-                availableProjects={currentProjects}
-                job={
-                  jobs.find(
-                    (job) => job.job_number === location.state.candidate.job_number
-                  ) ?
-                  jobs.find(
-                    (job) => job.job_number === location.state.candidate.job_number
-                  ) :
-                  null
-                }
-              />
-            </>
-          </div>
-        }
-      </> :
-
-      <></>
-    }
-
-    </div>
+      </div>
     </StaffJobLandingLayout>
   )
 }

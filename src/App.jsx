@@ -92,6 +92,9 @@ import HrAgendaReport from "./pages/HrPage/views/Agenda/HrAgendaReport/HrAgendaR
 import UsersLogsScreen from "./common/screens/UserLogsScreen/UserLogsScreen";
 import TeamleadLogApprovalScreen from "./pages/TeamleadPage/views/LogApprovalScreen/TeamleadLogApprovalScreen";
 import GroupleadLogApprovalScreen from "./pages/GroupLeadPage/views/LogApprovalScreen/GroupleadLogApprovalScreen";
+import HRCompanyStructure from "./pages/HrPage/views/CompanyStructure/HrCompanyStructure";
+import PaymentLandingPage from "./pages/AccountPage/views/PaymentLandingPage/PaymentLandingPage";
+import AccountsInvoicePage from "./pages/AccountPage/views/Payments/AccountsInvoicePage";
 
 function App() {
   // console.log = () => { };
@@ -511,7 +514,9 @@ function App() {
         } */}
 
         <Route path='/logout' element={<Logout />} />
-        <Route path='/payments' element={<Payment />} />
+        <Route path='/payments' element={<PaymentLandingPage />} />
+        <Route path='/payments/payment-records' element={<Payment />} />
+        <Route path='/payments/invoice' element={<AccountsInvoicePage />} />
 
         <Route
           path='/'
@@ -681,6 +686,17 @@ function App() {
             <HrJobScreenAllTasksContextProvider>
               <ValuesProvider>
                 <HrAllApplicationsScreen />
+              </ValuesProvider>
+            </HrJobScreenAllTasksContextProvider>
+          }
+        />
+
+        <Route
+          path="/company-structure"
+          element={
+            <HrJobScreenAllTasksContextProvider>
+              <ValuesProvider>
+                <HRCompanyStructure />
               </ValuesProvider>
             </HrJobScreenAllTasksContextProvider>
           }
@@ -1214,8 +1230,8 @@ function App() {
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout teamleadView={true} isGrouplead={true}>
-                <UsersLogsScreen 
-                  className={'group__Lead__User__Logs'} 
+                <UsersLogsScreen
+                  className={'group__Lead__User__Logs'}
                   isLeadUser={true}
                 />
               </StaffJobLandingLayout>
