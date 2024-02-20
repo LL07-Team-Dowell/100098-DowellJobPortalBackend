@@ -26,7 +26,7 @@ const CreateTeam = ({ isAdmin }) => {
     setPortfolioLoaded,
     isNotOwnerUser,
     setIsNotOwnerUser,
-    allApplications,
+    allCompanyApplications,
   } = useCurrentUserContext();
   // DATA
   const { data, setdata } = useValues();
@@ -135,7 +135,7 @@ const CreateTeam = ({ isAdmin }) => {
     ) {
       console.log("No team management product found for current user");
       setDesplaidMembers(
-        allApplications.map(application => {
+        allCompanyApplications.map(application => {
           return {
             member: application.username,
             id: application._id,
@@ -155,7 +155,7 @@ const CreateTeam = ({ isAdmin }) => {
       .then((res) => {
         setCurrentUser(res.data);
         setDesplaidMembers(
-          allApplications.map(application => {
+          allCompanyApplications.map(application => {
             return {
               member: application.username,
               id: application._id,

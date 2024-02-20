@@ -88,7 +88,7 @@ const AdminDashboard = ({ subAdminView }) => {
     } = useJobContext();
     const { 
         currentUser,
-        allApplications,
+        allCompanyApplications,
         userRemovalStatusChecked,
     } = useCurrentUserContext();
     const navigate = useNavigate();
@@ -134,10 +134,10 @@ const AdminDashboard = ({ subAdminView }) => {
     useEffect(() => {
         if (!applicationsLoaded) {
             if (!userRemovalStatusChecked) return;
-            setApplications(allApplications);
+            setApplications(allCompanyApplications);
             setApplicationsLoaded(true);
         }
-    }, [userRemovalStatusChecked, allApplications])
+    }, [userRemovalStatusChecked, allCompanyApplications])
     
     const handleLoadTotalLogCount = async () => {
         if (totalWorklogCountInOrgLoading) return

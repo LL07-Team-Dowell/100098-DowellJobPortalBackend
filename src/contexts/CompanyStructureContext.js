@@ -16,7 +16,7 @@ export default function CompanyStructureContextProvider ({ children }) {
 
     const { 
         currentUser, 
-        allApplications, 
+        allCompanyApplications, 
         userRemovalStatusChecked 
     } = useCurrentUserContext();
     const {
@@ -31,7 +31,7 @@ export default function CompanyStructureContextProvider ({ children }) {
         if (!applicationsLoaded) {
             if (!userRemovalStatusChecked) return
 
-            setApplications(allApplications);
+            setApplications(allCompanyApplications);
             setApplicationsLoaded(true);
         }
 

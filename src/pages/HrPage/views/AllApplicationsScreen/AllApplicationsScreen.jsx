@@ -31,7 +31,7 @@ const HrAllApplicationsScreen = () => {
         projectsLoading,
         setProjectsLoading,
     } = useHrJobScreenAllTasksContext();
-    const { currentUser, allApplications } = useCurrentUserContext();
+    const { currentUser, allCompanyApplications } = useCurrentUserContext();
     const [ searchValue, setSearchValue ] = useState('');
     const [ projectAssignedFilter, setProjectAssignedFilter ] = useState([]);
     const [ currentApplicationCategory, setCurrentApplicationCategory ] = useState([]);
@@ -42,7 +42,7 @@ const HrAllApplicationsScreen = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        setApplications(allApplications);
+        setApplications(allCompanyApplications);
         setApplicationsLoaded(true);
 
         if (!projectsLoaded) {

@@ -32,8 +32,8 @@ import UsersLogsScreen from "../../common/screens/UserLogsScreen/UserLogsScreen"
 const Teamlead = ({ isGrouplead }) => {
   const { 
     currentUser, 
-    allApplications, 
-    setAllApplications,
+    allCompanyApplications, 
+    setAllCompanyApplications,
     userRemovalStatusChecked,
   } = useCurrentUserContext();
   const { section, searchParams } = useNavigationContext();
@@ -199,7 +199,7 @@ const Teamlead = ({ isGrouplead }) => {
     setLoading(true);
 
     if (isGrouplead) {
-      const onboardingCandidates = allApplications
+      const onboardingCandidates = allCompanyApplications
       ?.filter(
         (application) =>
           application.status === candidateStatuses.ONBOARDING
@@ -217,7 +217,7 @@ const Teamlead = ({ isGrouplead }) => {
         type: candidateDataReducerActions.UPDATE_ALL_CANDIDATES,
         payload: {
           stateToChange: initialCandidatesDataStateNames.allCandidates,
-          value: allApplications?.filter(candidate => candidate.user_id).filter(candidate => candidate.user_id !== currentUser?.userinfo?.userID)
+          value: allCompanyApplications?.filter(candidate => candidate.user_id).filter(candidate => candidate.user_id !== currentUser?.userinfo?.userID)
         }
       });
 
@@ -239,13 +239,13 @@ const Teamlead = ({ isGrouplead }) => {
         console.log(jobsMatchingCurrentCompany);
         setJobs(jobsMatchingCurrentCompany);
 
-        const selectedCandidates = allApplications.filter(
+        const selectedCandidates = allCompanyApplications.filter(
           (application) => application.status === candidateStatuses.SELECTED
         );
-        const candidatesToRehire = allApplications.filter(
+        const candidatesToRehire = allCompanyApplications.filter(
           (application) => application.status === candidateStatuses.TO_REHIRE
         );
-        const onboardingCandidates = allApplications.filter(
+        const onboardingCandidates = allCompanyApplications.filter(
           (application) => application.status === candidateStatuses.ONBOARDING
         );
         dispatchToCandidatesData({
@@ -274,7 +274,7 @@ const Teamlead = ({ isGrouplead }) => {
           type: candidateDataReducerActions.UPDATE_ALL_CANDIDATES,
           payload: {
             stateToChange: initialCandidatesDataStateNames.allCandidates,
-            value: allApplications?.filter(candidate => candidate.user_id).filter(candidate => candidate.user_id !== currentUser?.userinfo?.userID)
+            value: allCompanyApplications?.filter(candidate => candidate.user_id).filter(candidate => candidate.user_id !== currentUser?.userinfo?.userID)
           }
         });
 
@@ -285,7 +285,7 @@ const Teamlead = ({ isGrouplead }) => {
         console.log(err);
         setLoading(false);
       });
-  }, [allApplications, userRemovalStatusChecked]);
+  }, [allCompanyApplications, userRemovalStatusChecked]);
 
   useEffect(() => {
     const currentTab = searchParams.get("tab");
@@ -432,7 +432,7 @@ const Teamlead = ({ isGrouplead }) => {
             application.data_type === currentUser?.portfolio_info[0].data_type
         )?.reverse();
 
-        setAllApplications(dataGotten);
+        setAllCompanyApplications(dataGotten);
 
         const applicationForMatching = dataGotten.reverse();
         const selectedCandidates = applicationForMatching.filter(

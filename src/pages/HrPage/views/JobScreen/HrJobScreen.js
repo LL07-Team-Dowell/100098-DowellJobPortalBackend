@@ -37,7 +37,7 @@ function fuzzySearch(query, text) {
 }
 
 function HrJobScreen() {
-  const { currentUser, userRolesLoaded, setUserRolesFromLogin, setRolesLoaded, allApplications } = useCurrentUserContext();
+  const { currentUser, userRolesLoaded, setUserRolesFromLogin, setRolesLoaded, allCompanyApplications } = useCurrentUserContext();
   const { setQuestions, candidateResponses, setCandidateResponses } = useHrJobScreenAllTasksContext();
   const { section, sub_section, path } = useNavigationContext();
   const [jobs, setJobs] = useState([]);
@@ -128,10 +128,10 @@ function HrJobScreen() {
     ])
       .then(async (res) => {
         // const filteredData = res[0]?.data?.response?.data?.filter(application => application.data_type === currentUser.portfolio_info[0].data_type)?.reverse();
-        setAppliedJobs(allApplications.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
-        setGuestApplications(allApplications.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION && !application.signup_mail_sent));
-        setCandidateData(allApplications.filter(application => application.status === candidateStatuses.SHORTLISTED));
-        setHiredCandidates(allApplications.filter(application => application.status === candidateStatuses.ONBOARDING));
+        setAppliedJobs(allCompanyApplications.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
+        setGuestApplications(allCompanyApplications.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION && !application.signup_mail_sent));
+        setCandidateData(allCompanyApplications.filter(application => application.status === candidateStatuses.SHORTLISTED));
+        setHiredCandidates(allCompanyApplications.filter(application => application.status === candidateStatuses.ONBOARDING));
 
         setJobs(
           res[0]?.data?.response?.data?.reverse()

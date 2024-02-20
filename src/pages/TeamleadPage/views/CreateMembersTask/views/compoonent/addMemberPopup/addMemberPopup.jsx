@@ -48,7 +48,7 @@ const AddMemberPopup = ({
     setPortfolioLoaded,
     isNotOwnerUser,
     setIsNotOwnerUser,
-    allApplications,
+    allCompanyApplications,
   } = useCurrentUserContext();
 
   const AddedMember = (id) => {
@@ -154,7 +154,7 @@ const AddMemberPopup = ({
       !teamManagementProduct
     ) {
       console.log("No team management product found for current user");
-      const membersFromUserPortfolio = allApplications.map(application => {
+      const membersFromUserPortfolio = allCompanyApplications.map(application => {
         return {
           member: application.username,
           id: application._id,
@@ -180,7 +180,7 @@ const AddMemberPopup = ({
     getUserInfoFromLoginAPI(dataToPost)
       .then((res) => {
         setCurrentUser(res.data);
-        const membersFromUserPortfolio = allApplications.map(application => {
+        const membersFromUserPortfolio = allCompanyApplications.map(application => {
           return {
             member: application.username,
             id: application._id,

@@ -16,7 +16,7 @@ export default function HRCompanyStructure () {
   
     const {
         currentUser,
-        allApplications
+        allCompanyApplications
     } = useCurrentUserContext();
 
     const {
@@ -89,7 +89,7 @@ export default function HRCompanyStructure () {
                 companyStructure={companyStructure}
                 companyStructureLoading={companyStructureLoading}
                 companyStructureLoaded={companyStructureLoaded}
-                applications={allApplications}
+                applications={allCompanyApplications}
                 applicationsLoaded={true}
                 projectsLoaded={projectsLoaded}
                 projectsAdded={projectsAdded}
