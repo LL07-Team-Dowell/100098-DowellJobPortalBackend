@@ -227,6 +227,16 @@
     padding: 0px;
 }
 
+.back_icon {
+    padding: 0.8%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0.2, 0.3);
+    cursor: pointer;
+}
+
 @media screen and (max-width: 767px) {
     .main_wrap {
         width: 100%;
