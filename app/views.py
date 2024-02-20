@@ -141,9 +141,9 @@ is_windows = True if (platform.system() == "Windows") else False
 if not is_windows:
     """for linux server"""
     try:
-        from .cython_files.itr_linux import itr_function
+        from cython_files.itr_linux import itr_function
     except ModuleNotFoundError:
-        from .cython_files.itr_linux import itr_function
+        from cython_files.itr_linux import itr_function
     load_dotenv("/home/100098/100098-DowellJobPortal/.env")
     API_KEY = str(os.getenv("API_KEY"))
     DB_Name = str(os.getenv("DB_Name"))
