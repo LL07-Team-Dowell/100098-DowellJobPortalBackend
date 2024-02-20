@@ -14,6 +14,7 @@ from rest_framework import status, generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .constant import *
+
 from .helper import (
     get_event_id,
     dowellconnection,
@@ -134,34 +135,34 @@ from django.views.decorators.csrf import csrf_protect
 from dotenv import load_dotenv
 import os
 import logging
+import platform
 
-"""for linux server"""
-load_dotenv("/home/100098/100098-DowellJobPortal/.env")
-if os.getenv("API_KEY"):
+is_windows = True if (platform.system() == "Windows") else False
+if not is_windows:
+    """for linux server"""
+    try:
+        from .cython_files.itr_linux import itr_function
+    except ModuleNotFoundError:
+        pass
+    load_dotenv("/home/100098/100098-DowellJobPortal/.env")
     API_KEY = str(os.getenv("API_KEY"))
-if os.getenv("DB_Name"):
     DB_Name = str(os.getenv("DB_Name"))
-if os.getenv("REPORT_DB_NAME"):
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
-if os.getenv("REPORT_UUID"):
     REPORT_UUID = str(os.getenv("REPORT_UUID"))
-if os.getenv("PROJECT_DB_NAME"):
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
-if os.getenv("ATTENDANCE_DB"):
     ATTENDANCE_DB = str(os.getenv("ATTENDANCE_DB"))
-if os.getenv("COMPANY_STRUCTURE_DB_NAME"):
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
-if os.getenv("Events_collection"):
     Events_collection = str(os.getenv("Events_collection"))
-if os.getenv("LEAVE_REPORT_COLLECTION"):
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
-if os.getenv("LEAVE_DB_NAME"):
     LEAVE_DB = str(os.getenv("LEAVE_DB_NAME"))
-if os.getenv("DB_PAYMENT_RECORDS"):
     DB_PAYMENT_RECORDS = str(os.getenv("DB_PAYMENT_RECORDS"))
     
-else:
+if is_windows:
     """for windows local"""
+    try:
+        from .cython_files.itr_windows import itr_function
+    except ModuleNotFoundError:
+        pass
     load_dotenv(f"{os.getcwd()}/env")
     API_KEY = str(os.getenv("API_KEY"))
     DB_Name = str(os.getenv("DB_Name"))
@@ -2546,7 +2547,6 @@ class approve_task(APIView):
                 check_approvable, task_created_date, user_id = self.approvable(field)
                 if check_approvable is True:
                     validate_teamlead, lead_user_id = self.valid_teamlead(data.get("lead_username"))
-                    print(lead_user_id, "+++++++++++++++++++++++++++++++++", user_id)
                     if validate_teamlead is False:
                         return Response(
                             {
@@ -6795,27 +6795,6 @@ class Generate_Report(APIView):
         
         if payload:
             # intializing query parameters-----------------------------------------------------
-            company_id = payload.get("company_id")
-            if not company_id:
-                return Response({'success':False,"message": f"Company id is empty"},status=status.HTTP_400_BAD_REQUEST)
-            user_id = payload.get("user_id")
-            if not user_id:
-                return Response({'success':False,"message": f"user_id is empty"},status=status.HTTP_400_BAD_REQUEST)
-            
-            # check if the user has any data------------------------------------------------
-            field = {
-                "user_id": user_id,
-                #"company_id": company_id,
-            }
-            info = json.loads(dowellconnection(*candidate_management_reports, "fetch", field, update_field=None ))["data"]
-            if len(info) <= 0:
-                return Response(
-                    {
-                        'success':False,
-                        "message": f"There is no candidate with such parameters --> "
-                        + " ".join([va for va in field.values()])
-                    },status=status.HTTP_204_NO_CONTENT)
-
             year = payload.get("year")
             if not year:
                 return Response({'success':False,"message": f"year is empty"},status=status.HTTP_400_BAD_REQUEST)
@@ -6831,8 +6810,29 @@ class Generate_Report(APIView):
             # -------------------------------------------------------------------------------
             
             
-            data = {}
-            data["personal_info"] = info[0]
+            company_id = payload.get("company_id")
+            if not company_id:
+                return Response({'success':False,"message": f"Company id is empty"},status=status.HTTP_400_BAD_REQUEST)
+            user_id = payload.get("user_id")
+            if not user_id:
+                return Response({'success':False,"message": f"user_id is empty"},status=status.HTTP_400_BAD_REQUEST)
+            
+            # check if the user has any data------------------------------------------------
+            field = {
+                "user_id": user_id,
+                "company_id": company_id,
+            }
+            info = json.loads(dowellconnection(*candidate_management_reports, "fetch", field, update_field=None ))["data"]
+            if len(info) <= 0:
+                return Response(
+                    {
+                        'success':False,
+                        "message": f"There is no candidate with such parameters --> "
+                        + " ".join([va for va in field.values()])
+                    },status=status.HTTP_204_NO_CONTENT)
+
+            
+            data = {"personal_info":info[0]}
 
             coll_name = REPORT_UUID+user_id
             query ={
@@ -6882,128 +6882,71 @@ class Generate_Report(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-    def itr_function(self, username, company_id):
-        data = []
-        field = {"applicant": username, "company_id": company_id}
-        tasks = dowellconnection(
-            *task_management_reports, "fetch", field, update_field=None
-        )
-        task_details = dowellconnection(
-            *task_details_module, "fetch", {}, update_field=None
-        )
-        response = {}
-        d = []
-        for task in json.loads(tasks)["data"]:
-            for t in json.loads(task_details)["data"]:
-                if t["task_id"] == task["_id"]:
-                    d.append(t)
-        response["data"] = d
-        projects = []
-        item = {}
-        total_tasks = []
-        total_tasks_last_one_day = []
-        total_tasks_last_one_week = []
-        # get number of projects or tasks
-        for res in response["data"]:
-            total_tasks.append(res)
-            try:
-                if not res["project"] in item.keys():
-                    projects.append(res["project"])
-            except KeyError:
-                res["project"] = "None"
-                projects.append(res["project"])
+    def generate_individual_c_report(self, request):
+        payload = request.data
 
-        projects = sorted(projects)
-        week_details = []
-        subprojects = {}
-        total_hours = {}
-        total_mins = {}
-        total_secs = {}
-        for p in set(sorted(projects)):
-            subprojects[p] = []
-            total_hours[p] = 0
-            total_mins[p] = 0
-            total_secs[p] = 0
-
-        # total hours, seconds and minutes----------
-        today = datetime.today()
-        start = today - timedelta(days=today.weekday())
-        end = start + timedelta(days=6)
-        today = datetime.strptime(set_date_format(str(today)), "%m/%d/%Y %H:%M:%S")
-        start = datetime.strptime(set_date_format(str(start)), "%m/%d/%Y %H:%M:%S")
-        end = datetime.strptime(set_date_format(str(end)), "%m/%d/%Y %H:%M:%S")
-
-        for res in response["data"]:
-            try:
-                if "task_created_date" in res.keys():
-                    task_created_date = datetime.strptime(
-                        set_date_format(res["task_created_date"]), "%m/%d/%Y %H:%M:%S"
-                    )
-                    if task_created_date >= start and task_created_date <= end:
-                        week_details.append(res["project"])
-                    if task_created_date >= today - timedelta(days=1):
-                        total_tasks_last_one_day.append(res["project"])
-                    if task_created_date >= today - timedelta(days=7):
-                        total_tasks_last_one_week.append(res["project"])
-                try:
-                    start_time = datetime.strptime(res["start_time"], "%H:%M")
-                except ValueError:
-                    start_time = datetime.strptime(res["start_time"], "%H:%M:%S")
-                try:
-                    end_time = datetime.strptime(res["end_time"], "%H:%M")
-                except ValueError:
-                    end_time = datetime.strptime(res["end_time"], "%H:%M:%S")
-                duration = end_time - start_time
-                dur_secs = (duration).total_seconds()
-                dur_mins = dur_secs / 60
-                dur_hrs = dur_mins / 60
-                total_hours[res["project"]] += dur_hrs
-                total_mins[res["project"]] += dur_mins
-                total_secs[res["project"]] += dur_secs
-                # print(dur_secs, dur_mins, dur_hrs)
-            except KeyError:
-                pass
-
-        # subprojects------------------
-        for res in response["data"]:
-            if "subproject" in res.keys():
-                if not res["subproject"] == None or not res["subproject"] == "None":
-                    if type(res["subproject"]) == list:
-                        for sp in res["subproject"]:
-                            if "," in sp:
-                                for s in sp.split(","):
-                                    subprojects[res["project"]].append(s)
-                            else:
-                                subprojects[res["project"]].append(sp)
-                    elif res["subproject"] == None:
-                        subprojects[res["project"]].append("None")
-                    else:
-                        subprojects[res["project"]].append(res["subproject"])
-        for p in set(sorted(projects)):
-            item = {
-                "project": p,
-                "subprojects": {sp: subprojects[p].count(sp) for sp in subprojects[p]},
-                "total_hours": total_hours[p],
-                "total_min": total_mins[p],
-                "total_secs": total_secs[p],
-                "total_tasks": projects.count(p),
-                "tasks_uploaded_this_week": week_details.count(p),
-                "total_tasks_last_one_day": total_tasks_last_one_day.count(p),
-                "total_tasks_last_one_week": total_tasks_last_one_week.count(p),
-                "tasks": total_tasks,
+        if payload:
+            year = payload.get("year")
+            if not year:
+                return Response({'success':False,"message": f"year is empty"},status=status.HTTP_400_BAD_REQUEST)
+            # ensuring the given year is a valid year------------------------------------------
+            if int(year) > datetime.today().year:
+                return Response(
+                    {
+                        "message": "You cannot get a report on a future date",
+                        "error": f"{year} is bigger than current year {datetime.today().year}",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            # -------------------------------------------------------------------------------
+            
+            
+            company_id = payload.get("company_id")
+            if not company_id:
+                return Response({'success':False,"message": f"Company id is empty"},status=status.HTTP_400_BAD_REQUEST)
+            user_id = payload.get("user_id")
+            if not user_id:
+                return Response({'success':False,"message": f"user_id is empty"},status=status.HTTP_400_BAD_REQUEST)
+            
+            # check if the user has any data------------------------------------------------
+            field = {
+                "user_id": user_id,
+                "company_id": company_id,
             }
-            data.append(item)
-        return data
+            info = json.loads(dowellconnection(*candidate_management_reports, "fetch", field, update_field=None ))["data"]
+            if len(info) <= 0:
+                return Response(
+                    {
+                        'success':False,
+                        "message": f"There is no candidate with such parameters --> "
+                        + " ".join([va for va in field.values()])
+                    },status=status.HTTP_204_NO_CONTENT)
+
+            response = itr_function(
+                payload.get("user_id"), payload.get("username"), payload.get("company_id"), payload.get("year")
+            )
+            data={"personal_info":info[0]}
+            data.update(response)
+            return Response(
+                {"success":True,"message": "Individual report generated", "response": data},
+                status=status.HTTP_201_CREATED,
+            )
+        else:
+            return Response(
+                {"message": "Parameters are not valid"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     def generate_individual_task_report(self, request):
         payload = request.data
 
         if payload:
-            response = self.itr_function(
-                payload.get("username"), payload.get("company_id")
+            
+            response = itr_function(
+                payload.get("user_id"), payload.get("username"), payload.get("company_id"), payload.get("year")
             )
             return Response(
-                {"message": "Individual task report generated", "response": response},
+                {"message": "Individual report task generated", "response": response},
                 status=status.HTTP_201_CREATED,
             )
         else:
@@ -7321,7 +7264,7 @@ class Generate_Report(APIView):
             elif request.data["report_type"] == "Lead":
                 return self.generate_lead_report(request)
             elif request.data["report_type"] == "Individual":
-                return self.generate_individual_report(request)
+                return self.generate_individual_c_report(request)
             elif request.data["report_type"] == "Individual Task":
                 return self.generate_individual_task_report(request)
             elif request.data["report_type"] == "Project":
