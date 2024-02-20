@@ -963,7 +963,7 @@ class GetEventSerializer(serializers.Serializer):
     )
 
 
-class PaymentSerializer(serializers.Serializer):
+class PaymentProcessSerializer(serializers.Serializer):
     PAYMENT_MONTH_CHOICE = (
         ("January", "January"),
         ("February", "February"),
@@ -981,7 +981,7 @@ class PaymentSerializer(serializers.Serializer):
     user_id = serializers.CharField(max_length=100)
     payment_month = serializers.ChoiceField(choices=PAYMENT_MONTH_CHOICE)
     payment_year = serializers.IntegerField(min_value=1)
-    number_of_leave_days = serializers.IntegerField(min_value=0)
+    user_was_on_leave = serializers.BooleanField()
     approved_logs_count = serializers.IntegerField(min_value=0)
     total_logs_required = serializers.IntegerField(min_value=0)
     payment_from = serializers.DateField(format="%Y-%m-%d")
@@ -990,10 +990,54 @@ class PaymentSerializer(serializers.Serializer):
     def validate(self, data):
         payment_from = data.get("payment_from")
         payment_to = data.get("payment_to")
+        payment_year = data.get("payment_year")
+        payment_month = data.get("payment_month")
 
         if payment_from and payment_to:
             if payment_from >= payment_to:
                 raise serializers.ValidationError(
                     "payment_from must be before payment_to."
                 )
+            elif (payment_to - payment_from).days != 7:
+                raise serializers.ValidationError(
+                    "The difference between payment_from and payment_to must be exactly 7 days."
+                )
+
+            payment_from_year = payment_from.year
+            payment_to_year = payment_to.year
+
+            if payment_from_year != payment_year or payment_to_year != payment_year:
+                raise serializers.ValidationError(
+                    "The year of payment_from and payment_to must match the payment_year."
+                )
+
+            month_dict = {
+                "January": 1,
+                "February": 2,
+                "March": 3,
+                "April": 4,
+                "May": 5,
+                "June": 6,
+                "July": 7,
+                "August": 8,
+                "September": 9,
+                "October": 10,
+                "November": 11,
+                "December": 12,
+            }
+            payment_month_int = month_dict.get(payment_month)
+
+            if payment_month_int is None:
+                raise serializers.ValidationError(
+                    f"Invalid month name: {payment_month}."
+                )
+
+            if (
+                payment_from.month != payment_month_int
+                or payment_to.month != payment_month_int
+            ):
+                raise serializers.ValidationError(
+                    f"The month of payment_from and payment_to must match the payment_month ({payment_month})."
+                )
+
         return data
