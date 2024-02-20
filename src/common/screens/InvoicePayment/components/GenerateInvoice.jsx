@@ -3,7 +3,6 @@ import Overlay from "../../../../components/Overlay";
 import { AiOutlineClose } from "react-icons/ai";
 import styles from "./styles.module.css";
 import Select from "react-select";
-import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import {
   getLogsBetweenRange,
   getleaveDays,
@@ -15,6 +14,7 @@ import { formatDateForAPI } from "../../../../helpers/helpers";
 import HorizontalBarLoader from "../../../../components/HorizontalBarLoader/HorizontalBarLoader";
 import { TbCopy } from "react-icons/tb";
 import { PiArrowElbowRightThin } from "react-icons/pi";
+import { toast } from "react-toastify";
 
 const GenerateInvoice = ({ handleCloseModal, requiredLogCount }) => {
   const [dataProcessing, setDataProcessing] = useState(false);
@@ -26,13 +26,13 @@ const GenerateInvoice = ({ handleCloseModal, requiredLogCount }) => {
   const [showMasterCode, setShowMasterCode] = useState("");
   const [copied, setCopiedId] = useState("");
 
-  const [dataForProcess, setDataForProcess] = useState({
-    payment_month: "",
-    payment_year: "",
-  });
+  // const [dataForProcess, setDataForProcess] = useState({
+  //   payment_month: "",
+  //   payment_year: "",
+  // });
 
   const monthsWith30Days = ["April", "June", "September", "November"];
-  const monthsWith28Days = ["Feburary"];
+  const monthsWith28Days = ["February"];
 
   let endDayOfMonth = 31;
 
@@ -40,15 +40,19 @@ const GenerateInvoice = ({ handleCloseModal, requiredLogCount }) => {
   if (monthsWith28Days.includes(selectedMonth)) endDayOfMonth = 28;
 
   const handleProcessInvoice = async () => {
+    if (!selectedMonth) return toast.info("Select Month");
+
+    if (!selectedYear) return toast.info("Select Year");
+
     setDataProcessing(true);
 
     Promise.all([
       getLogsBetweenRange({
         start_date: formatDateForAPI(
-          `${dataForProcess.payment_year}-${dataForProcess.payment_month}-01`
+          `${selectedYear.value}-${selectedMonth.value}-01`
         ),
         end_date: formatDateForAPI(
-          `${dataForProcess.payment_year}-${dataForProcess.payment_month}-${endDayOfMonth}`
+          `${selectedYear.value}-${selectedMonth.value}-${endDayOfMonth}`
         ),
         user_id: currentUser.userinfo.userID,
         company_id: currentUser.portfolio_info[0].org_id,
@@ -67,8 +71,8 @@ const GenerateInvoice = ({ handleCloseModal, requiredLogCount }) => {
 
         const dataForInvoice = {
           user_id: currentUser.userinfo.userID,
-          payment_month: dataForProcess.payment_month,
-          payment_year: dataForProcess.payment_year,
+          payment_month: selectedMonth.label,
+          payment_year: selectedYear.label,
           number_of_leave_days: 5,
           approved_logs_count: approvedLogs.length,
           total_logs_required: requiredLogCount,
@@ -81,8 +85,8 @@ const GenerateInvoice = ({ handleCloseModal, requiredLogCount }) => {
           created_by: currentUser.userinfo.username,
           portfolio: currentUser.portfolio_info[0].portfolio_name,
           data_type: currentUser.portfolio_info[0].data_type,
-          payment_month: dataForProcess.payment_month,
-          payment_year: dataForProcess.payment_year,
+          payment_month: selectedMonth.label,
+          payment_year: selectedYear.label,
           hr_username: "DummyHR",
           hr_portfolio: "DummyHR_Portfolio",
           accounts_username: "DummyAC",
@@ -164,24 +168,20 @@ const GenerateInvoice = ({ handleCloseModal, requiredLogCount }) => {
                     <div className={styles.invoice_details_select}>
                       <Select
                         options={[
-                          { label: "January", value: "January" },
-                          { label: "Feburary", value: "Feburary" },
-                          { label: "March", value: "March" },
-                          { label: "April", value: "April" },
-                          { label: "May", value: "May" },
-                          { label: "June", value: "June" },
-                          { label: "July", value: "July" },
-                          { label: "August", value: "August" },
-                          { label: "September", value: "September" },
-                          { label: "October", value: "October" },
-                          { label: "November", value: "November" },
-                          { label: "December", value: "December" },
+                          { label: "January", value: "01" },
+                          { label: "February", value: "02" },
+                          { label: "March", value: "03" },
+                          { label: "April", value: "04" },
+                          { label: "May", value: "05" },
+                          { label: "June", value: "06" },
+                          { label: "July", value: "07" },
+                          { label: "August", value: "08" },
+                          { label: "September", value: "09" },
+                          { label: "October", value: "10" },
+                          { label: "November", value: "11" },
+                          { label: "December", value: "12" },
                         ]}
                         onChange={(selectedOption) => {
-                          setDataForProcess((prevValue) => ({
-                            ...prevValue,
-                            payment_month: selectedOption.value,
-                          }));
                           setSelectedMonth(selectedOption);
                         }}
                         className={styles.invoice__select__date}
@@ -193,10 +193,6 @@ const GenerateInvoice = ({ handleCloseModal, requiredLogCount }) => {
                           { label: "2023", value: "2023" },
                         ]}
                         onChange={(selectedOption) => {
-                          setDataForProcess((prevValue) => ({
-                            ...prevValue,
-                            payment_year: selectedOption.value,
-                          }));
                           setSelectedYear(selectedOption);
                         }}
                         className={styles.invoice__select__year}
