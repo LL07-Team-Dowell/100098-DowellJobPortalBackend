@@ -1,7 +1,7 @@
 import json
 import requests
 import datetime
-import threading
+import threading, multiprocessing
 import calendar
 from datetime import datetime, timedelta, date
 from dateutil.relativedelta import relativedelta
@@ -17,7 +17,6 @@ from .constant import *
 from .helper import (
     get_event_id,
     dowellconnection,
-    call_notification,
     save_image,
     set_finalize,
     update_number,
@@ -53,6 +52,7 @@ from .helper import (
     speed_test_condition,
     get_dates_between,
     update_user_Report_data,
+    delete_user_Report_data,
     datacube_delete_function
 )
 from .serializers import (
@@ -162,7 +162,7 @@ if os.getenv("DB_PAYMENT_RECORDS"):
     
 else:
     """for windows local"""
-    load_dotenv(f"{os.getcwd()}/.env")
+    load_dotenv(f"{os.getcwd()}/env")
     API_KEY = str(os.getenv("API_KEY"))
     DB_Name = str(os.getenv("DB_Name"))
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
@@ -319,7 +319,7 @@ ISSUES_MAIL = """
   </body>
 </html>
 """
-
+DATACUBE_LIMIT = 100
 # api for job portal begins here---------------------------
 @method_decorator(csrf_exempt, name="dispatch")
 class serverStatus(APIView):
@@ -2464,7 +2464,7 @@ class approve_task(APIView):
         )
         # print(len(json.loads(info)["data"]),"==========")
         if len(json.loads(info)["data"]) > 0:
-            username = json.loads(info)["data"][0]["username"]
+            user_id = [users['user_id'] for users in json.loads(info)["data"] if "user_id" in users.keys()][0]
             portfolio_name = [
                 names["portfolio_name"] for names in json.loads(info)["data"] if "portfolio_name" in names.keys()
             ]
@@ -2481,75 +2481,72 @@ class approve_task(APIView):
                                 valid_profiles.append(d["profile_title"])
             if len(valid_profiles) > 0:
                 if valid_profiles[-1] in portfolio_name:
-                    return True
+                    return True,user_id
                 else:
-                    return False
-        return False
+                    return False,user_id
+        return False,''
 
-    def approvable(self):
-        data = self.request.data
-        field = {"_id": data.get("document_id")}
+    def approvable(self,field):
         update_field = {}
-        response = dowellconnection(*task_details_module, "fetch", field, update_field)
+        response = json.loads(dowellconnection(*task_details_module, "fetch", field, update_field))
+        if response["isSuccess"] is False or len(response["data"]) == 0:
+            return False, 'No task is found','', 
+        user_id =''
+        task_created_date=''
         if response is not None:
-            for item in json.loads(response)["data"]:
+            for item in response["data"]:
+                if 'user_id' in item.keys():
+                    user_id = item['user_id']
+                if 'task_created_date' in item.keys():
+                    task_created_date=item['task_created_date']
                 if "max_updated_date" not in item:
-                    return True
+                    return True,task_created_date,user_id
             current_date = datetime.today()
             # print(json.loads(response)["data"],"=========")
             try:
                 max_updated_dates = [
-                    datetime.strptime(item["max_updated_date"], "%m/%d/%Y %H:%M:%S")
-                    for item in json.loads(response)["data"]
+                    datetime.strptime(set_date_format(item["max_updated_date"]), "%m/%d/%Y %H:%M:%S")
+                    for item in response["data"] if "max_updated_date" in item.keys()
                 ]
+                task_created_date= json.loads(response)["data"][0]["task_created_date"]
+                user_id = response["data"][0]["user_id"]
             except Exception:
-                id = json.loads(response)["data"][0]["_id"]
-                task_created_date = set_date_format(
-                    json.loads(response)["data"][0]["task_created_date"]
-                )
-                max_updated_date = self.max_updated_date(task_created_date)
+                #id = json.loads(response)["data"][0]["_id"]
+                task_created_date= response["data"][0]["task_created_date"]
+                user_id = response["data"][0]["user_id"]
+                max_updated_date = self.max_updated_date(set_date_format(task_created_date))
                 res = dowellconnection(
                     *task_details_module,
                     "update",
-                    {"_id": id},
+                    {"_id": field['_id']},
                     {"max_updated_date": max_updated_date},
                 )
-                # print("response:", res)
-                resp = dowellconnection(
-                    *task_details_module, "fetch", field, update_field
-                )
-                max_updated_dates = [
-                    datetime.strptime(item["max_updated_date"], "%m/%d/%Y %H:%M:%S")
-                    for item in json.loads(resp)["data"]
-                ]
-
-            if len(max_updated_dates) >= 1:
-                max_updated_date = max(max_updated_dates)
-                if current_date <= max_updated_date:
-                    return True
-                else:
-                    return False
+            
+            max_updated_date= datetime.strptime(max_updated_date, "%m/%d/%Y %H:%M:%S")
+            if current_date <= max_updated_date:
+                return True,task_created_date,user_id
             else:
-                return True
+                return False,"Task approval unsuccessful. The 2-weeks approval window has elapsed.",user_id
+            
 
-        return False
+        return False,"Task approval unsuccessful. The 2-weeks approval window has elapsed.",user_id
 
-    @verify_user_token
-    def patch(self, request, user):
+    #@verify_user_token
+    def patch(self, request):
         data = request.data
         # print(data)
         if data:
             field = {"_id": data.get("document_id")}
             update_field = {
-                "status": data.get("status"),
+                "status": "completed",
                 "task_approved_by": data.get("lead_username")
             }
             serializer = TaskApprovedBySerializer(data=update_field)
             if serializer.is_valid():
-                check_approvable = self.approvable()
-
+                check_approvable, task_created_date, user_id = self.approvable(field)
                 if check_approvable is True:
-                    validate_teamlead = self.valid_teamlead(data.get("lead_username"))
+                    validate_teamlead, lead_user_id = self.valid_teamlead(data.get("lead_username"))
+                    print(lead_user_id, "+++++++++++++++++++++++++++++++++", user_id)
                     if validate_teamlead is False:
                         return Response(
                             {
@@ -2564,16 +2561,52 @@ class approve_task(APIView):
                         *task_details_module, "update", field, update_field
                     )
                     if json.loads(response)["isSuccess"] is True:
+                        u_r=[]
+                        def call_update_report(*args):
+                            res= update_user_Report_data(args[0],args[1],args[2],args[3],args[4],args[5])
+                            print(res)
+                            u_r.append(res)
+
+                        update_data ={
+                                    'tasks_completed':True,
+                                    'tasks_approved':True
+                                    }
+                                    
+                        if lead_user_id == user_id:
+                            update_data['tasks_you_marked_as_complete']=True
+                            update_data['tasks_you_approved']=True
+                            update_response_thread = threading.Thread(
+                                target=call_update_report,
+                                args=(API_KEY,REPORT_DB_NAME, REPORT_UUID, user_id, task_created_date, update_data))
+                            update_response_thread.start()
+                        
+                        else:
+                            update_response_thread = threading.Thread(
+                                target=call_update_report,
+                                args=(API_KEY,REPORT_DB_NAME, REPORT_UUID, user_id, task_created_date, update_data))
+                            update_response_thread.start()
+
+                            update_response_thread_two = threading.Thread(
+                                target=call_update_report,
+                                args=(API_KEY,REPORT_DB_NAME, REPORT_UUID,lead_user_id, task_created_date, {
+                                        'tasks_you_marked_as_complete':True,
+                                        'tasks_you_approved':True
+                                        }))
+                            update_response_thread_two.start()
+                        
+
                         return Response(
-                            {
-                                "message": "Task approved successfully",
-                                "response": json.loads(response),
-                            },
-                            status=status.HTTP_200_OK,
-                        )
+                                {
+                                    'success': True,
+                                    "message": "Task approved successfully",
+                                    "response": [],
+                                },
+                                status=status.HTTP_200_OK,
+                            )
                     else:
                         return Response(
                             {
+                                'success': False,
                                 "message": "Task failed to be approved",
                                 "response": json.loads(response),
                             },
@@ -2582,21 +2615,24 @@ class approve_task(APIView):
                 else:
                     return Response(
                         {
-                            "message": "Task approval unsuccessful. The 2-weeks approval window has elapsed."
+                            'success': False,
+                            "message": task_created_date
                         },
                         status=status.HTTP_400_BAD_REQUEST,
                     )
             else:
                 return Response(
                     {
-                        "message": "Task approval unsuccessful. task_approved_by is required"
+                        
+                        'success': False,
+                        "message": serializer.errors
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
         else:
             return Response(
-                {"message": "Parameters are not valid"},
+                {'success': False,"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -2641,7 +2677,6 @@ class task_module(APIView):
         _date = task_updated_date + relativedelta(hours=336)
         _date = _date.strftime("%Y-%m-%d %H:%M:%S")
         return _date
-
     #@verify_user_token
     def post(self, request):
         type_request = request.GET.get("type")
@@ -2678,8 +2713,8 @@ class task_module(APIView):
         else:
             return self.handle_error(request)
 
-    @verify_user_token
-    def add_task(self,request,user):
+    #@verify_user_token
+    def add_task(self,request):
         data = request.data
         payload = {
             "project": data.get("project"),
@@ -2736,33 +2771,56 @@ class task_module(APIView):
                     "status": "Incomplete",
                     "approval": False,
                 }
-                response = json.loads(
-                    dowellconnection(
-                        *task_details_module, "insert", field, update_field=None
-                    )
-                )
-                if response["isSuccess"]:
-                    field["_id"]=response["inserted_id"]
-                    # year,monthname, monthcount = get_month_details(data.get("task_created_date"))
-                    # filter_params={
-                    #    "applicant_id":data.get("applicant_id"),
-                    #    "username":data.get("task_added_by"),
-                    #    "year":year,
-                    #    "month":monthname,
-                    #    "company_id":data.get("company_id")
-                    # }
-                    # task_params={"task_added"}
-                    # report =updatereportdb(filter_params=filter_params,task_params=task_params)
-                    ##------------------------------------------------
+                t_r = []
+                u_r = []
+                def call_dowellconnection(*args):
+                    d = dowellconnection(*args)
+                    if "task_details" in args:
+                        t_r.append(json.loads(d))
+                def call_update_report(*args):
+                    
+                    update_data = {
+                        'task_added': True,
+                        'tasks_uncompleted':True
+                    }
+                    res= update_user_Report_data(API_KEY,REPORT_DB_NAME, REPORT_UUID, 
+                                            data.get("user_id"), data.get("task_created_date"), 
+                                            update_data)
+                    u_r.append(res)
 
-                    return Response(
-                        {
-                            "success": True,
-                            "message": "Task added successfully",
-                            "response": field,
-                        },
-                        status.HTTP_201_CREATED,
-                    )
+                create_response_thread = threading.Thread(
+                    target=call_dowellconnection,
+                    args=(*task_details_module, "insert", field, {}),
+                )
+                create_response_thread.start()
+
+                update_response_thread = threading.Thread(
+                    target=call_update_report,
+                    args=('none'))
+
+                update_response_thread.start()
+                create_response_thread.join()
+
+                error = ''
+                if (not create_response_thread.is_alive()):
+                    if t_r[0]["isSuccess"] == True:
+                        field["_id"]=t_r[0]["inserted_id"]
+                    
+                        return Response(
+                            {
+                                "success": True,
+                                "message": "Task added successfully",
+                                "response": field,
+                            },
+                            status.HTTP_201_CREATED,
+                        )
+                    else:
+                        error = t_r[0]
+                        return Response(
+                            error,
+                            status=status.HTTP_304_NOT_MODIFIED,
+                        )
+            
                 else:
                     return Response(
                         {"success": False, "message": "Failed to add task"},
@@ -2771,8 +2829,8 @@ class task_module(APIView):
             else:
                 return Response(
                     {
-                        "success": False,
-                        "message": "Failed to create task",
+                        "success": response["isSuccess"],
+                        "message": response["message"],
                     },
                     status.HTTP_400_BAD_REQUEST,
                 )
@@ -3286,7 +3344,7 @@ class task_module(APIView):
 class create_team(APIView):
     def get_current_datetime(self, date):
         _date = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S.%f").strftime(
-            "%m/%d/%Y %H:%M:%S"
+            "%Y-%m-%d"
         )
         return str(_date)
 
@@ -3308,33 +3366,68 @@ class create_team(APIView):
                 field["admin_team"] = True
 
             update_field = {"status": "nothing to update"}
-            response = dowellconnection(
-                *team_management_modules, "insert", field, update_field
-            )
-            # print(response)
-            if json.loads(response)["isSuccess"] == True:
-                
-                return Response(
-                    {
-                        "message": "Team created successfully",
-                        "response": json.loads(response),
-                    },
-                    status=status.HTTP_201_CREATED,
-                )
-            else:
-                return Response(
-                    {
-                        "message": "Team failed to be created",
-                        "response": json.loads(response),
-                    },
-                    status=status.HTTP_304_NOT_MODIFIED,
-                )
-        else:
-            return Response(
-                {"message": "Parameters are not valid"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            
+            t_r = []
+            u_r = []
+            def call_dowellconnection(*args):
+                d = dowellconnection(*args)
+                if "team_management_report" in args:
+                    t_r.append(json.loads(d))
+            def call_update_report(*args):
+                for user_id in field["members"]:
+                    update_data = {
+                        'teams': True,
+                    }
+                    res= update_user_Report_data(API_KEY,REPORT_DB_NAME, REPORT_UUID, 
+                                        user_id, field["date_created"], 
+                                        update_data)
+                    u_r.append(res)
 
+            create_response_thread = threading.Thread(
+                target=call_dowellconnection,
+                args=(*team_management_modules, "insert", field, update_field),
+            )
+            create_response_thread.start()
+
+            update_response_thread = threading.Thread(
+                target=call_update_report,
+                args=('none'))
+
+            update_response_thread.start()
+            create_response_thread.join()
+            update_response_thread.join()
+
+            error = ''
+            if (not create_response_thread.is_alive()
+                and not update_response_thread.is_alive() ):
+
+                if t_r[0]["isSuccess"] == True:
+                    if u_r[0]["success"] == True:
+                        return Response(
+                            {
+                                "message": "Team created successfully",
+                                "response": t_r[0],
+                            },
+                            status=status.HTTP_201_CREATED,
+                        )
+                    else:
+                        error = u_r[0]
+                        return Response(
+                            {
+                                "message": "Team failed to be created",
+                                "response": error,
+                            },
+                            status=status.HTTP_304_NOT_MODIFIED,
+                        )
+                else:
+                    error = t_r[0]
+                    return Response(
+                        {
+                            "message": "Team failed to be created",
+                            "response": error,
+                        },
+                        status=status.HTTP_304_NOT_MODIFIED,
+                    )
 
 @method_decorator(csrf_exempt, name="dispatch")
 class get_team(APIView):
@@ -3373,7 +3466,6 @@ class get_team(APIView):
                 status=status.HTTP_204_NO_CONTENT,
             )
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_teams(APIView):  # all teams
     def get(self, request, company_id):
@@ -3410,7 +3502,6 @@ class get_all_teams(APIView):  # all teams
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class edit_team(APIView):
@@ -3477,6 +3568,14 @@ class delete_team(APIView):
         )
         # print(response)
         if json.loads(response)["isSuccess"] == True:
+            delete_data = {
+                'teams': True,
+            }
+            res= json.loads(dowellconnection(*team_management_modules, "fetch", field, update_field=None))['data']
+            for user_id in res['members']:
+                res= delete_user_Report_data(API_KEY,REPORT_DB_NAME, REPORT_UUID, 
+                                    user_id, res["date_created"], 
+                                    delete_data)
             return Response(
                 {"message": f"Team has been deleted", "response": json.loads(response)},
                 status=status.HTTP_200_OK,
@@ -3493,16 +3592,9 @@ class delete_team(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class create_team_task(APIView):
-    # def max_updated_date(self, updated_date):
-    #     task_updated_date = datetime.strptime(
-    #         updated_date, "%m/%d/%Y %H:%M:%S"
-    #     )
-    #     _date = task_updated_date + relativedelta(hours=12)
-    #     _date = _date.strftime('%m/%d/%Y %H:%M:%S')
-    #     return str(_date)
     def get_current_datetime(self, date):
         _date = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S.%f").strftime(
-            "%m/%d/%Y %H:%M:%S"
+            "%Y-%m-%d"
         )
         return str(_date)
 
@@ -3514,6 +3606,7 @@ class create_team_task(APIView):
             "task_image": data.get("image"),
             "assignee": data.get("assignee"),
             "team_id": data.get("team_id"),
+            "user_id": data.get("user_id"),
             "task_created_date": self.get_current_datetime(datetime.now()),
             "subtasks": data.get("subtasks"),
         }
@@ -3528,48 +3621,82 @@ class create_team_task(APIView):
                 "completed": data.get("completed"),
                 "team_id": data.get("team_id"),
                 "data_type": data.get("data_type"),
-                "task_created_date": self.get_current_datetime(datetime.now()),
+                "task_created_date": payload["task_created_date"],
                 "due_date": data.get("due_date"),
                 "task_updated_date": "",
                 "approval": False,
-                "subtasks": data.get("subtasks"),
-                # "max_updated_date": self.max_updated_date(self.get_current_datetime(datetime.now())),
+                "user_id": data.get("user_id"),
+                "subtasks": data.get("subtasks")
             }
             update_field = {"status": "nothing to update"}
             
-            response = dowellconnection(
-                *task_management_reports, "insert", field, update_field
-            )
-            # print(response)
-            if json.loads(response)["isSuccess"] == True:
-                ##adding to sqlite--------------------------------
-                # year,monthname, monthcount = get_month_details(data.get("task_created_date"))
-                # filter_params={
-                #    "applicant_id":data.get("applicant_id"),
-                #    "username":data.get("task_added_by"),
-                #    "year":year,
-                #    "month":monthname,
-                #    "company_id":data.get("company_id")
-                # }
-                # task_params={"team_tasks"}
-                # report =updatereportdb(filter_params=filter_params,task_params=task_params)
-                ##------------------------------------------------
+            t_r = []
+            u_r = []
+            def call_dowellconnection(*args):
+                d = dowellconnection(*args)
+                if "task_reports" in args:
+                    t_r.append(json.loads(d))
+            def call_update_report(*args):
+                
+                update_data = {
+                        'team_tasks': True,
+                        'team_tasks_uncompleted':True
+                }
+                res= update_user_Report_data(API_KEY,REPORT_DB_NAME, REPORT_UUID, 
+                                        data.get("user_id"), field["task_created_date"], 
+                                        update_data)
+                u_r.append(res)
 
-                return Response(
-                    {
-                        "message": "Task created successfully",
-                        "response": json.loads(response),
-                    },
-                    status=status.HTTP_201_CREATED,
-                )
+            create_response_thread = threading.Thread(
+                target=call_dowellconnection,
+                args=(*task_management_reports, "insert", field, update_field),
+            )
+            create_response_thread.start()
+
+            update_response_thread = threading.Thread(
+                target=call_update_report,
+                args=('none'))
+
+            update_response_thread.start()
+            create_response_thread.join()
+            update_response_thread.join()
+
+            error = ''
+            if (not create_response_thread.is_alive()
+                and not update_response_thread.is_alive() ):
+
+                if t_r[0]["isSuccess"] == True:
+                    if u_r[0]["success"] == True:
+                        return Response(
+                            {
+                                "message": "Task created successfully",
+                                "response": t_r[0],
+                            },
+                            status=status.HTTP_201_CREATED,
+                        )
+                    else:
+                        error = u_r[0]
+                        return Response(
+                            {
+                                "message": "Task failed to be created",
+                                "response": error,
+                            },
+                            status=status.HTTP_304_NOT_MODIFIED,
+                        )
+                else:
+                    error = t_r[0]
+                    return Response(
+                        {
+                            "message": "Task failed to be created",
+                            "response": error,
+                        },
+                        status=status.HTTP_304_NOT_MODIFIED,
+                    )
             else:
                 return Response(
-                    {
-                        "message": "Task Creation Failed",
-                        "response": json.loads(response),
-                    },
-                    status=status.HTTP_304_NOT_MODIFIED,
-                )
+                        {"message": "Operation failed"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
         else:
             return Response(
                 {"message": "Parameters are not valid", "response": serializer.errors},
@@ -3599,13 +3726,16 @@ class edit_team_task(APIView):
                 "subtasks": data.get("subtasks"),
             }
             iscomplete=False
+            update_data={}
             if (
                 data.get("completed") == "True"
                 or data.get("completed") == "true"
                 or data.get("completed") == True
             ):
-                update_field["completed"] = data.get("completed")
+                update_field["completed"] = True
                 update_field["completed_on"] = self.get_current_datetime(datetime.now())
+                update_data['team_tasks_completed']= True,
+                
             # print(update_field, "=====")
             # check if task exists---
             check = dowellconnection(
@@ -3620,26 +3750,82 @@ class edit_team_task(APIView):
                     status=status.HTTP_204_NO_CONTENT,
                 )
             else:
-                response = dowellconnection(
-                    *task_management_reports, "update", field, update_field
+                t_r = []
+                u_r = []
+                def call_dowellconnection(*args):
+                    d = dowellconnection(*args)
+                    if "task_reports" in args:
+                        t_r.append(json.loads(d))
+                def call_update_report(*args):
+                    if len(update_data)>0 and (json.loads(check)["data"][0]['completed'] != True):  
+                        user_id =  json.loads(check)["data"][0]['user_id']
+                        task_created_date =  json.loads(check)["data"][0]['task_created_date']
+                        res= update_user_Report_data(API_KEY,REPORT_DB_NAME, REPORT_UUID, 
+                                                user_id, task_created_date, 
+                                                update_data)
+                        u_r.append(res)
+                    
+                create_response_thread = threading.Thread(
+                    target=call_dowellconnection,
+                    args=(*task_management_reports, "update", field, update_field),
                 )
-                # print(response)
-                if json.loads(response)["isSuccess"] == True:
-                    return Response(
-                        {
-                            "message": "Team Task Updated successfully",
-                            "response": json.loads(response),
-                        },
-                        status=status.HTTP_200_OK,
-                    )
+                create_response_thread.start()
+
+                update_response_thread = threading.Thread(
+                    target=call_update_report,
+                    args=('none'))
+
+                update_response_thread.start()
+                create_response_thread.join()
+                update_response_thread.join()
+
+                error = ''
+                if (not create_response_thread.is_alive()
+                    and not update_response_thread.is_alive() ):
+
+                    if t_r[0]["isSuccess"] == True:
+                        if len(u_r)>0:
+                            if u_r[0]["success"] == True:
+                                return Response(
+                                    {
+                                        "message": "Team Task Updated successfully",
+                                        "response": t_r[0],
+                                    },
+                                    status=status.HTTP_201_CREATED,
+                                )
+                            else:
+                                error = u_r[0]
+                                return Response(
+                                    {
+                                        "message": "Task failed to be created",
+                                        "response": error,
+                                    },
+                                    status=status.HTTP_400_BAD_REQUEST,
+                                )
+                        else:
+                            return Response(
+                                    {
+                                        "message": "Team Task Updated successfully",
+                                        "response": t_r[0],
+                                    },
+                                    status=status.HTTP_201_CREATED,
+                                )
+                    else:
+                        error = t_r[0]
+                        return Response(
+                            {
+                                "message": "Team Task failed to be updated",
+                                "response": error,
+                            },
+                            status=status.HTTP_304_NOT_MODIFIED,
+                        )
+                
                 else:
                     return Response(
-                        {
-                            "message": "Team Task failed to be updated",
-                            "response": json.loads(response),
-                        },
-                        status=status.HTTP_404_NOT_FOUND,
-                    )
+                            {"message": "Operation failed"},
+                            status=status.HTTP_304_NOT_MODIFIED,
+                        )
+
         else:
             return Response(
                 {"message": "Parameters are not valid"},
@@ -3695,6 +3881,18 @@ class delete_team_task(APIView):
         )
         # print(response)
         if json.loads(response)["isSuccess"] == True:
+            delete_data={
+                "team_tasks": True,
+            }
+            res= json.loads(dowellconnection(*task_management_reports, "fetch", field, update_field=None))['data'][0]
+            user_id = res['user_id']
+            if "completed" in res and (res['completed'] == True):
+                delete_data['team_tasks_completed']= True
+            else:
+                delete_data['team_tasks_uncompleted']= True
+            del_res= delete_user_Report_data(API_KEY,REPORT_DB_NAME, REPORT_UUID, 
+                                    user_id, res["task_created_date"], 
+                                    delete_data)
             return Response(
                 {
                     "message": f"Tasks with task id - {task_id} has been deleted",
@@ -5147,6 +5345,7 @@ class Thread_Apis(APIView):
             "expected_product_behavior": data.get("expected_product_behavior"),
             "actual_product_behavior": data.get("actual_product_behavior"),
             "thread_type": data.get("thread_type"),
+            "user_id": data.get("user_id"),
         }
 
         field = {
@@ -5165,6 +5364,7 @@ class Thread_Apis(APIView):
             "expected_product_behavior": data.get("expected_product_behavior"),
             "actual_product_behavior": data.get("actual_product_behavior"),
             "thread_type": data.get("thread_type"),
+            "user_id": data.get("user_id")
         }
         update_field = {}
         serializer = ThreadsSerializer(data=serializer_data)
@@ -5215,7 +5415,12 @@ class Thread_Apis(APIView):
                     send_mail_thread.start()
                     send_mail_thread.join()
                 ##------------------------------------------------
-
+                update_data = {
+                    'team_tasks_issues_raised': True,
+                }
+                res= update_user_Report_data(API_KEY,REPORT_DB_NAME, REPORT_UUID, 
+                                    data.get('user_id'), field["created_date"], 
+                                    update_data)
                 return Response(
                     {
                         "message": "Thread created successfully",
@@ -5282,7 +5487,7 @@ class Thread_Apis(APIView):
         data = request.data
         if data:
             field = {
-                "_id": data.get("document_id"),
+                "_id": data.get("document_id")
             }
 
             # check for previous status
@@ -5383,6 +5588,14 @@ class Thread_Apis(APIView):
 
             # print(update_response)
             if json.loads(update_response)["isSuccess"] == True:
+                if data.get("current_status") == "Resolved":
+                    update_data = {
+                        'team_tasks_issues_resolved': True,
+                    }
+                    date_ = json.loads(get_response)["data"][0]["created_date"]
+                    res= update_user_Report_data(API_KEY,REPORT_DB_NAME, REPORT_UUID, 
+                                    data.get("user_id"), date_, 
+                                    update_data)
                 return Response(
                     {
                         "message": f"Thread with id-{data.get('document_id')} has been successfully updated",
@@ -5556,6 +5769,12 @@ class Comment_Apis(APIView):
             )
             # print(insert_response)
             if json.loads(insert_response)["isSuccess"] == True:
+                update_data = {
+                    'team_tasks_comments_added': True,
+                }
+                res= update_user_Report_data(API_KEY,REPORT_DB_NAME, REPORT_UUID, 
+                                    data.get('user_id'), field["created_date"], 
+                                    update_data)
                 return Response(
                     {
                         "message": "Comment created successfully",
@@ -6586,7 +6805,7 @@ class Generate_Report(APIView):
             # check if the user has any data------------------------------------------------
             field = {
                 "user_id": user_id,
-                "company_id": company_id,
+                #"company_id": company_id,
             }
             info = json.loads(dowellconnection(*candidate_management_reports, "fetch", field, update_field=None ))["data"]
             if len(info) <= 0:
@@ -10366,7 +10585,7 @@ class Company_Structure(APIView):
         company_id = request.data.get("company_id")
         company_name = request.data.get("company_name")
         ceo = request.data.get("ceo")
-        c_l = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,{"ceo":ceo},10,0,False))
+        c_l = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,{"ceo":ceo},DATACUBE_LIMIT,0,False))
         if len(c_l['data']) >0:
             return Response({
                         "success":False,
@@ -10379,7 +10598,7 @@ class Company_Structure(APIView):
             "company_name":company_name,
             "data_type":"Real_Data"
         }
-        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,DATACUBE_LIMIT,0,False))
         #if ceo exists update else insert it
         if res['success'] == False and res['message']==f"Collection '{coll_name}' does not exist in Datacube database":
             """create the collection if the is no content----------------------"""
@@ -10427,7 +10646,7 @@ class Company_Structure(APIView):
             "data_type":"Real_Data"
         }
         coll_name = 'ceo'
-        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,DATACUBE_LIMIT,0,False))
         if res['success'] == True:
             return Response(res,status=status.HTTP_200_OK)
         else:
@@ -10452,7 +10671,7 @@ class Company_Structure(APIView):
             "data_type":"Real_Data",
             "ceo":previous_ceo,
         }
-        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,DATACUBE_LIMIT,0,False))
         #if ceo exists update else insert it
         if res['success'] == False:
             return Response(res,status=status.HTTP_404_NOT_FOUND)
@@ -10489,7 +10708,7 @@ class Company_Structure(APIView):
             })
         company_id = request.data.get("company_id")
         project_lead = request.data.get("project_lead")
-        p_l = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,{"project_lead":project_lead},10,0,False))
+        p_l = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,{"project_lead":project_lead},DATACUBE_LIMIT,0,False))
         if len(p_l['data']) >0:
             return Response({
                     "success":False,
@@ -10526,7 +10745,7 @@ class Company_Structure(APIView):
             "project_lead_id":project_lead_id,
             "data_type":data_type
         }
-        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,DATACUBE_LIMIT,0,False))
         
         if res['success'] == False and res['message']==f"Collection '{coll_name}' does not exist in Datacube database":
             """create the collection if the is no content----------------------"""
@@ -10567,7 +10786,7 @@ class Company_Structure(APIView):
                 current_projects_managed={}
                 current_coded_projects_managed={}
                 _pleads=[]
-                check_projects_managed = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,'project_leads',pq,10,0,False))
+                check_projects_managed = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,'project_leads',pq,DATACUBE_LIMIT,0,False))
                 if check_projects_managed['success']==True:
                     for p in check_projects_managed['data']:
                         if p["projects_managed"]!=None and len(p["projects_managed"])>0:
@@ -10618,7 +10837,7 @@ class Company_Structure(APIView):
             "data_type":"Real_Data"
         }
         coll_name = 'project_leads'
-        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,DATACUBE_LIMIT,0,False))
         if res['success'] == True:
             return Response(res,status=status.HTTP_200_OK)
         else:
@@ -10667,7 +10886,7 @@ class Company_Structure(APIView):
             'project_lead':project_lead,
             'data_type':data_type
         }
-        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,DATACUBE_LIMIT,0,False))
         #if ceo exists update else insert it
         if res['success'] == False :
             return Response(res,status=status.HTTP_404_NOT_FOUND)
@@ -10685,7 +10904,7 @@ class Company_Structure(APIView):
                 current_projects_managed={}
                 current_coded_projects_managed={}
                 _pleads=[]
-                check_projects_managed = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,'project_leads',pq,10,0,False))
+                check_projects_managed = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,'project_leads',pq,DATACUBE_LIMIT,0,False))
                 if check_projects_managed['success']==True:
                     for p in check_projects_managed['data']:
                         if p["projects_managed"]!=None and len(p["projects_managed"])>0:
@@ -10738,7 +10957,7 @@ class Company_Structure(APIView):
         company_id = request.data.get("company_id")
         project = request.data.get("project")
         _coded_project = self.rearrange(project.lower())
-        _project = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{'company_id':company_id},10,0,False))
+        _project = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{'company_id':company_id},DATACUBE_LIMIT,0,False))
         
         for p in _project['data']:
             if p['_coded_project'] == _coded_project:
@@ -10757,7 +10976,7 @@ class Company_Structure(APIView):
                 },status=status.HTTP_404_NOT_FOUND)
         #checking if team lead reports to is in dowell------------------------
         teamlead_reports_to = []
-        res_proj = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{'company_id':company_id},10,0,False))
+        res_proj = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{'company_id':company_id},DATACUBE_LIMIT,0,False))
         if res_proj['success'] == True and len(res_proj['data']) >=1 :
             for project_leads in res_proj['data']:
                 if "_coded_projects_managed" in project_leads.keys():
@@ -10785,8 +11004,7 @@ class Company_Structure(APIView):
             "_coded_project":_coded_project,
             "data_type":"Real_Data"
         }
-        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
-        #if ceo exists update else insert it
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,DATACUBE_LIMIT,0,False))
         
         if res['success'] == False and res['message']==f"Collection '{coll_name}' does not exist in Datacube database":
             """create the collection if the is no content----------------------"""
@@ -10839,8 +11057,9 @@ class Company_Structure(APIView):
             "company_id":company_id,
             "data_type":"Real_Data"
         }
-        coll_name = 'projects'
-        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        coll_name = type_request.replace("get_","")
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,DATACUBE_LIMIT,0,False))
+        
         if res['success'] == True:
             return Response(res,status=status.HTTP_200_OK)
         else:
@@ -10860,7 +11079,13 @@ class Company_Structure(APIView):
         company_id = request.data.get("company_id")
         team_lead = request.data.get("team_lead")
         teamlead_reports_to = []
-        res_proj = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{},10,0,False))
+        res_projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{'company_id':company_id},DATACUBE_LIMIT,0,False))
+        if not (res_projects['success'] == True and len(res_projects['data']) >=1) :
+            return Response({
+                "success":False,
+                "message":f"No date to update for this '{project}'"
+            },status=status.HTTP_404_NOT_FOUND)
+        res_proj = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{'company_id':company_id},DATACUBE_LIMIT,0,False))
         #print(res_proj, "===============",len(res_proj['data']))
         if res_proj['success'] == True and len(res_proj['data']) >=1 :
             for project_leads in res_proj['data']:
@@ -10871,7 +11096,9 @@ class Company_Structure(APIView):
         group_leads = request.data.get("group_leads")
         members = request.data.get("members")
         _m =[]
-        update_data = {"teamlead_reports_to": teamlead_reports_to[-1]}
+        update_data ={}
+        if len(teamlead_reports_to)>=1:
+            update_data["teamlead_reports_to"]= teamlead_reports_to[-1]
         if members:
             _m += members
         if group_leads:
@@ -10911,15 +11138,14 @@ class Company_Structure(APIView):
             return Response(update_collection,status=status.HTTP_200_OK)
         else:
             del update_collection['data']
-            return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)    
-
+            return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)      
     def get(self,requests, company_id):
         data={}
         search_query ={  
             "company_id":company_id,
             "data_type":"Real_Data",
         }
-        ceo = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"ceo",search_query,10,0, False))
+        ceo = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"ceo",search_query,DATACUBE_LIMIT,0, False))
         if len(ceo['data']) >0:
             _x = ceo['data'][-1]
             data['ceo'] =_x['ceo']
@@ -10929,7 +11155,7 @@ class Company_Structure(APIView):
                 'company_id':company_id,
                 "data_type":"Real_Data"
             }
-            project_leads = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",plq,10,0,False))
+            project_leads = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",plq,DATACUBE_LIMIT,0,False))
             
             for y in project_leads['data']:
                 _y ={
@@ -10943,7 +11169,7 @@ class Company_Structure(APIView):
                     'company_id':company_id,
                     "data_type":"Real_Data"
                 }
-                projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",pq,10,0,False))
+                projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",pq,DATACUBE_LIMIT,0,False))
         
                 if len(projects['data'])>0:
                     
@@ -11023,7 +11249,7 @@ class DowellEvents(APIView):
                     ATTENDANCE_DB,
                     Events_collection,
                     check_field,
-                    0,
+                    DATACUBE_LIMIT,
                     0,
                     False
                 )
@@ -11173,7 +11399,7 @@ class DowellEvents(APIView):
         try:
             fetch_collection = json.loads(
                 datacube_data_retrival_function(
-                    API_KEY, ATTENDANCE_DB, Events_collection, data, 0, 0, False
+                    API_KEY, ATTENDANCE_DB, Events_collection, data, DATACUBE_LIMIT, 0, False
                 )
             )
 
