@@ -113,7 +113,7 @@ from .serializers import (
     WorklogsDateSerializer,
     UpdateUserIdSerializer,
     InsertPaymentInformation,
-    PaymentSerializer,
+    PaymentProcessSerializer,
 )
 from .authorization import (
     verify_user_token,
@@ -422,13 +422,13 @@ class Invoice_module(APIView):
         user_id = request.data.get("user_id")
         payment_month = request.data.get("payment_month")
         payment_year = request.data.get("payment_year")
-        number_of_leave_days = request.data.get("number_of_leave_days")
+        user_was_on_leave = request.data.get("user_was_on_leave")
         approved_logs_count = request.data.get("approved_logs_count")
         total_logs_required = request.data.get("total_logs_required")
         payment_from = request.data.get("payment_from")
         payment_to = request.data.get("payment_to")
 
-        serializer = PaymentSerializer(data=request.data)
+        serializer = PaymentProcessSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(
                 {
@@ -442,9 +442,9 @@ class Invoice_module(APIView):
             "db_record_type": "payment_detail",
             "payment_month": payment_month,
             "payment_year": payment_year,
+            "payment_from": payment_from,
+            "payment_to": payment_to,
         }
-        data_2 = {"db_record_type": "payment_record"}
-
         existing_payment_detail = datacube_data_retrival(
             api_key=API_KEY,
             database_name=DB_PAYMENT_RECORDS,
@@ -455,6 +455,7 @@ class Invoice_module(APIView):
         )
         json_existing_payment_detail = json.loads(existing_payment_detail)
 
+        data_2 = {"db_record_type": "payment_record"}
         existing_payment_record = datacube_data_retrival(
             api_key=API_KEY,
             database_name=DB_PAYMENT_RECORDS,
@@ -486,25 +487,17 @@ class Invoice_module(APIView):
             )
 
         else:
-            weeks_per_month = 4
             weekly_payment_amount = json_existing_payment_record["data"][0][
                 "weekly_payment_amount"
             ]
             currency_paid = json_existing_payment_record["data"][0]["payment_currency"]
-            monthly_payment = weekly_payment_amount * weeks_per_month
-
-            daily_payment = weekly_payment_amount / 5
-            amount_to_pay = monthly_payment
+            amount_to_pay = weekly_payment_amount
 
             if approved_logs_count < total_logs_required:
                 logs_ratio = approved_logs_count / total_logs_required
                 amount_to_pay *= logs_ratio
 
-            if number_of_leave_days > 0:
-                leave_adjustment = daily_payment * number_of_leave_days
-                amount_to_pay -= leave_adjustment
-
-            if amount_to_pay < 0:
+            if user_was_on_leave:
                 amount_to_pay = 0
 
             insert_data = {
@@ -513,12 +506,12 @@ class Invoice_module(APIView):
                 "payment_year": payment_year,
                 "amount_paid": amount_to_pay,
                 "currency_paid": currency_paid,
-                "actual_monthly_pay": monthly_payment,
+                "weekly_payment_amount": weekly_payment_amount,
                 "approved_logs_count": approved_logs_count,
                 "requried_logs_count": total_logs_required,
-                "leave_days": number_of_leave_days,
+                "user_was_on_leave": user_was_on_leave,
                 "payment_approved": False,
-                "payment_approved_on": " ",
+                "payment_approved_on": None,
                 "payment_from": payment_from,
                 "payment_to": payment_to,
             }
@@ -598,8 +591,13 @@ class Invoice_module(APIView):
     def invoice(self, request):
         user_id = request.GET.get("user_id")
         payment_year = request.GET.get("payment_year")
+        payment_month = request.GET.get("payment_month")
 
         fetch_data = {"payment_year": payment_year}
+
+        if payment_month:
+            fetch_data["payment_month"] = payment_month
+
         result = datacube_data_retrival_function(
             api_key=API_KEY,
             database_name=DB_PAYMENT_RECORDS,
@@ -621,7 +619,7 @@ class Invoice_module(APIView):
                 return Response(
                     {
                         "success": True,
-                        "message": f"Payment details for {payment_year} and user_id {user_id}",
+                        "message": f"Payment details for {payment_year} and {payment_month if payment_month else 'all months'} for user_id {user_id}",
                         "database_response": True,
                         "response": payment_details,
                     },
