@@ -6898,8 +6898,6 @@ class Generate_Report(APIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            # -------------------------------------------------------------------------------
-            
             
             company_id = payload.get("company_id")
             if not company_id:
