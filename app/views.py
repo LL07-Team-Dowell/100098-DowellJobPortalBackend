@@ -143,7 +143,7 @@ if not is_windows:
     try:
         from .cython_files.itr_linux import itr_function
     except ModuleNotFoundError:
-        from .cython_files.itr_windows import itr_function
+        from .cython_files.itr_linux import itr_function
     load_dotenv("/home/100098/100098-DowellJobPortal/.env")
     API_KEY = str(os.getenv("API_KEY"))
     DB_Name = str(os.getenv("DB_Name"))
