@@ -2382,7 +2382,6 @@ static const char __pyx_k_month_name[] = "month_name";
 static const char __pyx_k_start_time[] = "start_time";
 static const char __pyx_k_subproject[] = "subproject";
 static const char __pyx_k_task_added[] = "task_added";
-static const char __pyx_k_team_tasks[] = "team_tasks";
 static const char __pyx_k_total_secs[] = "total_secs";
 static const char __pyx_k_approved_by[] = "approved_by";
 static const char __pyx_k_d_m_Y_H_M_S[] = "%d/%m/%Y %H:%M:%S";
@@ -2406,11 +2405,14 @@ static const char __pyx_k_week_details[] = "week_details";
 static const char __pyx_k_Y_m_d_H_M_S_f[] = "%Y-%m-%d %H:%M:%S.%f";
 static const char __pyx_k_class_getitem[] = "__class_getitem__";
 static const char __pyx_k_d_m_Y_H_M_S_2[] = "%d/%m/%Y  %H:%M:%S";
+static const char __pyx_k_issues_raised[] = "issues_raised";
 static const char __pyx_k_tasks_details[] = "tasks_details";
 static const char __pyx_k_total_seconds[] = "total_seconds";
+static const char __pyx_k_comments_added[] = "comments_added";
 static const char __pyx_k_tasks_approved[] = "tasks_approved";
 static const char __pyx_k_team_member_ID[] = "team_member_ID";
 static const char __pyx_k_Y_m_dT_H_M_S_fZ[] = "%Y-%m-%dT%H:%M:%S.%fZ";
+static const char __pyx_k_issues_resolved[] = "issues_resolved";
 static const char __pyx_k_itr_windows_pyx[] = "itr_windows.pyx";
 static const char __pyx_k_set_date_format[] = "set_date_format";
 static const char __pyx_k_tasks_completed[] = "tasks_completed";
@@ -2425,26 +2427,19 @@ static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_tasks_you_approved[] = "tasks_you_approved";
 static const char __pyx_k_ThreadCommentReport[] = "ThreadCommentReport";
 static const char __pyx_k_task_details_module[] = "task_details_module";
-static const char __pyx_k_team_tasks_approved[] = "team_tasks_approved";
-static const char __pyx_k_team_tasks_completed[] = "team_tasks_completed";
 static const char __pyx_k_thread_report_module[] = "thread_report_module";
 static const char __pyx_k_comment_report_module[] = "comment_report_module";
 static const char __pyx_k_team_management_report[] = "team_management_report";
-static const char __pyx_k_team_tasks_uncompleted[] = "team_tasks_uncompleted";
 static const char __pyx_k_task_management_reports[] = "task_management_reports";
 static const char __pyx_k_team_management_modules[] = "team_management_modules";
 static const char __pyx_k_tasks_uploaded_this_week[] = "tasks_uploaded_this_week";
-static const char __pyx_k_team_tasks_issues_raised[] = "team_tasks_issues_raised";
 static const char __pyx_k_total_tasks_last_one_day[] = "total_tasks_last_one_day";
 static const char __pyx_k_West_Africa_Standard_Time[] = "(West Africa Standard Time)";
-static const char __pyx_k_team_tasks_comments_added[] = "team_tasks_comments_added";
 static const char __pyx_k_total_tasks_last_one_week[] = "total_tasks_last_one_week";
 static const char __pyx_k_percentage_tasks_completed[] = "percentage_tasks_completed";
-static const char __pyx_k_team_tasks_issues_resolved[] = "team_tasks_issues_resolved";
 static const char __pyx_k_tasks_you_marked_as_complete[] = "tasks_you_marked_as_complete";
 static const char __pyx_k_tasks_you_marked_as_incomplete[] = "tasks_you_marked_as_incomplete";
 static const char __pyx_k_http_uxlivinglab_pythonanywhere[] = "http://uxlivinglab.pythonanywhere.com";
-static const char __pyx_k_percentage_team_tasks_completed[] = "percentage_team_tasks_completed";
 /* #### Code section: decls ### */
 static PyObject *__pyx_pf_11itr_windows_dowellconnection(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cluster, PyObject *__pyx_v_database, PyObject *__pyx_v_collection, PyObject *__pyx_v_document, PyObject *__pyx_v_team_member_ID, PyObject *__pyx_v_function_ID, PyObject *__pyx_v_command, PyObject *__pyx_v_field, PyObject *__pyx_v_update_field); /* proto */
 static PyObject *__pyx_pf_11itr_windows_2set_date_format(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_date); /* proto */
@@ -2518,6 +2513,7 @@ typedef struct {
   PyObject *__pyx_n_s_collection;
   PyObject *__pyx_n_s_command;
   PyObject *__pyx_n_s_comment_report_module;
+  PyObject *__pyx_n_s_comments_added;
   PyObject *__pyx_n_s_company_id;
   PyObject *__pyx_n_s_complete;
   PyObject *__pyx_n_s_completed;
@@ -2554,6 +2550,8 @@ typedef struct {
   PyObject *__pyx_n_s_initializing;
   PyObject *__pyx_n_s_is_coroutine;
   PyObject *__pyx_n_s_iso_format;
+  PyObject *__pyx_n_s_issues_raised;
+  PyObject *__pyx_n_s_issues_resolved;
   PyObject *__pyx_n_s_itr_function;
   PyObject *__pyx_n_s_itr_windows;
   PyObject *__pyx_kp_s_itr_windows_pyx;
@@ -2572,7 +2570,6 @@ typedef struct {
   PyObject *__pyx_n_s_name;
   PyObject *__pyx_n_s_payload;
   PyObject *__pyx_n_s_percentage_tasks_completed;
-  PyObject *__pyx_n_s_percentage_team_tasks_completed;
   PyObject *__pyx_n_s_platform;
   PyObject *__pyx_n_s_project;
   PyObject *__pyx_n_s_projects;
@@ -2612,13 +2609,6 @@ typedef struct {
   PyObject *__pyx_n_s_team_management_modules;
   PyObject *__pyx_n_s_team_management_report;
   PyObject *__pyx_n_s_team_member_ID;
-  PyObject *__pyx_n_s_team_tasks;
-  PyObject *__pyx_n_s_team_tasks_approved;
-  PyObject *__pyx_n_s_team_tasks_comments_added;
-  PyObject *__pyx_n_s_team_tasks_completed;
-  PyObject *__pyx_n_s_team_tasks_issues_raised;
-  PyObject *__pyx_n_s_team_tasks_issues_resolved;
-  PyObject *__pyx_n_s_team_tasks_uncompleted;
   PyObject *__pyx_n_s_teams;
   PyObject *__pyx_n_s_test;
   PyObject *__pyx_n_s_text;
@@ -2738,6 +2728,7 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_collection);
   Py_CLEAR(clear_module_state->__pyx_n_s_command);
   Py_CLEAR(clear_module_state->__pyx_n_s_comment_report_module);
+  Py_CLEAR(clear_module_state->__pyx_n_s_comments_added);
   Py_CLEAR(clear_module_state->__pyx_n_s_company_id);
   Py_CLEAR(clear_module_state->__pyx_n_s_complete);
   Py_CLEAR(clear_module_state->__pyx_n_s_completed);
@@ -2774,6 +2765,8 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_initializing);
   Py_CLEAR(clear_module_state->__pyx_n_s_is_coroutine);
   Py_CLEAR(clear_module_state->__pyx_n_s_iso_format);
+  Py_CLEAR(clear_module_state->__pyx_n_s_issues_raised);
+  Py_CLEAR(clear_module_state->__pyx_n_s_issues_resolved);
   Py_CLEAR(clear_module_state->__pyx_n_s_itr_function);
   Py_CLEAR(clear_module_state->__pyx_n_s_itr_windows);
   Py_CLEAR(clear_module_state->__pyx_kp_s_itr_windows_pyx);
@@ -2792,7 +2785,6 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_name);
   Py_CLEAR(clear_module_state->__pyx_n_s_payload);
   Py_CLEAR(clear_module_state->__pyx_n_s_percentage_tasks_completed);
-  Py_CLEAR(clear_module_state->__pyx_n_s_percentage_team_tasks_completed);
   Py_CLEAR(clear_module_state->__pyx_n_s_platform);
   Py_CLEAR(clear_module_state->__pyx_n_s_project);
   Py_CLEAR(clear_module_state->__pyx_n_s_projects);
@@ -2832,13 +2824,6 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_team_management_modules);
   Py_CLEAR(clear_module_state->__pyx_n_s_team_management_report);
   Py_CLEAR(clear_module_state->__pyx_n_s_team_member_ID);
-  Py_CLEAR(clear_module_state->__pyx_n_s_team_tasks);
-  Py_CLEAR(clear_module_state->__pyx_n_s_team_tasks_approved);
-  Py_CLEAR(clear_module_state->__pyx_n_s_team_tasks_comments_added);
-  Py_CLEAR(clear_module_state->__pyx_n_s_team_tasks_completed);
-  Py_CLEAR(clear_module_state->__pyx_n_s_team_tasks_issues_raised);
-  Py_CLEAR(clear_module_state->__pyx_n_s_team_tasks_issues_resolved);
-  Py_CLEAR(clear_module_state->__pyx_n_s_team_tasks_uncompleted);
   Py_CLEAR(clear_module_state->__pyx_n_s_teams);
   Py_CLEAR(clear_module_state->__pyx_n_s_test);
   Py_CLEAR(clear_module_state->__pyx_n_s_text);
@@ -2936,6 +2921,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_collection);
   Py_VISIT(traverse_module_state->__pyx_n_s_command);
   Py_VISIT(traverse_module_state->__pyx_n_s_comment_report_module);
+  Py_VISIT(traverse_module_state->__pyx_n_s_comments_added);
   Py_VISIT(traverse_module_state->__pyx_n_s_company_id);
   Py_VISIT(traverse_module_state->__pyx_n_s_complete);
   Py_VISIT(traverse_module_state->__pyx_n_s_completed);
@@ -2972,6 +2958,8 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_initializing);
   Py_VISIT(traverse_module_state->__pyx_n_s_is_coroutine);
   Py_VISIT(traverse_module_state->__pyx_n_s_iso_format);
+  Py_VISIT(traverse_module_state->__pyx_n_s_issues_raised);
+  Py_VISIT(traverse_module_state->__pyx_n_s_issues_resolved);
   Py_VISIT(traverse_module_state->__pyx_n_s_itr_function);
   Py_VISIT(traverse_module_state->__pyx_n_s_itr_windows);
   Py_VISIT(traverse_module_state->__pyx_kp_s_itr_windows_pyx);
@@ -2990,7 +2978,6 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_name);
   Py_VISIT(traverse_module_state->__pyx_n_s_payload);
   Py_VISIT(traverse_module_state->__pyx_n_s_percentage_tasks_completed);
-  Py_VISIT(traverse_module_state->__pyx_n_s_percentage_team_tasks_completed);
   Py_VISIT(traverse_module_state->__pyx_n_s_platform);
   Py_VISIT(traverse_module_state->__pyx_n_s_project);
   Py_VISIT(traverse_module_state->__pyx_n_s_projects);
@@ -3030,13 +3017,6 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_team_management_modules);
   Py_VISIT(traverse_module_state->__pyx_n_s_team_management_report);
   Py_VISIT(traverse_module_state->__pyx_n_s_team_member_ID);
-  Py_VISIT(traverse_module_state->__pyx_n_s_team_tasks);
-  Py_VISIT(traverse_module_state->__pyx_n_s_team_tasks_approved);
-  Py_VISIT(traverse_module_state->__pyx_n_s_team_tasks_comments_added);
-  Py_VISIT(traverse_module_state->__pyx_n_s_team_tasks_completed);
-  Py_VISIT(traverse_module_state->__pyx_n_s_team_tasks_issues_raised);
-  Py_VISIT(traverse_module_state->__pyx_n_s_team_tasks_issues_resolved);
-  Py_VISIT(traverse_module_state->__pyx_n_s_team_tasks_uncompleted);
   Py_VISIT(traverse_module_state->__pyx_n_s_teams);
   Py_VISIT(traverse_module_state->__pyx_n_s_test);
   Py_VISIT(traverse_module_state->__pyx_n_s_text);
@@ -3144,6 +3124,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_collection __pyx_mstate_global->__pyx_n_s_collection
 #define __pyx_n_s_command __pyx_mstate_global->__pyx_n_s_command
 #define __pyx_n_s_comment_report_module __pyx_mstate_global->__pyx_n_s_comment_report_module
+#define __pyx_n_s_comments_added __pyx_mstate_global->__pyx_n_s_comments_added
 #define __pyx_n_s_company_id __pyx_mstate_global->__pyx_n_s_company_id
 #define __pyx_n_s_complete __pyx_mstate_global->__pyx_n_s_complete
 #define __pyx_n_s_completed __pyx_mstate_global->__pyx_n_s_completed
@@ -3180,6 +3161,8 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_initializing __pyx_mstate_global->__pyx_n_s_initializing
 #define __pyx_n_s_is_coroutine __pyx_mstate_global->__pyx_n_s_is_coroutine
 #define __pyx_n_s_iso_format __pyx_mstate_global->__pyx_n_s_iso_format
+#define __pyx_n_s_issues_raised __pyx_mstate_global->__pyx_n_s_issues_raised
+#define __pyx_n_s_issues_resolved __pyx_mstate_global->__pyx_n_s_issues_resolved
 #define __pyx_n_s_itr_function __pyx_mstate_global->__pyx_n_s_itr_function
 #define __pyx_n_s_itr_windows __pyx_mstate_global->__pyx_n_s_itr_windows
 #define __pyx_kp_s_itr_windows_pyx __pyx_mstate_global->__pyx_kp_s_itr_windows_pyx
@@ -3198,7 +3181,6 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_name __pyx_mstate_global->__pyx_n_s_name
 #define __pyx_n_s_payload __pyx_mstate_global->__pyx_n_s_payload
 #define __pyx_n_s_percentage_tasks_completed __pyx_mstate_global->__pyx_n_s_percentage_tasks_completed
-#define __pyx_n_s_percentage_team_tasks_completed __pyx_mstate_global->__pyx_n_s_percentage_team_tasks_completed
 #define __pyx_n_s_platform __pyx_mstate_global->__pyx_n_s_platform
 #define __pyx_n_s_project __pyx_mstate_global->__pyx_n_s_project
 #define __pyx_n_s_projects __pyx_mstate_global->__pyx_n_s_projects
@@ -3238,13 +3220,6 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_team_management_modules __pyx_mstate_global->__pyx_n_s_team_management_modules
 #define __pyx_n_s_team_management_report __pyx_mstate_global->__pyx_n_s_team_management_report
 #define __pyx_n_s_team_member_ID __pyx_mstate_global->__pyx_n_s_team_member_ID
-#define __pyx_n_s_team_tasks __pyx_mstate_global->__pyx_n_s_team_tasks
-#define __pyx_n_s_team_tasks_approved __pyx_mstate_global->__pyx_n_s_team_tasks_approved
-#define __pyx_n_s_team_tasks_comments_added __pyx_mstate_global->__pyx_n_s_team_tasks_comments_added
-#define __pyx_n_s_team_tasks_completed __pyx_mstate_global->__pyx_n_s_team_tasks_completed
-#define __pyx_n_s_team_tasks_issues_raised __pyx_mstate_global->__pyx_n_s_team_tasks_issues_raised
-#define __pyx_n_s_team_tasks_issues_resolved __pyx_mstate_global->__pyx_n_s_team_tasks_issues_resolved
-#define __pyx_n_s_team_tasks_uncompleted __pyx_mstate_global->__pyx_n_s_team_tasks_uncompleted
 #define __pyx_n_s_teams __pyx_mstate_global->__pyx_n_s_teams
 #define __pyx_n_s_test __pyx_mstate_global->__pyx_n_s_test
 #define __pyx_n_s_text __pyx_mstate_global->__pyx_n_s_text
@@ -6002,8 +5977,8 @@ static PyObject *__pyx_pf_11itr_windows_4get_month_details(CYTHON_UNUSED PyObjec
  *     return (str(datime.year), month_name, months.count(month_name))
  * 
  * def itr_function(user_id,username, company_id, year):             # <<<<<<<<<<<<<<
- *     # Initialize the data dictionary
- *     data = {'tasks_details': {}}
+ *         # Initialize the data dictionary
+ *         data = {'tasks_details': {}}
  */
 
 /* Python wrapper */
@@ -6205,10 +6180,10 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
 
   /* "itr_windows.pyx":152
  * def itr_function(user_id,username, company_id, year):
- *     # Initialize the data dictionary
- *     data = {'tasks_details': {}}             # <<<<<<<<<<<<<<
+ *         # Initialize the data dictionary
+ *         data = {'tasks_details': {}}             # <<<<<<<<<<<<<<
  * 
- *     # Iterate over the months
+ *         # Iterate over the months
  */
   __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 152, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -6221,10 +6196,10 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
 
   /* "itr_windows.pyx":155
  * 
- *     # Iterate over the months
- *     for month in list(calendar.month_name)[1:]:             # <<<<<<<<<<<<<<
- *         # Initialize data for the month
- *         data['tasks_details'][month] = {
+ *         # Iterate over the months
+ *         for month in list(calendar.month_name)[1:]:             # <<<<<<<<<<<<<<
+ *             # Initialize data for the month
+ *             data['tasks_details'][month] = {
  */
   __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_calendar); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 155, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -6258,13 +6233,13 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
     __pyx_t_2 = 0;
 
     /* "itr_windows.pyx":158
- *         # Initialize data for the month
- *         data['tasks_details'][month] = {
- *             "task_added": 0,             # <<<<<<<<<<<<<<
- *             "tasks_completed": 0,
- *             "tasks_uncompleted": 0,
+ *             # Initialize data for the month
+ *             data['tasks_details'][month] = {
+ *                 "task_added": 0,             # <<<<<<<<<<<<<<
+ *                 "tasks_completed": 0,
+ *                 "tasks_uncompleted": 0,
  */
-    __pyx_t_2 = __Pyx_PyDict_NewPresized(17); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 158, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyDict_NewPresized(12); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 158, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_task_added, __pyx_int_0) < 0) __PYX_ERR(0, 158, __pyx_L1_error)
     if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_tasks_completed, __pyx_int_0) < 0) __PYX_ERR(0, 158, __pyx_L1_error)
@@ -6275,21 +6250,16 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
     if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_tasks_you_marked_as_complete, __pyx_int_0) < 0) __PYX_ERR(0, 158, __pyx_L1_error)
     if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_tasks_you_marked_as_incomplete, __pyx_int_0) < 0) __PYX_ERR(0, 158, __pyx_L1_error)
     if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_teams, __pyx_int_0) < 0) __PYX_ERR(0, 158, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_team_tasks, __pyx_int_0) < 0) __PYX_ERR(0, 158, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_team_tasks_completed, __pyx_int_0) < 0) __PYX_ERR(0, 158, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_team_tasks_uncompleted, __pyx_int_0) < 0) __PYX_ERR(0, 158, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_percentage_team_tasks_completed, __pyx_float_0_0) < 0) __PYX_ERR(0, 158, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_team_tasks_approved, __pyx_int_0) < 0) __PYX_ERR(0, 158, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_team_tasks_issues_raised, __pyx_int_0) < 0) __PYX_ERR(0, 158, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_team_tasks_issues_resolved, __pyx_int_0) < 0) __PYX_ERR(0, 158, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_team_tasks_comments_added, __pyx_int_0) < 0) __PYX_ERR(0, 158, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_issues_raised, __pyx_int_0) < 0) __PYX_ERR(0, 158, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_issues_resolved, __pyx_int_0) < 0) __PYX_ERR(0, 158, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_comments_added, __pyx_int_0) < 0) __PYX_ERR(0, 158, __pyx_L1_error)
 
     /* "itr_windows.pyx":157
- *     for month in list(calendar.month_name)[1:]:
- *         # Initialize data for the month
- *         data['tasks_details'][month] = {             # <<<<<<<<<<<<<<
- *             "task_added": 0,
- *             "tasks_completed": 0,
+ *         for month in list(calendar.month_name)[1:]:
+ *             # Initialize data for the month
+ *             data['tasks_details'][month] = {             # <<<<<<<<<<<<<<
+ *                 "task_added": 0,
+ *                 "tasks_completed": 0,
  */
     __pyx_t_4 = __Pyx_PyDict_GetItem(__pyx_v_data, __pyx_n_s_tasks_details); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 157, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
@@ -6299,111 +6269,111 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
 
     /* "itr_windows.pyx":155
  * 
- *     # Iterate over the months
- *     for month in list(calendar.month_name)[1:]:             # <<<<<<<<<<<<<<
- *         # Initialize data for the month
- *         data['tasks_details'][month] = {
+ *         # Iterate over the months
+ *         for month in list(calendar.month_name)[1:]:             # <<<<<<<<<<<<<<
+ *             # Initialize data for the month
+ *             data['tasks_details'][month] = {
  */
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "itr_windows.pyx":177
- *         }
+  /* "itr_windows.pyx":172
+ *             }
  * 
- *     field = {"user_id": user_id, "company_id": company_id}             # <<<<<<<<<<<<<<
- *     """task_management = json.loads(dowellconnection(
- *         *task_management_reports, "fetch", field, update_field=None
+ *         field = {"user_id": user_id, "company_id": company_id}             # <<<<<<<<<<<<<<
+ *         """task_management = json.loads(dowellconnection(
+ *             *task_management_reports, "fetch", field, update_field=None
  */
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 177, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 172, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_user_id, __pyx_v_user_id) < 0) __PYX_ERR(0, 177, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_company_id, __pyx_v_company_id) < 0) __PYX_ERR(0, 177, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_user_id, __pyx_v_user_id) < 0) __PYX_ERR(0, 172, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_company_id, __pyx_v_company_id) < 0) __PYX_ERR(0, 172, __pyx_L1_error)
   __pyx_v_field = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "itr_windows.pyx":182
- *     ))["data"]
- *     print(task_management)"""
- *     task_details = json.loads(dowellconnection(             # <<<<<<<<<<<<<<
- *         *task_details_module, "fetch", field, update_field=None
- *     ))["data"]
+  /* "itr_windows.pyx":177
+ *         ))["data"]
+ *         print(task_management)"""
+ *         task_details = json.loads(dowellconnection(             # <<<<<<<<<<<<<<
+ *             *task_details_module, "fetch", field, update_field=None
+ *         ))["data"]
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_json); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 182, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_json); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 177, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_loads); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 182, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_loads); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 177, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_dowellconnection); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 182, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_dowellconnection); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 177, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "itr_windows.pyx":183
- *     print(task_management)"""
- *     task_details = json.loads(dowellconnection(
- *         *task_details_module, "fetch", field, update_field=None             # <<<<<<<<<<<<<<
- *     ))["data"]
- *     today = datetime.today()
+  /* "itr_windows.pyx":178
+ *         print(task_management)"""
+ *         task_details = json.loads(dowellconnection(
+ *             *task_details_module, "fetch", field, update_field=None             # <<<<<<<<<<<<<<
+ *         ))["data"]
+ *         today = datetime.today()
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_task_details_module); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 183, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_task_details_module); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 178, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
 
-  /* "itr_windows.pyx":182
- *     ))["data"]
- *     print(task_management)"""
- *     task_details = json.loads(dowellconnection(             # <<<<<<<<<<<<<<
- *         *task_details_module, "fetch", field, update_field=None
- *     ))["data"]
+  /* "itr_windows.pyx":177
+ *         ))["data"]
+ *         print(task_management)"""
+ *         task_details = json.loads(dowellconnection(             # <<<<<<<<<<<<<<
+ *             *task_details_module, "fetch", field, update_field=None
+ *         ))["data"]
  */
-  __pyx_t_6 = __Pyx_PySequence_Tuple(__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 182, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PySequence_Tuple(__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 177, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "itr_windows.pyx":183
- *     print(task_management)"""
- *     task_details = json.loads(dowellconnection(
- *         *task_details_module, "fetch", field, update_field=None             # <<<<<<<<<<<<<<
- *     ))["data"]
- *     today = datetime.today()
+  /* "itr_windows.pyx":178
+ *         print(task_management)"""
+ *         task_details = json.loads(dowellconnection(
+ *             *task_details_module, "fetch", field, update_field=None             # <<<<<<<<<<<<<<
+ *         ))["data"]
+ *         today = datetime.today()
  */
-  __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 182, __pyx_L1_error)
+  __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 177, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_INCREF(__pyx_n_s_fetch);
   __Pyx_GIVEREF(__pyx_n_s_fetch);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_n_s_fetch)) __PYX_ERR(0, 182, __pyx_L1_error);
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_n_s_fetch)) __PYX_ERR(0, 177, __pyx_L1_error);
   __Pyx_INCREF(__pyx_v_field);
   __Pyx_GIVEREF(__pyx_v_field);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_v_field)) __PYX_ERR(0, 182, __pyx_L1_error);
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_v_field)) __PYX_ERR(0, 177, __pyx_L1_error);
 
-  /* "itr_windows.pyx":182
- *     ))["data"]
- *     print(task_management)"""
- *     task_details = json.loads(dowellconnection(             # <<<<<<<<<<<<<<
- *         *task_details_module, "fetch", field, update_field=None
- *     ))["data"]
+  /* "itr_windows.pyx":177
+ *         ))["data"]
+ *         print(task_management)"""
+ *         task_details = json.loads(dowellconnection(             # <<<<<<<<<<<<<<
+ *             *task_details_module, "fetch", field, update_field=None
+ *         ))["data"]
  */
-  __pyx_t_7 = PyNumber_Add(__pyx_t_6, __pyx_t_5); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 182, __pyx_L1_error)
+  __pyx_t_7 = PyNumber_Add(__pyx_t_6, __pyx_t_5); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 177, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "itr_windows.pyx":183
- *     print(task_management)"""
- *     task_details = json.loads(dowellconnection(
- *         *task_details_module, "fetch", field, update_field=None             # <<<<<<<<<<<<<<
- *     ))["data"]
- *     today = datetime.today()
+  /* "itr_windows.pyx":178
+ *         print(task_management)"""
+ *         task_details = json.loads(dowellconnection(
+ *             *task_details_module, "fetch", field, update_field=None             # <<<<<<<<<<<<<<
+ *         ))["data"]
+ *         today = datetime.today()
  */
-  __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 183, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 178, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_update_field, Py_None) < 0) __PYX_ERR(0, 183, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_update_field, Py_None) < 0) __PYX_ERR(0, 178, __pyx_L1_error)
 
-  /* "itr_windows.pyx":182
- *     ))["data"]
- *     print(task_management)"""
- *     task_details = json.loads(dowellconnection(             # <<<<<<<<<<<<<<
- *         *task_details_module, "fetch", field, update_field=None
- *     ))["data"]
+  /* "itr_windows.pyx":177
+ *         ))["data"]
+ *         print(task_management)"""
+ *         task_details = json.loads(dowellconnection(             # <<<<<<<<<<<<<<
+ *             *task_details_module, "fetch", field, update_field=None
+ *         ))["data"]
  */
-  __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_7, __pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 182, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_7, __pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 177, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -6427,34 +6397,34 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
     __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_8, 1+__pyx_t_8);
     __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 182, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 177, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   }
 
-  /* "itr_windows.pyx":184
- *     task_details = json.loads(dowellconnection(
- *         *task_details_module, "fetch", field, update_field=None
- *     ))["data"]             # <<<<<<<<<<<<<<
- *     today = datetime.today()
- *     st = today - timedelta(days=today.weekday())
+  /* "itr_windows.pyx":179
+ *         task_details = json.loads(dowellconnection(
+ *             *task_details_module, "fetch", field, update_field=None
+ *         ))["data"]             # <<<<<<<<<<<<<<
+ *         today = datetime.today()
+ *         st = today - timedelta(days=today.weekday())
  */
-  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_t_1, __pyx_n_s_data); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 184, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_t_1, __pyx_n_s_data); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 179, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_task_details = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "itr_windows.pyx":185
- *         *task_details_module, "fetch", field, update_field=None
- *     ))["data"]
- *     today = datetime.today()             # <<<<<<<<<<<<<<
- *     st = today - timedelta(days=today.weekday())
+  /* "itr_windows.pyx":180
+ *             *task_details_module, "fetch", field, update_field=None
+ *         ))["data"]
+ *         today = datetime.today()             # <<<<<<<<<<<<<<
+ *         st = today - timedelta(days=today.weekday())
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_datetime); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 185, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_datetime); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 180, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_today); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 185, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_today); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 180, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_t_1 = NULL;
@@ -6475,25 +6445,25 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
     PyObject *__pyx_callargs[2] = {__pyx_t_1, NULL};
     __pyx_t_4 = __Pyx_PyObject_FastCall(__pyx_t_6, __pyx_callargs+1-__pyx_t_8, 0+__pyx_t_8);
     __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 185, __pyx_L1_error)
+    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 180, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   }
   __pyx_v_today = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "itr_windows.pyx":186
- *     ))["data"]
- *     today = datetime.today()
- *     st = today - timedelta(days=today.weekday())             # <<<<<<<<<<<<<<
+  /* "itr_windows.pyx":181
+ *         ))["data"]
+ *         today = datetime.today()
+ *         st = today - timedelta(days=today.weekday())             # <<<<<<<<<<<<<<
  * 
- *     start = datetime.strptime(str(st), "%Y-%m-%d %H:%M:%S.%f")
+ *         start = datetime.strptime(str(st), "%Y-%m-%d %H:%M:%S.%f")
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_timedelta); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 186, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_timedelta); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 181, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_6 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 186, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 181, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_today, __pyx_n_s_weekday); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 186, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_today, __pyx_n_s_weekday); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 181, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_t_7 = NULL;
   __pyx_t_8 = 0;
@@ -6513,35 +6483,35 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
     PyObject *__pyx_callargs[2] = {__pyx_t_7, NULL};
     __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_5, __pyx_callargs+1-__pyx_t_8, 0+__pyx_t_8);
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 186, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 181, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   }
-  if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_days, __pyx_t_1) < 0) __PYX_ERR(0, 186, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_days, __pyx_t_1) < 0) __PYX_ERR(0, 181, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_empty_tuple, __pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 186, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_empty_tuple, __pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 181, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = PyNumber_Subtract(__pyx_v_today, __pyx_t_1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 186, __pyx_L1_error)
+  __pyx_t_6 = PyNumber_Subtract(__pyx_v_today, __pyx_t_1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 181, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_st = __pyx_t_6;
   __pyx_t_6 = 0;
 
-  /* "itr_windows.pyx":188
- *     st = today - timedelta(days=today.weekday())
+  /* "itr_windows.pyx":183
+ *         st = today - timedelta(days=today.weekday())
  * 
- *     start = datetime.strptime(str(st), "%Y-%m-%d %H:%M:%S.%f")             # <<<<<<<<<<<<<<
- *     end = datetime.strptime(str(st + timedelta(days=6)), "%Y-%m-%d %H:%M:%S.%f")
+ *         start = datetime.strptime(str(st), "%Y-%m-%d %H:%M:%S.%f")             # <<<<<<<<<<<<<<
+ *         end = datetime.strptime(str(st + timedelta(days=6)), "%Y-%m-%d %H:%M:%S.%f")
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_datetime); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 188, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_datetime); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 183, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_strptime); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 188, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_strptime); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 183, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Str(__pyx_v_st); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 188, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Str(__pyx_v_st); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 183, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_5 = NULL;
   __pyx_t_8 = 0;
@@ -6562,38 +6532,38 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
     __pyx_t_6 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_8, 2+__pyx_t_8);
     __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 188, __pyx_L1_error)
+    if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 183, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   }
   __pyx_v_start = __pyx_t_6;
   __pyx_t_6 = 0;
 
-  /* "itr_windows.pyx":189
+  /* "itr_windows.pyx":184
  * 
- *     start = datetime.strptime(str(st), "%Y-%m-%d %H:%M:%S.%f")
- *     end = datetime.strptime(str(st + timedelta(days=6)), "%Y-%m-%d %H:%M:%S.%f")             # <<<<<<<<<<<<<<
+ *         start = datetime.strptime(str(st), "%Y-%m-%d %H:%M:%S.%f")
+ *         end = datetime.strptime(str(st + timedelta(days=6)), "%Y-%m-%d %H:%M:%S.%f")             # <<<<<<<<<<<<<<
  * 
- *     projects={}
+ *         projects={}
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_datetime); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 189, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_datetime); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 184, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_strptime); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 189, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_strptime); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 184, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_timedelta); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 189, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_timedelta); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 184, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 189, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 184, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_days, __pyx_int_6) < 0) __PYX_ERR(0, 189, __pyx_L1_error)
-  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_empty_tuple, __pyx_t_5); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 189, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_days, __pyx_int_6) < 0) __PYX_ERR(0, 184, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_empty_tuple, __pyx_t_5); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 184, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = PyNumber_Add(__pyx_v_st, __pyx_t_7); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 189, __pyx_L1_error)
+  __pyx_t_5 = PyNumber_Add(__pyx_v_st, __pyx_t_7); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 184, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_7 = __Pyx_PyObject_Str(__pyx_t_5); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 189, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_Str(__pyx_t_5); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 184, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_t_5 = NULL;
@@ -6615,37 +6585,37 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
     __pyx_t_6 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_8, 2+__pyx_t_8);
     __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 189, __pyx_L1_error)
+    if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 184, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
   __pyx_v_end = __pyx_t_6;
   __pyx_t_6 = 0;
 
-  /* "itr_windows.pyx":191
- *     end = datetime.strptime(str(st + timedelta(days=6)), "%Y-%m-%d %H:%M:%S.%f")
+  /* "itr_windows.pyx":186
+ *         end = datetime.strptime(str(st + timedelta(days=6)), "%Y-%m-%d %H:%M:%S.%f")
  * 
- *     projects={}             # <<<<<<<<<<<<<<
- *     week_details,total_tasks_last_one_day,total_tasks_last_one_week = [],[],[]
- *     task_added=0
+ *         projects={}             # <<<<<<<<<<<<<<
+ *         week_details,total_tasks_last_one_day,total_tasks_last_one_week = [],[],[]
+ *         task_added=0
  */
-  __pyx_t_6 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 186, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __pyx_v_projects = ((PyObject*)__pyx_t_6);
   __pyx_t_6 = 0;
 
-  /* "itr_windows.pyx":192
+  /* "itr_windows.pyx":187
  * 
- *     projects={}
- *     week_details,total_tasks_last_one_day,total_tasks_last_one_week = [],[],[]             # <<<<<<<<<<<<<<
- *     task_added=0
- *     tasks_completed =0
+ *         projects={}
+ *         week_details,total_tasks_last_one_day,total_tasks_last_one_week = [],[],[]             # <<<<<<<<<<<<<<
+ *         task_added=0
+ *         tasks_completed =0
  */
-  __pyx_t_6 = PyList_New(0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 192, __pyx_L1_error)
+  __pyx_t_6 = PyList_New(0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 187, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 192, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 187, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_7 = PyList_New(0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 192, __pyx_L1_error)
+  __pyx_t_7 = PyList_New(0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 187, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __pyx_v_week_details = ((PyObject*)__pyx_t_6);
   __pyx_t_6 = 0;
@@ -6654,81 +6624,81 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
   __pyx_v_total_tasks_last_one_week = ((PyObject*)__pyx_t_7);
   __pyx_t_7 = 0;
 
-  /* "itr_windows.pyx":193
- *     projects={}
- *     week_details,total_tasks_last_one_day,total_tasks_last_one_week = [],[],[]
- *     task_added=0             # <<<<<<<<<<<<<<
- *     tasks_completed =0
- *     tasks_uncompleted=0
+  /* "itr_windows.pyx":188
+ *         projects={}
+ *         week_details,total_tasks_last_one_day,total_tasks_last_one_week = [],[],[]
+ *         task_added=0             # <<<<<<<<<<<<<<
+ *         tasks_completed =0
+ *         tasks_uncompleted=0
  */
   __Pyx_INCREF(__pyx_int_0);
   __pyx_v_task_added = __pyx_int_0;
 
-  /* "itr_windows.pyx":194
- *     week_details,total_tasks_last_one_day,total_tasks_last_one_week = [],[],[]
- *     task_added=0
- *     tasks_completed =0             # <<<<<<<<<<<<<<
- *     tasks_uncompleted=0
- *     tasks_you_approved=0
+  /* "itr_windows.pyx":189
+ *         week_details,total_tasks_last_one_day,total_tasks_last_one_week = [],[],[]
+ *         task_added=0
+ *         tasks_completed =0             # <<<<<<<<<<<<<<
+ *         tasks_uncompleted=0
+ *         tasks_you_approved=0
  */
   __Pyx_INCREF(__pyx_int_0);
   __pyx_v_tasks_completed = __pyx_int_0;
 
-  /* "itr_windows.pyx":195
- *     task_added=0
- *     tasks_completed =0
- *     tasks_uncompleted=0             # <<<<<<<<<<<<<<
- *     tasks_you_approved=0
- *     tasks_you_marked_as_complete=0
+  /* "itr_windows.pyx":190
+ *         task_added=0
+ *         tasks_completed =0
+ *         tasks_uncompleted=0             # <<<<<<<<<<<<<<
+ *         tasks_you_approved=0
+ *         tasks_you_marked_as_complete=0
  */
   __Pyx_INCREF(__pyx_int_0);
   __pyx_v_tasks_uncompleted = __pyx_int_0;
 
-  /* "itr_windows.pyx":196
- *     tasks_completed =0
- *     tasks_uncompleted=0
- *     tasks_you_approved=0             # <<<<<<<<<<<<<<
- *     tasks_you_marked_as_complete=0
- *     tasks_you_marked_as_incomplete=0
+  /* "itr_windows.pyx":191
+ *         tasks_completed =0
+ *         tasks_uncompleted=0
+ *         tasks_you_approved=0             # <<<<<<<<<<<<<<
+ *         tasks_you_marked_as_complete=0
+ *         tasks_you_marked_as_incomplete=0
  */
   __Pyx_INCREF(__pyx_int_0);
   __pyx_v_tasks_you_approved = __pyx_int_0;
 
-  /* "itr_windows.pyx":197
- *     tasks_uncompleted=0
- *     tasks_you_approved=0
- *     tasks_you_marked_as_complete=0             # <<<<<<<<<<<<<<
- *     tasks_you_marked_as_incomplete=0
- *     for task in task_details:
+  /* "itr_windows.pyx":192
+ *         tasks_uncompleted=0
+ *         tasks_you_approved=0
+ *         tasks_you_marked_as_complete=0             # <<<<<<<<<<<<<<
+ *         tasks_you_marked_as_incomplete=0
+ *         for task in task_details:
  */
   __Pyx_INCREF(__pyx_int_0);
   __pyx_v_tasks_you_marked_as_complete = __pyx_int_0;
 
-  /* "itr_windows.pyx":198
- *     tasks_you_approved=0
- *     tasks_you_marked_as_complete=0
- *     tasks_you_marked_as_incomplete=0             # <<<<<<<<<<<<<<
- *     for task in task_details:
- *         if "task_created_date" in task.keys():
+  /* "itr_windows.pyx":193
+ *         tasks_you_approved=0
+ *         tasks_you_marked_as_complete=0
+ *         tasks_you_marked_as_incomplete=0             # <<<<<<<<<<<<<<
+ *         for task in task_details:
+ *             if "task_created_date" in task.keys():
  */
   __Pyx_INCREF(__pyx_int_0);
   __pyx_v_tasks_you_marked_as_incomplete = __pyx_int_0;
 
-  /* "itr_windows.pyx":199
- *     tasks_you_marked_as_complete=0
- *     tasks_you_marked_as_incomplete=0
- *     for task in task_details:             # <<<<<<<<<<<<<<
- *         if "task_created_date" in task.keys():
- *             task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
+  /* "itr_windows.pyx":194
+ *         tasks_you_marked_as_complete=0
+ *         tasks_you_marked_as_incomplete=0
+ *         for task in task_details:             # <<<<<<<<<<<<<<
+ *             if "task_created_date" in task.keys():
+ *                 task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
  */
   if (likely(PyList_CheckExact(__pyx_v_task_details)) || PyTuple_CheckExact(__pyx_v_task_details)) {
     __pyx_t_7 = __pyx_v_task_details; __Pyx_INCREF(__pyx_t_7);
     __pyx_t_3 = 0;
     __pyx_t_9 = NULL;
   } else {
-    __pyx_t_3 = -1; __pyx_t_7 = PyObject_GetIter(__pyx_v_task_details); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 199, __pyx_L1_error)
+    __pyx_t_3 = -1; __pyx_t_7 = PyObject_GetIter(__pyx_v_task_details); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 194, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_9 = __Pyx_PyObject_GetIterNextFunc(__pyx_t_7); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 199, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_GetIterNextFunc(__pyx_t_7); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 194, __pyx_L1_error)
   }
   for (;;) {
     if (likely(!__pyx_t_9)) {
@@ -6736,28 +6706,28 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
         {
           Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_7);
           #if !CYTHON_ASSUME_SAFE_MACROS
-          if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 199, __pyx_L1_error)
+          if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 194, __pyx_L1_error)
           #endif
           if (__pyx_t_3 >= __pyx_temp) break;
         }
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_7, __pyx_t_3); __Pyx_INCREF(__pyx_t_1); __pyx_t_3++; if (unlikely((0 < 0))) __PYX_ERR(0, 199, __pyx_L1_error)
+        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_7, __pyx_t_3); __Pyx_INCREF(__pyx_t_1); __pyx_t_3++; if (unlikely((0 < 0))) __PYX_ERR(0, 194, __pyx_L1_error)
         #else
-        __pyx_t_1 = __Pyx_PySequence_ITEM(__pyx_t_7, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 199, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PySequence_ITEM(__pyx_t_7, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 194, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         #endif
       } else {
         {
           Py_ssize_t __pyx_temp = __Pyx_PyTuple_GET_SIZE(__pyx_t_7);
           #if !CYTHON_ASSUME_SAFE_MACROS
-          if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 199, __pyx_L1_error)
+          if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 194, __pyx_L1_error)
           #endif
           if (__pyx_t_3 >= __pyx_temp) break;
         }
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_7, __pyx_t_3); __Pyx_INCREF(__pyx_t_1); __pyx_t_3++; if (unlikely((0 < 0))) __PYX_ERR(0, 199, __pyx_L1_error)
+        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_7, __pyx_t_3); __Pyx_INCREF(__pyx_t_1); __pyx_t_3++; if (unlikely((0 < 0))) __PYX_ERR(0, 194, __pyx_L1_error)
         #else
-        __pyx_t_1 = __Pyx_PySequence_ITEM(__pyx_t_7, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 199, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PySequence_ITEM(__pyx_t_7, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 194, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         #endif
       }
@@ -6767,7 +6737,7 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 199, __pyx_L1_error)
+          else __PYX_ERR(0, 194, __pyx_L1_error)
         }
         break;
       }
@@ -6776,14 +6746,14 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
     __Pyx_XDECREF_SET(__pyx_v_task, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "itr_windows.pyx":200
- *     tasks_you_marked_as_incomplete=0
- *     for task in task_details:
- *         if "task_created_date" in task.keys():             # <<<<<<<<<<<<<<
- *             task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
- *             _year, month, mcnt = get_month_details(task["task_created_date"])
+    /* "itr_windows.pyx":195
+ *         tasks_you_marked_as_incomplete=0
+ *         for task in task_details:
+ *             if "task_created_date" in task.keys():             # <<<<<<<<<<<<<<
+ *                 task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
+ *                 _year, month, mcnt = get_month_details(task["task_created_date"])
  */
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_task, __pyx_n_s_keys); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 200, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_task, __pyx_n_s_keys); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 195, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __pyx_t_5 = NULL;
     __pyx_t_8 = 0;
@@ -6803,29 +6773,29 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
       PyObject *__pyx_callargs[2] = {__pyx_t_5, NULL};
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_6, __pyx_callargs+1-__pyx_t_8, 0+__pyx_t_8);
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 200, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 195, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     }
-    __pyx_t_10 = (__Pyx_PySequence_ContainsTF(__pyx_n_s_task_created_date, __pyx_t_1, Py_EQ)); if (unlikely((__pyx_t_10 < 0))) __PYX_ERR(0, 200, __pyx_L1_error)
+    __pyx_t_10 = (__Pyx_PySequence_ContainsTF(__pyx_n_s_task_created_date, __pyx_t_1, Py_EQ)); if (unlikely((__pyx_t_10 < 0))) __PYX_ERR(0, 195, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     if (__pyx_t_10) {
 
-      /* "itr_windows.pyx":201
- *     for task in task_details:
- *         if "task_created_date" in task.keys():
- *             task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")             # <<<<<<<<<<<<<<
- *             _year, month, mcnt = get_month_details(task["task_created_date"])
- *             if _year == year:
+      /* "itr_windows.pyx":196
+ *         for task in task_details:
+ *             if "task_created_date" in task.keys():
+ *                 task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")             # <<<<<<<<<<<<<<
+ *                 _year, month, mcnt = get_month_details(task["task_created_date"])
+ *                 if _year == year:
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_datetime); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 201, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_datetime); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 196, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_strptime); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 201, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_strptime); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 196, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_set_date_format); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 201, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_set_date_format); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 196, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_task_created_date); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 201, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_task_created_date); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 196, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __pyx_t_11 = NULL;
       __pyx_t_8 = 0;
@@ -6846,7 +6816,7 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
         __pyx_t_6 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_8, 1+__pyx_t_8);
         __Pyx_XDECREF(__pyx_t_11); __pyx_t_11 = 0;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-        if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 201, __pyx_L1_error)
+        if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 196, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       }
@@ -6869,23 +6839,23 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
         __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_5, __pyx_callargs+1-__pyx_t_8, 2+__pyx_t_8);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 201, __pyx_L1_error)
+        if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 196, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       }
       __Pyx_XDECREF_SET(__pyx_v_task_created_date, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "itr_windows.pyx":202
- *         if "task_created_date" in task.keys():
- *             task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
- *             _year, month, mcnt = get_month_details(task["task_created_date"])             # <<<<<<<<<<<<<<
- *             if _year == year:
- *                 task_added+=1
+      /* "itr_windows.pyx":197
+ *             if "task_created_date" in task.keys():
+ *                 task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
+ *                 _year, month, mcnt = get_month_details(task["task_created_date"])             # <<<<<<<<<<<<<<
+ *                 if _year == year:
+ *                     task_added+=1
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_get_month_details); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 202, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_get_month_details); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 197, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_task_created_date); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 202, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_task_created_date); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 197, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
       __pyx_t_4 = NULL;
       __pyx_t_8 = 0;
@@ -6906,7 +6876,7 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
         __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_5, __pyx_callargs+1-__pyx_t_8, 1+__pyx_t_8);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 202, __pyx_L1_error)
+        if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 197, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       }
@@ -6916,7 +6886,7 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
         if (unlikely(size != 3)) {
           if (size > 3) __Pyx_RaiseTooManyValuesError(3);
           else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-          __PYX_ERR(0, 202, __pyx_L1_error)
+          __PYX_ERR(0, 197, __pyx_L1_error)
         }
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
         if (likely(PyTuple_CheckExact(sequence))) {
@@ -6932,17 +6902,17 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
         __Pyx_INCREF(__pyx_t_6);
         __Pyx_INCREF(__pyx_t_4);
         #else
-        __pyx_t_5 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 202, __pyx_L1_error)
+        __pyx_t_5 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 197, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
-        __pyx_t_6 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 202, __pyx_L1_error)
+        __pyx_t_6 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 197, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
-        __pyx_t_4 = PySequence_ITEM(sequence, 2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 202, __pyx_L1_error)
+        __pyx_t_4 = PySequence_ITEM(sequence, 2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 197, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         #endif
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       } else {
         Py_ssize_t index = -1;
-        __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 202, __pyx_L1_error)
+        __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 197, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         __pyx_t_12 = __Pyx_PyObject_GetIterNextFunc(__pyx_t_2);
@@ -6952,7 +6922,7 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
         __Pyx_GOTREF(__pyx_t_6);
         index = 2; __pyx_t_4 = __pyx_t_12(__pyx_t_2); if (unlikely(!__pyx_t_4)) goto __pyx_L9_unpacking_failed;
         __Pyx_GOTREF(__pyx_t_4);
-        if (__Pyx_IternextUnpackEndCheck(__pyx_t_12(__pyx_t_2), 3) < 0) __PYX_ERR(0, 202, __pyx_L1_error)
+        if (__Pyx_IternextUnpackEndCheck(__pyx_t_12(__pyx_t_2), 3) < 0) __PYX_ERR(0, 197, __pyx_L1_error)
         __pyx_t_12 = NULL;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         goto __pyx_L10_unpacking_done;
@@ -6960,7 +6930,7 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __pyx_t_12 = NULL;
         if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-        __PYX_ERR(0, 202, __pyx_L1_error)
+        __PYX_ERR(0, 197, __pyx_L1_error)
         __pyx_L10_unpacking_done:;
       }
       __Pyx_XDECREF_SET(__pyx_v__year, __pyx_t_5);
@@ -6970,71 +6940,71 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
       __Pyx_XDECREF_SET(__pyx_v_mcnt, __pyx_t_4);
       __pyx_t_4 = 0;
 
-      /* "itr_windows.pyx":203
- *             task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
- *             _year, month, mcnt = get_month_details(task["task_created_date"])
- *             if _year == year:             # <<<<<<<<<<<<<<
- *                 task_added+=1
- *                 complete =["Completed","completed", 'Complete', 'complete', True, "true", "True"]
+      /* "itr_windows.pyx":198
+ *                 task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
+ *                 _year, month, mcnt = get_month_details(task["task_created_date"])
+ *                 if _year == year:             # <<<<<<<<<<<<<<
+ *                     task_added+=1
+ *                     complete =["Completed","completed", 'Complete', 'complete', True, "true", "True"]
  */
-      __pyx_t_1 = PyObject_RichCompare(__pyx_v__year, __pyx_v_year, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 203, __pyx_L1_error)
-      __pyx_t_10 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_10 < 0))) __PYX_ERR(0, 203, __pyx_L1_error)
+      __pyx_t_1 = PyObject_RichCompare(__pyx_v__year, __pyx_v_year, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 198, __pyx_L1_error)
+      __pyx_t_10 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_10 < 0))) __PYX_ERR(0, 198, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       if (__pyx_t_10) {
 
-        /* "itr_windows.pyx":204
- *             _year, month, mcnt = get_month_details(task["task_created_date"])
- *             if _year == year:
- *                 task_added+=1             # <<<<<<<<<<<<<<
- *                 complete =["Completed","completed", 'Complete', 'complete', True, "true", "True"]
- *                 if (("status" in task.keys() and task['status'] in complete ) or (("completed" in task.keys() and task["completed"] in complete ) or ("Completed" in task.keys() and task["Completed"] in complete ) or ("Complete" in task.keys() and task["Complete"] in complete ) or("complete" in task.keys() and task["complete"] in complete )) ):
+        /* "itr_windows.pyx":199
+ *                 _year, month, mcnt = get_month_details(task["task_created_date"])
+ *                 if _year == year:
+ *                     task_added+=1             # <<<<<<<<<<<<<<
+ *                     complete =["Completed","completed", 'Complete', 'complete', True, "true", "True"]
+ *                     if (("status" in task.keys() and task['status'] in complete ) or (("completed" in task.keys() and task["completed"] in complete ) or ("Completed" in task.keys() and task["Completed"] in complete ) or ("Complete" in task.keys() and task["Complete"] in complete ) or("complete" in task.keys() and task["complete"] in complete )) ):
  */
-        __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_v_task_added, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 204, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_v_task_added, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 199, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF_SET(__pyx_v_task_added, __pyx_t_1);
         __pyx_t_1 = 0;
 
-        /* "itr_windows.pyx":205
- *             if _year == year:
- *                 task_added+=1
- *                 complete =["Completed","completed", 'Complete', 'complete', True, "true", "True"]             # <<<<<<<<<<<<<<
- *                 if (("status" in task.keys() and task['status'] in complete ) or (("completed" in task.keys() and task["completed"] in complete ) or ("Completed" in task.keys() and task["Completed"] in complete ) or ("Complete" in task.keys() and task["Complete"] in complete ) or("complete" in task.keys() and task["complete"] in complete )) ):
- *                     tasks_completed+=1
+        /* "itr_windows.pyx":200
+ *                 if _year == year:
+ *                     task_added+=1
+ *                     complete =["Completed","completed", 'Complete', 'complete', True, "true", "True"]             # <<<<<<<<<<<<<<
+ *                     if (("status" in task.keys() and task['status'] in complete ) or (("completed" in task.keys() and task["completed"] in complete ) or ("Completed" in task.keys() and task["Completed"] in complete ) or ("Complete" in task.keys() and task["Complete"] in complete ) or("complete" in task.keys() and task["complete"] in complete )) ):
+ *                         tasks_completed+=1
  */
-        __pyx_t_1 = PyList_New(7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 205, __pyx_L1_error)
+        __pyx_t_1 = PyList_New(7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 200, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_INCREF(__pyx_n_s_Completed);
         __Pyx_GIVEREF(__pyx_n_s_Completed);
-        if (__Pyx_PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s_Completed)) __PYX_ERR(0, 205, __pyx_L1_error);
+        if (__Pyx_PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s_Completed)) __PYX_ERR(0, 200, __pyx_L1_error);
         __Pyx_INCREF(__pyx_n_s_completed);
         __Pyx_GIVEREF(__pyx_n_s_completed);
-        if (__Pyx_PyList_SET_ITEM(__pyx_t_1, 1, __pyx_n_s_completed)) __PYX_ERR(0, 205, __pyx_L1_error);
+        if (__Pyx_PyList_SET_ITEM(__pyx_t_1, 1, __pyx_n_s_completed)) __PYX_ERR(0, 200, __pyx_L1_error);
         __Pyx_INCREF(__pyx_n_s_Complete);
         __Pyx_GIVEREF(__pyx_n_s_Complete);
-        if (__Pyx_PyList_SET_ITEM(__pyx_t_1, 2, __pyx_n_s_Complete)) __PYX_ERR(0, 205, __pyx_L1_error);
+        if (__Pyx_PyList_SET_ITEM(__pyx_t_1, 2, __pyx_n_s_Complete)) __PYX_ERR(0, 200, __pyx_L1_error);
         __Pyx_INCREF(__pyx_n_s_complete);
         __Pyx_GIVEREF(__pyx_n_s_complete);
-        if (__Pyx_PyList_SET_ITEM(__pyx_t_1, 3, __pyx_n_s_complete)) __PYX_ERR(0, 205, __pyx_L1_error);
+        if (__Pyx_PyList_SET_ITEM(__pyx_t_1, 3, __pyx_n_s_complete)) __PYX_ERR(0, 200, __pyx_L1_error);
         __Pyx_INCREF(Py_True);
         __Pyx_GIVEREF(Py_True);
-        if (__Pyx_PyList_SET_ITEM(__pyx_t_1, 4, Py_True)) __PYX_ERR(0, 205, __pyx_L1_error);
+        if (__Pyx_PyList_SET_ITEM(__pyx_t_1, 4, Py_True)) __PYX_ERR(0, 200, __pyx_L1_error);
         __Pyx_INCREF(__pyx_n_s_true);
         __Pyx_GIVEREF(__pyx_n_s_true);
-        if (__Pyx_PyList_SET_ITEM(__pyx_t_1, 5, __pyx_n_s_true)) __PYX_ERR(0, 205, __pyx_L1_error);
+        if (__Pyx_PyList_SET_ITEM(__pyx_t_1, 5, __pyx_n_s_true)) __PYX_ERR(0, 200, __pyx_L1_error);
         __Pyx_INCREF(__pyx_n_s_True);
         __Pyx_GIVEREF(__pyx_n_s_True);
-        if (__Pyx_PyList_SET_ITEM(__pyx_t_1, 6, __pyx_n_s_True)) __PYX_ERR(0, 205, __pyx_L1_error);
+        if (__Pyx_PyList_SET_ITEM(__pyx_t_1, 6, __pyx_n_s_True)) __PYX_ERR(0, 200, __pyx_L1_error);
         __Pyx_XDECREF_SET(__pyx_v_complete, ((PyObject*)__pyx_t_1));
         __pyx_t_1 = 0;
 
-        /* "itr_windows.pyx":206
- *                 task_added+=1
- *                 complete =["Completed","completed", 'Complete', 'complete', True, "true", "True"]
- *                 if (("status" in task.keys() and task['status'] in complete ) or (("completed" in task.keys() and task["completed"] in complete ) or ("Completed" in task.keys() and task["Completed"] in complete ) or ("Complete" in task.keys() and task["Complete"] in complete ) or("complete" in task.keys() and task["complete"] in complete )) ):             # <<<<<<<<<<<<<<
- *                     tasks_completed+=1
- *                     if ("approved_by" in task.keys() and task["approved_by"]==username):
+        /* "itr_windows.pyx":201
+ *                     task_added+=1
+ *                     complete =["Completed","completed", 'Complete', 'complete', True, "true", "True"]
+ *                     if (("status" in task.keys() and task['status'] in complete ) or (("completed" in task.keys() and task["completed"] in complete ) or ("Completed" in task.keys() and task["Completed"] in complete ) or ("Complete" in task.keys() and task["Complete"] in complete ) or("complete" in task.keys() and task["complete"] in complete )) ):             # <<<<<<<<<<<<<<
+ *                         tasks_completed+=1
+ *                         if ("approved_by" in task.keys() and task["approved_by"]==username):
  */
-        __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_task, __pyx_n_s_keys); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_task, __pyx_n_s_keys); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 201, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         __pyx_t_6 = NULL;
         __pyx_t_8 = 0;
@@ -7054,19 +7024,19 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
           PyObject *__pyx_callargs[2] = {__pyx_t_6, NULL};
           __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_8, 0+__pyx_t_8);
           __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-          if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 206, __pyx_L1_error)
+          if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 201, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         }
-        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_n_s_status, __pyx_t_1, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_n_s_status, __pyx_t_1, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 201, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         if (!__pyx_t_13) {
           goto __pyx_L14_next_or;
         } else {
         }
-        __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_status); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_status); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 201, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_t_1, __pyx_v_complete, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_t_1, __pyx_v_complete, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 201, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         if (!__pyx_t_13) {
         } else {
@@ -7074,7 +7044,7 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
           goto __pyx_L13_bool_binop_done;
         }
         __pyx_L14_next_or:;
-        __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_task, __pyx_n_s_keys); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_task, __pyx_n_s_keys); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 201, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         __pyx_t_6 = NULL;
         __pyx_t_8 = 0;
@@ -7094,19 +7064,19 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
           PyObject *__pyx_callargs[2] = {__pyx_t_6, NULL};
           __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_8, 0+__pyx_t_8);
           __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-          if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 206, __pyx_L1_error)
+          if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 201, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         }
-        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_n_s_completed, __pyx_t_1, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_n_s_completed, __pyx_t_1, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 201, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         if (!__pyx_t_13) {
           goto __pyx_L16_next_or;
         } else {
         }
-        __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_completed); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_completed); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 201, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_t_1, __pyx_v_complete, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_t_1, __pyx_v_complete, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 201, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         if (!__pyx_t_13) {
         } else {
@@ -7114,7 +7084,7 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
           goto __pyx_L13_bool_binop_done;
         }
         __pyx_L16_next_or:;
-        __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_task, __pyx_n_s_keys); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_task, __pyx_n_s_keys); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 201, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         __pyx_t_6 = NULL;
         __pyx_t_8 = 0;
@@ -7134,19 +7104,19 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
           PyObject *__pyx_callargs[2] = {__pyx_t_6, NULL};
           __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_8, 0+__pyx_t_8);
           __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-          if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 206, __pyx_L1_error)
+          if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 201, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         }
-        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_n_s_Completed, __pyx_t_1, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_n_s_Completed, __pyx_t_1, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 201, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         if (!__pyx_t_13) {
           goto __pyx_L18_next_or;
         } else {
         }
-        __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_Completed); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_Completed); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 201, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_t_1, __pyx_v_complete, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_t_1, __pyx_v_complete, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 201, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         if (!__pyx_t_13) {
         } else {
@@ -7154,7 +7124,7 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
           goto __pyx_L13_bool_binop_done;
         }
         __pyx_L18_next_or:;
-        __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_task, __pyx_n_s_keys); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_task, __pyx_n_s_keys); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 201, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         __pyx_t_6 = NULL;
         __pyx_t_8 = 0;
@@ -7174,19 +7144,19 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
           PyObject *__pyx_callargs[2] = {__pyx_t_6, NULL};
           __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_8, 0+__pyx_t_8);
           __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-          if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 206, __pyx_L1_error)
+          if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 201, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         }
-        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_n_s_Complete, __pyx_t_1, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_n_s_Complete, __pyx_t_1, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 201, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         if (!__pyx_t_13) {
           goto __pyx_L20_next_or;
         } else {
         }
-        __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_Complete); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_Complete); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 201, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_t_1, __pyx_v_complete, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_t_1, __pyx_v_complete, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 201, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         if (!__pyx_t_13) {
         } else {
@@ -7194,7 +7164,7 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
           goto __pyx_L13_bool_binop_done;
         }
         __pyx_L20_next_or:;
-        __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_task, __pyx_n_s_keys); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_task, __pyx_n_s_keys); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 201, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         __pyx_t_6 = NULL;
         __pyx_t_8 = 0;
@@ -7214,45 +7184,45 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
           PyObject *__pyx_callargs[2] = {__pyx_t_6, NULL};
           __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_8, 0+__pyx_t_8);
           __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-          if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 206, __pyx_L1_error)
+          if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 201, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         }
-        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_n_s_complete, __pyx_t_1, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_n_s_complete, __pyx_t_1, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 201, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         if (__pyx_t_13) {
         } else {
           __pyx_t_10 = __pyx_t_13;
           goto __pyx_L13_bool_binop_done;
         }
-        __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_complete); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_complete); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 201, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_t_1, __pyx_v_complete, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_t_1, __pyx_v_complete, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 201, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         __pyx_t_10 = __pyx_t_13;
         __pyx_L13_bool_binop_done:;
         if (__pyx_t_10) {
 
-          /* "itr_windows.pyx":207
- *                 complete =["Completed","completed", 'Complete', 'complete', True, "true", "True"]
- *                 if (("status" in task.keys() and task['status'] in complete ) or (("completed" in task.keys() and task["completed"] in complete ) or ("Completed" in task.keys() and task["Completed"] in complete ) or ("Complete" in task.keys() and task["Complete"] in complete ) or("complete" in task.keys() and task["complete"] in complete )) ):
- *                     tasks_completed+=1             # <<<<<<<<<<<<<<
- *                     if ("approved_by" in task.keys() and task["approved_by"]==username):
- *                         tasks_you_approved+=1
+          /* "itr_windows.pyx":202
+ *                     complete =["Completed","completed", 'Complete', 'complete', True, "true", "True"]
+ *                     if (("status" in task.keys() and task['status'] in complete ) or (("completed" in task.keys() and task["completed"] in complete ) or ("Completed" in task.keys() and task["Completed"] in complete ) or ("Complete" in task.keys() and task["Complete"] in complete ) or("complete" in task.keys() and task["complete"] in complete )) ):
+ *                         tasks_completed+=1             # <<<<<<<<<<<<<<
+ *                         if ("approved_by" in task.keys() and task["approved_by"]==username):
+ *                             tasks_you_approved+=1
  */
-          __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_v_tasks_completed, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 207, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_v_tasks_completed, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 202, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_DECREF_SET(__pyx_v_tasks_completed, __pyx_t_1);
           __pyx_t_1 = 0;
 
-          /* "itr_windows.pyx":208
- *                 if (("status" in task.keys() and task['status'] in complete ) or (("completed" in task.keys() and task["completed"] in complete ) or ("Completed" in task.keys() and task["Completed"] in complete ) or ("Complete" in task.keys() and task["Complete"] in complete ) or("complete" in task.keys() and task["complete"] in complete )) ):
- *                     tasks_completed+=1
- *                     if ("approved_by" in task.keys() and task["approved_by"]==username):             # <<<<<<<<<<<<<<
- *                         tasks_you_approved+=1
- *                         tasks_you_marked_as_complete+=1
+          /* "itr_windows.pyx":203
+ *                     if (("status" in task.keys() and task['status'] in complete ) or (("completed" in task.keys() and task["completed"] in complete ) or ("Completed" in task.keys() and task["Completed"] in complete ) or ("Complete" in task.keys() and task["Complete"] in complete ) or("complete" in task.keys() and task["complete"] in complete )) ):
+ *                         tasks_completed+=1
+ *                         if ("approved_by" in task.keys() and task["approved_by"]==username):             # <<<<<<<<<<<<<<
+ *                             tasks_you_approved+=1
+ *                             tasks_you_marked_as_complete+=1
  */
-          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_task, __pyx_n_s_keys); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 208, __pyx_L1_error)
+          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_task, __pyx_n_s_keys); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 203, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
           __pyx_t_6 = NULL;
           __pyx_t_8 = 0;
@@ -7272,91 +7242,91 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
             PyObject *__pyx_callargs[2] = {__pyx_t_6, NULL};
             __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_8, 0+__pyx_t_8);
             __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-            if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 208, __pyx_L1_error)
+            if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 203, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_1);
             __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
           }
-          __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_n_s_approved_by, __pyx_t_1, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 208, __pyx_L1_error)
+          __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_n_s_approved_by, __pyx_t_1, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 203, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
           if (__pyx_t_13) {
           } else {
             __pyx_t_10 = __pyx_t_13;
             goto __pyx_L24_bool_binop_done;
           }
-          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_approved_by); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 208, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_approved_by); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 203, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
-          __pyx_t_4 = PyObject_RichCompare(__pyx_t_1, __pyx_v_username, Py_EQ); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 208, __pyx_L1_error)
+          __pyx_t_4 = PyObject_RichCompare(__pyx_t_1, __pyx_v_username, Py_EQ); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 203, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 208, __pyx_L1_error)
+          __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 203, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
           __pyx_t_10 = __pyx_t_13;
           __pyx_L24_bool_binop_done:;
           if (__pyx_t_10) {
 
-            /* "itr_windows.pyx":209
- *                     tasks_completed+=1
- *                     if ("approved_by" in task.keys() and task["approved_by"]==username):
- *                         tasks_you_approved+=1             # <<<<<<<<<<<<<<
- *                         tasks_you_marked_as_complete+=1
- *                 else:
+            /* "itr_windows.pyx":204
+ *                         tasks_completed+=1
+ *                         if ("approved_by" in task.keys() and task["approved_by"]==username):
+ *                             tasks_you_approved+=1             # <<<<<<<<<<<<<<
+ *                             tasks_you_marked_as_complete+=1
+ *                     else:
  */
-            __pyx_t_4 = __Pyx_PyInt_AddObjC(__pyx_v_tasks_you_approved, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 209, __pyx_L1_error)
+            __pyx_t_4 = __Pyx_PyInt_AddObjC(__pyx_v_tasks_you_approved, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 204, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_4);
             __Pyx_DECREF_SET(__pyx_v_tasks_you_approved, __pyx_t_4);
             __pyx_t_4 = 0;
 
-            /* "itr_windows.pyx":210
- *                     if ("approved_by" in task.keys() and task["approved_by"]==username):
- *                         tasks_you_approved+=1
- *                         tasks_you_marked_as_complete+=1             # <<<<<<<<<<<<<<
- *                 else:
- *                     tasks_uncompleted+=1
+            /* "itr_windows.pyx":205
+ *                         if ("approved_by" in task.keys() and task["approved_by"]==username):
+ *                             tasks_you_approved+=1
+ *                             tasks_you_marked_as_complete+=1             # <<<<<<<<<<<<<<
+ *                     else:
+ *                         tasks_uncompleted+=1
  */
-            __pyx_t_4 = __Pyx_PyInt_AddObjC(__pyx_v_tasks_you_marked_as_complete, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 210, __pyx_L1_error)
+            __pyx_t_4 = __Pyx_PyInt_AddObjC(__pyx_v_tasks_you_marked_as_complete, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 205, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_4);
             __Pyx_DECREF_SET(__pyx_v_tasks_you_marked_as_complete, __pyx_t_4);
             __pyx_t_4 = 0;
 
-            /* "itr_windows.pyx":208
- *                 if (("status" in task.keys() and task['status'] in complete ) or (("completed" in task.keys() and task["completed"] in complete ) or ("Completed" in task.keys() and task["Completed"] in complete ) or ("Complete" in task.keys() and task["Complete"] in complete ) or("complete" in task.keys() and task["complete"] in complete )) ):
- *                     tasks_completed+=1
- *                     if ("approved_by" in task.keys() and task["approved_by"]==username):             # <<<<<<<<<<<<<<
- *                         tasks_you_approved+=1
- *                         tasks_you_marked_as_complete+=1
+            /* "itr_windows.pyx":203
+ *                     if (("status" in task.keys() and task['status'] in complete ) or (("completed" in task.keys() and task["completed"] in complete ) or ("Completed" in task.keys() and task["Completed"] in complete ) or ("Complete" in task.keys() and task["Complete"] in complete ) or("complete" in task.keys() and task["complete"] in complete )) ):
+ *                         tasks_completed+=1
+ *                         if ("approved_by" in task.keys() and task["approved_by"]==username):             # <<<<<<<<<<<<<<
+ *                             tasks_you_approved+=1
+ *                             tasks_you_marked_as_complete+=1
  */
           }
 
-          /* "itr_windows.pyx":206
- *                 task_added+=1
- *                 complete =["Completed","completed", 'Complete', 'complete', True, "true", "True"]
- *                 if (("status" in task.keys() and task['status'] in complete ) or (("completed" in task.keys() and task["completed"] in complete ) or ("Completed" in task.keys() and task["Completed"] in complete ) or ("Complete" in task.keys() and task["Complete"] in complete ) or("complete" in task.keys() and task["complete"] in complete )) ):             # <<<<<<<<<<<<<<
- *                     tasks_completed+=1
- *                     if ("approved_by" in task.keys() and task["approved_by"]==username):
+          /* "itr_windows.pyx":201
+ *                     task_added+=1
+ *                     complete =["Completed","completed", 'Complete', 'complete', True, "true", "True"]
+ *                     if (("status" in task.keys() and task['status'] in complete ) or (("completed" in task.keys() and task["completed"] in complete ) or ("Completed" in task.keys() and task["Completed"] in complete ) or ("Complete" in task.keys() and task["Complete"] in complete ) or("complete" in task.keys() and task["complete"] in complete )) ):             # <<<<<<<<<<<<<<
+ *                         tasks_completed+=1
+ *                         if ("approved_by" in task.keys() and task["approved_by"]==username):
  */
           goto __pyx_L12;
         }
 
-        /* "itr_windows.pyx":212
- *                         tasks_you_marked_as_complete+=1
- *                 else:
- *                     tasks_uncompleted+=1             # <<<<<<<<<<<<<<
- *                     if ("approved_by" in task.keys() and task["approved_by"]==username):
- *                         tasks_you_approved+=1
+        /* "itr_windows.pyx":207
+ *                             tasks_you_marked_as_complete+=1
+ *                     else:
+ *                         tasks_uncompleted+=1             # <<<<<<<<<<<<<<
+ *                         if ("approved_by" in task.keys() and task["approved_by"]==username):
+ *                             tasks_you_approved+=1
  */
         /*else*/ {
-          __pyx_t_4 = __Pyx_PyInt_AddObjC(__pyx_v_tasks_uncompleted, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 212, __pyx_L1_error)
+          __pyx_t_4 = __Pyx_PyInt_AddObjC(__pyx_v_tasks_uncompleted, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 207, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
           __Pyx_DECREF_SET(__pyx_v_tasks_uncompleted, __pyx_t_4);
           __pyx_t_4 = 0;
 
-          /* "itr_windows.pyx":213
- *                 else:
- *                     tasks_uncompleted+=1
- *                     if ("approved_by" in task.keys() and task["approved_by"]==username):             # <<<<<<<<<<<<<<
- *                         tasks_you_approved+=1
- *                         tasks_you_marked_as_incomplete+=1
+          /* "itr_windows.pyx":208
+ *                     else:
+ *                         tasks_uncompleted+=1
+ *                         if ("approved_by" in task.keys() and task["approved_by"]==username):             # <<<<<<<<<<<<<<
+ *                             tasks_you_approved+=1
+ *                             tasks_you_marked_as_incomplete+=1
  */
-          __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_task, __pyx_n_s_keys); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 213, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_task, __pyx_n_s_keys); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 208, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __pyx_t_6 = NULL;
           __pyx_t_8 = 0;
@@ -7376,124 +7346,124 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
             PyObject *__pyx_callargs[2] = {__pyx_t_6, NULL};
             __pyx_t_4 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_8, 0+__pyx_t_8);
             __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-            if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 213, __pyx_L1_error)
+            if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 208, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_4);
             __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
           }
-          __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_n_s_approved_by, __pyx_t_4, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 213, __pyx_L1_error)
+          __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_n_s_approved_by, __pyx_t_4, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 208, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
           if (__pyx_t_13) {
           } else {
             __pyx_t_10 = __pyx_t_13;
             goto __pyx_L27_bool_binop_done;
           }
-          __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_approved_by); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 213, __pyx_L1_error)
+          __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_approved_by); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 208, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
-          __pyx_t_1 = PyObject_RichCompare(__pyx_t_4, __pyx_v_username, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 213, __pyx_L1_error)
+          __pyx_t_1 = PyObject_RichCompare(__pyx_t_4, __pyx_v_username, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 208, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-          __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 213, __pyx_L1_error)
+          __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 208, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
           __pyx_t_10 = __pyx_t_13;
           __pyx_L27_bool_binop_done:;
           if (__pyx_t_10) {
 
-            /* "itr_windows.pyx":214
- *                     tasks_uncompleted+=1
- *                     if ("approved_by" in task.keys() and task["approved_by"]==username):
- *                         tasks_you_approved+=1             # <<<<<<<<<<<<<<
- *                         tasks_you_marked_as_incomplete+=1
- *                 #incomplete=["Incomplete", "incomplete", 'Incompleted', 'incompleted']
+            /* "itr_windows.pyx":209
+ *                         tasks_uncompleted+=1
+ *                         if ("approved_by" in task.keys() and task["approved_by"]==username):
+ *                             tasks_you_approved+=1             # <<<<<<<<<<<<<<
+ *                             tasks_you_marked_as_incomplete+=1
+ *                     #incomplete=["Incomplete", "incomplete", 'Incompleted', 'incompleted']
  */
-            __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_v_tasks_you_approved, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 214, __pyx_L1_error)
+            __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_v_tasks_you_approved, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 209, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_1);
             __Pyx_DECREF_SET(__pyx_v_tasks_you_approved, __pyx_t_1);
             __pyx_t_1 = 0;
 
-            /* "itr_windows.pyx":215
- *                     if ("approved_by" in task.keys() and task["approved_by"]==username):
- *                         tasks_you_approved+=1
- *                         tasks_you_marked_as_incomplete+=1             # <<<<<<<<<<<<<<
- *                 #incomplete=["Incomplete", "incomplete", 'Incompleted', 'incompleted']
+            /* "itr_windows.pyx":210
+ *                         if ("approved_by" in task.keys() and task["approved_by"]==username):
+ *                             tasks_you_approved+=1
+ *                             tasks_you_marked_as_incomplete+=1             # <<<<<<<<<<<<<<
+ *                     #incomplete=["Incomplete", "incomplete", 'Incompleted', 'incompleted']
  * 
  */
-            __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_v_tasks_you_marked_as_incomplete, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 215, __pyx_L1_error)
+            __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_v_tasks_you_marked_as_incomplete, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 210, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_1);
             __Pyx_DECREF_SET(__pyx_v_tasks_you_marked_as_incomplete, __pyx_t_1);
             __pyx_t_1 = 0;
 
-            /* "itr_windows.pyx":213
- *                 else:
- *                     tasks_uncompleted+=1
- *                     if ("approved_by" in task.keys() and task["approved_by"]==username):             # <<<<<<<<<<<<<<
- *                         tasks_you_approved+=1
- *                         tasks_you_marked_as_incomplete+=1
+            /* "itr_windows.pyx":208
+ *                     else:
+ *                         tasks_uncompleted+=1
+ *                         if ("approved_by" in task.keys() and task["approved_by"]==username):             # <<<<<<<<<<<<<<
+ *                             tasks_you_approved+=1
+ *                             tasks_you_marked_as_incomplete+=1
  */
           }
         }
         __pyx_L12:;
 
-        /* "itr_windows.pyx":219
+        /* "itr_windows.pyx":214
  * 
  * 
- *                 data["tasks_details"][month]["task_added"] =task_added             # <<<<<<<<<<<<<<
- *                 data['tasks_details'][month]["tasks_completed"]= tasks_completed
- *                 data['tasks_details'][month]["tasks_uncompleted"]= tasks_uncompleted
+ *                     data["tasks_details"][month]["task_added"] =task_added             # <<<<<<<<<<<<<<
+ *                     data['tasks_details'][month]["tasks_completed"]= tasks_completed
+ *                     data['tasks_details'][month]["tasks_uncompleted"]= tasks_uncompleted
  */
-        __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_data, __pyx_n_s_tasks_details); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 219, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_data, __pyx_n_s_tasks_details); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 214, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_4 = __Pyx_PyObject_GetItem(__pyx_t_1, __pyx_v_month); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 219, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_PyObject_GetItem(__pyx_t_1, __pyx_v_month); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 214, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        if (unlikely((PyObject_SetItem(__pyx_t_4, __pyx_n_s_task_added, __pyx_v_task_added) < 0))) __PYX_ERR(0, 219, __pyx_L1_error)
+        if (unlikely((PyObject_SetItem(__pyx_t_4, __pyx_n_s_task_added, __pyx_v_task_added) < 0))) __PYX_ERR(0, 214, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-        /* "itr_windows.pyx":220
+        /* "itr_windows.pyx":215
  * 
- *                 data["tasks_details"][month]["task_added"] =task_added
- *                 data['tasks_details'][month]["tasks_completed"]= tasks_completed             # <<<<<<<<<<<<<<
- *                 data['tasks_details'][month]["tasks_uncompleted"]= tasks_uncompleted
- *                 data['tasks_details'][month]["tasks_approved"]+= 1 if ("approved" in task.keys() and task['approved']==True) else 0
+ *                     data["tasks_details"][month]["task_added"] =task_added
+ *                     data['tasks_details'][month]["tasks_completed"]= tasks_completed             # <<<<<<<<<<<<<<
+ *                     data['tasks_details'][month]["tasks_uncompleted"]= tasks_uncompleted
+ *                     data['tasks_details'][month]["tasks_approved"]+= 1 if ("approved" in task.keys() and task['approved']==True) else 0
  */
-        __pyx_t_4 = __Pyx_PyDict_GetItem(__pyx_v_data, __pyx_n_s_tasks_details); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 220, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_PyDict_GetItem(__pyx_v_data, __pyx_n_s_tasks_details); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 215, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
-        __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_t_4, __pyx_v_month); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 220, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_t_4, __pyx_v_month); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 215, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely((PyObject_SetItem(__pyx_t_1, __pyx_n_s_tasks_completed, __pyx_v_tasks_completed) < 0))) __PYX_ERR(0, 220, __pyx_L1_error)
+        if (unlikely((PyObject_SetItem(__pyx_t_1, __pyx_n_s_tasks_completed, __pyx_v_tasks_completed) < 0))) __PYX_ERR(0, 215, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "itr_windows.pyx":221
- *                 data["tasks_details"][month]["task_added"] =task_added
- *                 data['tasks_details'][month]["tasks_completed"]= tasks_completed
- *                 data['tasks_details'][month]["tasks_uncompleted"]= tasks_uncompleted             # <<<<<<<<<<<<<<
- *                 data['tasks_details'][month]["tasks_approved"]+= 1 if ("approved" in task.keys() and task['approved']==True) else 0
- *                 data["tasks_details"][month]["percentage_tasks_completed"]=(tasks_completed/task_added)*100
+        /* "itr_windows.pyx":216
+ *                     data["tasks_details"][month]["task_added"] =task_added
+ *                     data['tasks_details'][month]["tasks_completed"]= tasks_completed
+ *                     data['tasks_details'][month]["tasks_uncompleted"]= tasks_uncompleted             # <<<<<<<<<<<<<<
+ *                     data['tasks_details'][month]["tasks_approved"]+= 1 if ("approved" in task.keys() and task['approved']==True) else 0
+ *                     data["tasks_details"][month]["percentage_tasks_completed"]=(tasks_completed/task_added)*100
  */
-        __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_data, __pyx_n_s_tasks_details); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 221, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_data, __pyx_n_s_tasks_details); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 216, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_4 = __Pyx_PyObject_GetItem(__pyx_t_1, __pyx_v_month); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 221, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_PyObject_GetItem(__pyx_t_1, __pyx_v_month); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 216, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        if (unlikely((PyObject_SetItem(__pyx_t_4, __pyx_n_s_tasks_uncompleted, __pyx_v_tasks_uncompleted) < 0))) __PYX_ERR(0, 221, __pyx_L1_error)
+        if (unlikely((PyObject_SetItem(__pyx_t_4, __pyx_n_s_tasks_uncompleted, __pyx_v_tasks_uncompleted) < 0))) __PYX_ERR(0, 216, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-        /* "itr_windows.pyx":222
- *                 data['tasks_details'][month]["tasks_completed"]= tasks_completed
- *                 data['tasks_details'][month]["tasks_uncompleted"]= tasks_uncompleted
- *                 data['tasks_details'][month]["tasks_approved"]+= 1 if ("approved" in task.keys() and task['approved']==True) else 0             # <<<<<<<<<<<<<<
- *                 data["tasks_details"][month]["percentage_tasks_completed"]=(tasks_completed/task_added)*100
- *                 data["tasks_details"][month]["tasks_you_approved"] = tasks_you_approved
+        /* "itr_windows.pyx":217
+ *                     data['tasks_details'][month]["tasks_completed"]= tasks_completed
+ *                     data['tasks_details'][month]["tasks_uncompleted"]= tasks_uncompleted
+ *                     data['tasks_details'][month]["tasks_approved"]+= 1 if ("approved" in task.keys() and task['approved']==True) else 0             # <<<<<<<<<<<<<<
+ *                     data["tasks_details"][month]["percentage_tasks_completed"]=(tasks_completed/task_added)*100
+ *                     data["tasks_details"][month]["tasks_you_approved"] = tasks_you_approved
  */
-        __pyx_t_4 = __Pyx_PyDict_GetItem(__pyx_v_data, __pyx_n_s_tasks_details); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 222, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_PyDict_GetItem(__pyx_v_data, __pyx_n_s_tasks_details); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 217, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
-        __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_t_4, __pyx_v_month); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 222, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_t_4, __pyx_v_month); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 217, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_INCREF(__pyx_n_s_tasks_approved);
         __pyx_t_14 = __pyx_n_s_tasks_approved;
-        __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_t_1, __pyx_t_14); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 222, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_t_1, __pyx_t_14); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 217, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
-        __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_task, __pyx_n_s_keys); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 222, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_task, __pyx_n_s_keys); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 217, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __pyx_t_11 = NULL;
         __pyx_t_8 = 0;
@@ -7513,22 +7483,22 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
           PyObject *__pyx_callargs[2] = {__pyx_t_11, NULL};
           __pyx_t_5 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_8, 0+__pyx_t_8);
           __Pyx_XDECREF(__pyx_t_11); __pyx_t_11 = 0;
-          if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 222, __pyx_L1_error)
+          if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 217, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_5);
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         }
-        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_n_s_approved, __pyx_t_5, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 222, __pyx_L1_error)
+        __pyx_t_13 = (__Pyx_PySequence_ContainsTF(__pyx_n_s_approved, __pyx_t_5, Py_EQ)); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 217, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
         if (__pyx_t_13) {
         } else {
           __pyx_t_10 = __pyx_t_13;
           goto __pyx_L29_bool_binop_done;
         }
-        __pyx_t_5 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_approved); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 222, __pyx_L1_error)
+        __pyx_t_5 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_approved); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 217, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
-        __pyx_t_2 = PyObject_RichCompare(__pyx_t_5, Py_True, Py_EQ); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 222, __pyx_L1_error)
+        __pyx_t_2 = PyObject_RichCompare(__pyx_t_5, Py_True, Py_EQ); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 217, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-        __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 222, __pyx_L1_error)
+        __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 217, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __pyx_t_10 = __pyx_t_13;
         __pyx_L29_bool_binop_done:;
@@ -7539,235 +7509,235 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
           __Pyx_INCREF(__pyx_int_0);
           __pyx_t_6 = __pyx_int_0;
         }
-        __pyx_t_2 = PyNumber_InPlaceAdd(__pyx_t_4, __pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 222, __pyx_L1_error)
+        __pyx_t_2 = PyNumber_InPlaceAdd(__pyx_t_4, __pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 217, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        if (unlikely((PyObject_SetItem(__pyx_t_1, __pyx_t_14, __pyx_t_2) < 0))) __PYX_ERR(0, 222, __pyx_L1_error)
+        if (unlikely((PyObject_SetItem(__pyx_t_1, __pyx_t_14, __pyx_t_2) < 0))) __PYX_ERR(0, 217, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "itr_windows.pyx":223
- *                 data['tasks_details'][month]["tasks_uncompleted"]= tasks_uncompleted
- *                 data['tasks_details'][month]["tasks_approved"]+= 1 if ("approved" in task.keys() and task['approved']==True) else 0
- *                 data["tasks_details"][month]["percentage_tasks_completed"]=(tasks_completed/task_added)*100             # <<<<<<<<<<<<<<
- *                 data["tasks_details"][month]["tasks_you_approved"] = tasks_you_approved
- *                 data["tasks_details"][month]["tasks_you_marked_as_complete"] = tasks_you_marked_as_complete
+        /* "itr_windows.pyx":218
+ *                     data['tasks_details'][month]["tasks_uncompleted"]= tasks_uncompleted
+ *                     data['tasks_details'][month]["tasks_approved"]+= 1 if ("approved" in task.keys() and task['approved']==True) else 0
+ *                     data["tasks_details"][month]["percentage_tasks_completed"]=(tasks_completed/task_added)*100             # <<<<<<<<<<<<<<
+ *                     data["tasks_details"][month]["tasks_you_approved"] = tasks_you_approved
+ *                     data["tasks_details"][month]["tasks_you_marked_as_complete"] = tasks_you_marked_as_complete
  */
-        __pyx_t_1 = __Pyx_PyNumber_Divide(__pyx_v_tasks_completed, __pyx_v_task_added); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 223, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyNumber_Divide(__pyx_v_tasks_completed, __pyx_v_task_added); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 218, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_2 = __Pyx_PyInt_MultiplyObjC(__pyx_t_1, __pyx_int_100, 0x64, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 223, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyInt_MultiplyObjC(__pyx_t_1, __pyx_int_100, 0x64, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 218, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_data, __pyx_n_s_tasks_details); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 223, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_data, __pyx_n_s_tasks_details); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 218, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_t_1, __pyx_v_month); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 223, __pyx_L1_error)
+        __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_t_1, __pyx_v_month); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 218, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        if (unlikely((PyObject_SetItem(__pyx_t_6, __pyx_n_s_percentage_tasks_completed, __pyx_t_2) < 0))) __PYX_ERR(0, 223, __pyx_L1_error)
+        if (unlikely((PyObject_SetItem(__pyx_t_6, __pyx_n_s_percentage_tasks_completed, __pyx_t_2) < 0))) __PYX_ERR(0, 218, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-        /* "itr_windows.pyx":224
- *                 data['tasks_details'][month]["tasks_approved"]+= 1 if ("approved" in task.keys() and task['approved']==True) else 0
- *                 data["tasks_details"][month]["percentage_tasks_completed"]=(tasks_completed/task_added)*100
- *                 data["tasks_details"][month]["tasks_you_approved"] = tasks_you_approved             # <<<<<<<<<<<<<<
- *                 data["tasks_details"][month]["tasks_you_marked_as_complete"] = tasks_you_marked_as_complete
- *                 data["tasks_details"][month]["tasks_you_marked_as_incomplete"] = tasks_you_marked_as_incomplete
+        /* "itr_windows.pyx":219
+ *                     data['tasks_details'][month]["tasks_approved"]+= 1 if ("approved" in task.keys() and task['approved']==True) else 0
+ *                     data["tasks_details"][month]["percentage_tasks_completed"]=(tasks_completed/task_added)*100
+ *                     data["tasks_details"][month]["tasks_you_approved"] = tasks_you_approved             # <<<<<<<<<<<<<<
+ *                     data["tasks_details"][month]["tasks_you_marked_as_complete"] = tasks_you_marked_as_complete
+ *                     data["tasks_details"][month]["tasks_you_marked_as_incomplete"] = tasks_you_marked_as_incomplete
  */
-        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_data, __pyx_n_s_tasks_details); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 224, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_data, __pyx_n_s_tasks_details); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 219, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_t_2, __pyx_v_month); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 224, __pyx_L1_error)
+        __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_t_2, __pyx_v_month); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 219, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-        if (unlikely((PyObject_SetItem(__pyx_t_6, __pyx_n_s_tasks_you_approved, __pyx_v_tasks_you_approved) < 0))) __PYX_ERR(0, 224, __pyx_L1_error)
+        if (unlikely((PyObject_SetItem(__pyx_t_6, __pyx_n_s_tasks_you_approved, __pyx_v_tasks_you_approved) < 0))) __PYX_ERR(0, 219, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-        /* "itr_windows.pyx":225
- *                 data["tasks_details"][month]["percentage_tasks_completed"]=(tasks_completed/task_added)*100
- *                 data["tasks_details"][month]["tasks_you_approved"] = tasks_you_approved
- *                 data["tasks_details"][month]["tasks_you_marked_as_complete"] = tasks_you_marked_as_complete             # <<<<<<<<<<<<<<
- *                 data["tasks_details"][month]["tasks_you_marked_as_incomplete"] = tasks_you_marked_as_incomplete
- *                 if task_created_date >= start and task_created_date <= end:
+        /* "itr_windows.pyx":220
+ *                     data["tasks_details"][month]["percentage_tasks_completed"]=(tasks_completed/task_added)*100
+ *                     data["tasks_details"][month]["tasks_you_approved"] = tasks_you_approved
+ *                     data["tasks_details"][month]["tasks_you_marked_as_complete"] = tasks_you_marked_as_complete             # <<<<<<<<<<<<<<
+ *                     data["tasks_details"][month]["tasks_you_marked_as_incomplete"] = tasks_you_marked_as_incomplete
+ *                     if task_created_date >= start and task_created_date <= end:
  */
-        __pyx_t_6 = __Pyx_PyDict_GetItem(__pyx_v_data, __pyx_n_s_tasks_details); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 225, __pyx_L1_error)
+        __pyx_t_6 = __Pyx_PyDict_GetItem(__pyx_v_data, __pyx_n_s_tasks_details); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 220, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
-        __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_t_6, __pyx_v_month); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 225, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_t_6, __pyx_v_month); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 220, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        if (unlikely((PyObject_SetItem(__pyx_t_2, __pyx_n_s_tasks_you_marked_as_complete, __pyx_v_tasks_you_marked_as_complete) < 0))) __PYX_ERR(0, 225, __pyx_L1_error)
+        if (unlikely((PyObject_SetItem(__pyx_t_2, __pyx_n_s_tasks_you_marked_as_complete, __pyx_v_tasks_you_marked_as_complete) < 0))) __PYX_ERR(0, 220, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-        /* "itr_windows.pyx":226
- *                 data["tasks_details"][month]["tasks_you_approved"] = tasks_you_approved
- *                 data["tasks_details"][month]["tasks_you_marked_as_complete"] = tasks_you_marked_as_complete
- *                 data["tasks_details"][month]["tasks_you_marked_as_incomplete"] = tasks_you_marked_as_incomplete             # <<<<<<<<<<<<<<
- *                 if task_created_date >= start and task_created_date <= end:
- *                     week_details.append(task["project"])
+        /* "itr_windows.pyx":221
+ *                     data["tasks_details"][month]["tasks_you_approved"] = tasks_you_approved
+ *                     data["tasks_details"][month]["tasks_you_marked_as_complete"] = tasks_you_marked_as_complete
+ *                     data["tasks_details"][month]["tasks_you_marked_as_incomplete"] = tasks_you_marked_as_incomplete             # <<<<<<<<<<<<<<
+ *                     if task_created_date >= start and task_created_date <= end:
+ *                         week_details.append(task["project"])
  */
-        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_data, __pyx_n_s_tasks_details); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 226, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_data, __pyx_n_s_tasks_details); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 221, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_t_2, __pyx_v_month); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 226, __pyx_L1_error)
+        __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_t_2, __pyx_v_month); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 221, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-        if (unlikely((PyObject_SetItem(__pyx_t_6, __pyx_n_s_tasks_you_marked_as_incomplete, __pyx_v_tasks_you_marked_as_incomplete) < 0))) __PYX_ERR(0, 226, __pyx_L1_error)
+        if (unlikely((PyObject_SetItem(__pyx_t_6, __pyx_n_s_tasks_you_marked_as_incomplete, __pyx_v_tasks_you_marked_as_incomplete) < 0))) __PYX_ERR(0, 221, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-        /* "itr_windows.pyx":227
- *                 data["tasks_details"][month]["tasks_you_marked_as_complete"] = tasks_you_marked_as_complete
- *                 data["tasks_details"][month]["tasks_you_marked_as_incomplete"] = tasks_you_marked_as_incomplete
- *                 if task_created_date >= start and task_created_date <= end:             # <<<<<<<<<<<<<<
- *                     week_details.append(task["project"])
+        /* "itr_windows.pyx":222
+ *                     data["tasks_details"][month]["tasks_you_marked_as_complete"] = tasks_you_marked_as_complete
+ *                     data["tasks_details"][month]["tasks_you_marked_as_incomplete"] = tasks_you_marked_as_incomplete
+ *                     if task_created_date >= start and task_created_date <= end:             # <<<<<<<<<<<<<<
+ *                         week_details.append(task["project"])
  * 
  */
-        __pyx_t_6 = PyObject_RichCompare(__pyx_v_task_created_date, __pyx_v_start, Py_GE); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 227, __pyx_L1_error)
-        __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 227, __pyx_L1_error)
+        __pyx_t_6 = PyObject_RichCompare(__pyx_v_task_created_date, __pyx_v_start, Py_GE); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 222, __pyx_L1_error)
+        __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 222, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
         if (__pyx_t_13) {
         } else {
           __pyx_t_10 = __pyx_t_13;
           goto __pyx_L32_bool_binop_done;
         }
-        __pyx_t_6 = PyObject_RichCompare(__pyx_v_task_created_date, __pyx_v_end, Py_LE); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 227, __pyx_L1_error)
-        __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 227, __pyx_L1_error)
+        __pyx_t_6 = PyObject_RichCompare(__pyx_v_task_created_date, __pyx_v_end, Py_LE); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 222, __pyx_L1_error)
+        __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 222, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
         __pyx_t_10 = __pyx_t_13;
         __pyx_L32_bool_binop_done:;
         if (__pyx_t_10) {
 
-          /* "itr_windows.pyx":228
- *                 data["tasks_details"][month]["tasks_you_marked_as_incomplete"] = tasks_you_marked_as_incomplete
- *                 if task_created_date >= start and task_created_date <= end:
- *                     week_details.append(task["project"])             # <<<<<<<<<<<<<<
+          /* "itr_windows.pyx":223
+ *                     data["tasks_details"][month]["tasks_you_marked_as_incomplete"] = tasks_you_marked_as_incomplete
+ *                     if task_created_date >= start and task_created_date <= end:
+ *                         week_details.append(task["project"])             # <<<<<<<<<<<<<<
  * 
- *                 if task_created_date >= today - timedelta(days=1):
+ *                     if task_created_date >= today - timedelta(days=1):
  */
-          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 228, __pyx_L1_error)
+          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 223, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
-          __pyx_t_15 = __Pyx_PyList_Append(__pyx_v_week_details, __pyx_t_6); if (unlikely(__pyx_t_15 == ((int)-1))) __PYX_ERR(0, 228, __pyx_L1_error)
+          __pyx_t_15 = __Pyx_PyList_Append(__pyx_v_week_details, __pyx_t_6); if (unlikely(__pyx_t_15 == ((int)-1))) __PYX_ERR(0, 223, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-          /* "itr_windows.pyx":227
- *                 data["tasks_details"][month]["tasks_you_marked_as_complete"] = tasks_you_marked_as_complete
- *                 data["tasks_details"][month]["tasks_you_marked_as_incomplete"] = tasks_you_marked_as_incomplete
- *                 if task_created_date >= start and task_created_date <= end:             # <<<<<<<<<<<<<<
- *                     week_details.append(task["project"])
+          /* "itr_windows.pyx":222
+ *                     data["tasks_details"][month]["tasks_you_marked_as_complete"] = tasks_you_marked_as_complete
+ *                     data["tasks_details"][month]["tasks_you_marked_as_incomplete"] = tasks_you_marked_as_incomplete
+ *                     if task_created_date >= start and task_created_date <= end:             # <<<<<<<<<<<<<<
+ *                         week_details.append(task["project"])
  * 
+ */
+        }
+
+        /* "itr_windows.pyx":225
+ *                         week_details.append(task["project"])
+ * 
+ *                     if task_created_date >= today - timedelta(days=1):             # <<<<<<<<<<<<<<
+ *                         total_tasks_last_one_day.append(task["project"])
+ * 
+ */
+        __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_timedelta); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 225, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_6);
+        __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 225, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_days, __pyx_int_1) < 0) __PYX_ERR(0, 225, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_empty_tuple, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 225, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_1);
+        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __pyx_t_2 = PyNumber_Subtract(__pyx_v_today, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 225, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        __pyx_t_1 = PyObject_RichCompare(__pyx_v_task_created_date, __pyx_t_2, Py_GE); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 225, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __pyx_t_10 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_10 < 0))) __PYX_ERR(0, 225, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        if (__pyx_t_10) {
+
+          /* "itr_windows.pyx":226
+ * 
+ *                     if task_created_date >= today - timedelta(days=1):
+ *                         total_tasks_last_one_day.append(task["project"])             # <<<<<<<<<<<<<<
+ * 
+ *                     if task_created_date >= today - timedelta(days=7):
+ */
+          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 226, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_1);
+          __pyx_t_15 = __Pyx_PyList_Append(__pyx_v_total_tasks_last_one_day, __pyx_t_1); if (unlikely(__pyx_t_15 == ((int)-1))) __PYX_ERR(0, 226, __pyx_L1_error)
+          __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+          /* "itr_windows.pyx":225
+ *                         week_details.append(task["project"])
+ * 
+ *                     if task_created_date >= today - timedelta(days=1):             # <<<<<<<<<<<<<<
+ *                         total_tasks_last_one_day.append(task["project"])
+ * 
+ */
+        }
+
+        /* "itr_windows.pyx":228
+ *                         total_tasks_last_one_day.append(task["project"])
+ * 
+ *                     if task_created_date >= today - timedelta(days=7):             # <<<<<<<<<<<<<<
+ *                         total_tasks_last_one_week.append(task["project"])
+ *                     start_time = datetime.strptime(task["start_time"], "%H:%M") if len(task["start_time"]) == 5 else datetime.strptime(task["start_time"], "%H:%M:%S")
+ */
+        __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_timedelta); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 228, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_1);
+        __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 228, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_days, __pyx_int_7) < 0) __PYX_ERR(0, 228, __pyx_L1_error)
+        __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_empty_tuple, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 228, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_6);
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __pyx_t_2 = PyNumber_Subtract(__pyx_v_today, __pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 228, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+        __pyx_t_6 = PyObject_RichCompare(__pyx_v_task_created_date, __pyx_t_2, Py_GE); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 228, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __pyx_t_10 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely((__pyx_t_10 < 0))) __PYX_ERR(0, 228, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+        if (__pyx_t_10) {
+
+          /* "itr_windows.pyx":229
+ * 
+ *                     if task_created_date >= today - timedelta(days=7):
+ *                         total_tasks_last_one_week.append(task["project"])             # <<<<<<<<<<<<<<
+ *                     start_time = datetime.strptime(task["start_time"], "%H:%M") if len(task["start_time"]) == 5 else datetime.strptime(task["start_time"], "%H:%M:%S")
+ *                     end_time = datetime.strptime(task["end_time"], "%H:%M") if len(task["end_time"]) == 5 else datetime.strptime(task["end_time"], "%H:%M:%S")
+ */
+          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 229, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_6);
+          __pyx_t_15 = __Pyx_PyList_Append(__pyx_v_total_tasks_last_one_week, __pyx_t_6); if (unlikely(__pyx_t_15 == ((int)-1))) __PYX_ERR(0, 229, __pyx_L1_error)
+          __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+
+          /* "itr_windows.pyx":228
+ *                         total_tasks_last_one_day.append(task["project"])
+ * 
+ *                     if task_created_date >= today - timedelta(days=7):             # <<<<<<<<<<<<<<
+ *                         total_tasks_last_one_week.append(task["project"])
+ *                     start_time = datetime.strptime(task["start_time"], "%H:%M") if len(task["start_time"]) == 5 else datetime.strptime(task["start_time"], "%H:%M:%S")
  */
         }
 
         /* "itr_windows.pyx":230
- *                     week_details.append(task["project"])
- * 
- *                 if task_created_date >= today - timedelta(days=1):             # <<<<<<<<<<<<<<
- *                     total_tasks_last_one_day.append(task["project"])
- * 
+ *                     if task_created_date >= today - timedelta(days=7):
+ *                         total_tasks_last_one_week.append(task["project"])
+ *                     start_time = datetime.strptime(task["start_time"], "%H:%M") if len(task["start_time"]) == 5 else datetime.strptime(task["start_time"], "%H:%M:%S")             # <<<<<<<<<<<<<<
+ *                     end_time = datetime.strptime(task["end_time"], "%H:%M") if len(task["end_time"]) == 5 else datetime.strptime(task["end_time"], "%H:%M:%S")
+ *                     duration = end_time - start_time
  */
-        __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_timedelta); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 230, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_6);
-        __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 230, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_start_time); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 230, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_days, __pyx_int_1) < 0) __PYX_ERR(0, 230, __pyx_L1_error)
-        __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_empty_tuple, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 230, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_1);
-        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-        __pyx_t_2 = PyNumber_Subtract(__pyx_v_today, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 230, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_2);
-        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        __pyx_t_1 = PyObject_RichCompare(__pyx_v_task_created_date, __pyx_t_2, Py_GE); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 230, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-        __pyx_t_10 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_10 < 0))) __PYX_ERR(0, 230, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        if (__pyx_t_10) {
-
-          /* "itr_windows.pyx":231
- * 
- *                 if task_created_date >= today - timedelta(days=1):
- *                     total_tasks_last_one_day.append(task["project"])             # <<<<<<<<<<<<<<
- * 
- *                 if task_created_date >= today - timedelta(days=7):
- */
-          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 231, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_1);
-          __pyx_t_15 = __Pyx_PyList_Append(__pyx_v_total_tasks_last_one_day, __pyx_t_1); if (unlikely(__pyx_t_15 == ((int)-1))) __PYX_ERR(0, 231, __pyx_L1_error)
-          __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-          /* "itr_windows.pyx":230
- *                     week_details.append(task["project"])
- * 
- *                 if task_created_date >= today - timedelta(days=1):             # <<<<<<<<<<<<<<
- *                     total_tasks_last_one_day.append(task["project"])
- * 
- */
-        }
-
-        /* "itr_windows.pyx":233
- *                     total_tasks_last_one_day.append(task["project"])
- * 
- *                 if task_created_date >= today - timedelta(days=7):             # <<<<<<<<<<<<<<
- *                     total_tasks_last_one_week.append(task["project"])
- *                 start_time = datetime.strptime(task["start_time"], "%H:%M") if len(task["start_time"]) == 5 else datetime.strptime(task["start_time"], "%H:%M:%S")
- */
-        __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_timedelta); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 233, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 233, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_2);
-        if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_days, __pyx_int_7) < 0) __PYX_ERR(0, 233, __pyx_L1_error)
-        __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_empty_tuple, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 233, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_6);
-        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-        __pyx_t_2 = PyNumber_Subtract(__pyx_v_today, __pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 233, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_2);
-        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        __pyx_t_6 = PyObject_RichCompare(__pyx_v_task_created_date, __pyx_t_2, Py_GE); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 233, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-        __pyx_t_10 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely((__pyx_t_10 < 0))) __PYX_ERR(0, 233, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        if (__pyx_t_10) {
-
-          /* "itr_windows.pyx":234
- * 
- *                 if task_created_date >= today - timedelta(days=7):
- *                     total_tasks_last_one_week.append(task["project"])             # <<<<<<<<<<<<<<
- *                 start_time = datetime.strptime(task["start_time"], "%H:%M") if len(task["start_time"]) == 5 else datetime.strptime(task["start_time"], "%H:%M:%S")
- *                 end_time = datetime.strptime(task["end_time"], "%H:%M") if len(task["end_time"]) == 5 else datetime.strptime(task["end_time"], "%H:%M:%S")
- */
-          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 234, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_6);
-          __pyx_t_15 = __Pyx_PyList_Append(__pyx_v_total_tasks_last_one_week, __pyx_t_6); if (unlikely(__pyx_t_15 == ((int)-1))) __PYX_ERR(0, 234, __pyx_L1_error)
-          __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-
-          /* "itr_windows.pyx":233
- *                     total_tasks_last_one_day.append(task["project"])
- * 
- *                 if task_created_date >= today - timedelta(days=7):             # <<<<<<<<<<<<<<
- *                     total_tasks_last_one_week.append(task["project"])
- *                 start_time = datetime.strptime(task["start_time"], "%H:%M") if len(task["start_time"]) == 5 else datetime.strptime(task["start_time"], "%H:%M:%S")
- */
-        }
-
-        /* "itr_windows.pyx":235
- *                 if task_created_date >= today - timedelta(days=7):
- *                     total_tasks_last_one_week.append(task["project"])
- *                 start_time = datetime.strptime(task["start_time"], "%H:%M") if len(task["start_time"]) == 5 else datetime.strptime(task["start_time"], "%H:%M:%S")             # <<<<<<<<<<<<<<
- *                 end_time = datetime.strptime(task["end_time"], "%H:%M") if len(task["end_time"]) == 5 else datetime.strptime(task["end_time"], "%H:%M:%S")
- *                 duration = end_time - start_time
- */
-        __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_start_time); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 235, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_16 = PyObject_Length(__pyx_t_2); if (unlikely(__pyx_t_16 == ((Py_ssize_t)-1))) __PYX_ERR(0, 235, __pyx_L1_error)
+        __pyx_t_16 = PyObject_Length(__pyx_t_2); if (unlikely(__pyx_t_16 == ((Py_ssize_t)-1))) __PYX_ERR(0, 230, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __pyx_t_10 = (__pyx_t_16 == 5);
         if (__pyx_t_10) {
-          __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_datetime); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 235, __pyx_L1_error)
+          __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_datetime); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 230, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
-          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_strptime); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 235, __pyx_L1_error)
+          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_strptime); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 230, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_start_time); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 235, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_start_time); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 230, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __pyx_t_5 = NULL;
           __pyx_t_8 = 0;
@@ -7788,19 +7758,19 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
             __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_8, 2+__pyx_t_8);
             __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
             __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-            if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 235, __pyx_L1_error)
+            if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 230, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_2);
             __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
           }
           __pyx_t_6 = __pyx_t_2;
           __pyx_t_2 = 0;
         } else {
-          __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_datetime); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 235, __pyx_L1_error)
+          __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_datetime); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 230, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
-          __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_strptime); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 235, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_strptime); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 230, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-          __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_start_time); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 235, __pyx_L1_error)
+          __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_start_time); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 230, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
           __pyx_t_5 = NULL;
           __pyx_t_8 = 0;
@@ -7821,7 +7791,7 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
             __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_8, 2+__pyx_t_8);
             __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
             __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-            if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 235, __pyx_L1_error)
+            if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 230, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_2);
             __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
           }
@@ -7831,25 +7801,25 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
         __Pyx_XDECREF_SET(__pyx_v_start_time, __pyx_t_6);
         __pyx_t_6 = 0;
 
-        /* "itr_windows.pyx":236
- *                     total_tasks_last_one_week.append(task["project"])
- *                 start_time = datetime.strptime(task["start_time"], "%H:%M") if len(task["start_time"]) == 5 else datetime.strptime(task["start_time"], "%H:%M:%S")
- *                 end_time = datetime.strptime(task["end_time"], "%H:%M") if len(task["end_time"]) == 5 else datetime.strptime(task["end_time"], "%H:%M:%S")             # <<<<<<<<<<<<<<
- *                 duration = end_time - start_time
- *                 dur_secs = (duration).total_seconds()
+        /* "itr_windows.pyx":231
+ *                         total_tasks_last_one_week.append(task["project"])
+ *                     start_time = datetime.strptime(task["start_time"], "%H:%M") if len(task["start_time"]) == 5 else datetime.strptime(task["start_time"], "%H:%M:%S")
+ *                     end_time = datetime.strptime(task["end_time"], "%H:%M") if len(task["end_time"]) == 5 else datetime.strptime(task["end_time"], "%H:%M:%S")             # <<<<<<<<<<<<<<
+ *                     duration = end_time - start_time
+ *                     dur_secs = (duration).total_seconds()
  */
-        __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_end_time); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 236, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_end_time); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 231, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_16 = PyObject_Length(__pyx_t_2); if (unlikely(__pyx_t_16 == ((Py_ssize_t)-1))) __PYX_ERR(0, 236, __pyx_L1_error)
+        __pyx_t_16 = PyObject_Length(__pyx_t_2); if (unlikely(__pyx_t_16 == ((Py_ssize_t)-1))) __PYX_ERR(0, 231, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __pyx_t_10 = (__pyx_t_16 == 5);
         if (__pyx_t_10) {
-          __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_datetime); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 236, __pyx_L1_error)
+          __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_datetime); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 231, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
-          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_strptime); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 236, __pyx_L1_error)
+          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_strptime); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 231, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_end_time); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 236, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_end_time); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 231, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __pyx_t_5 = NULL;
           __pyx_t_8 = 0;
@@ -7870,19 +7840,19 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
             __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_8, 2+__pyx_t_8);
             __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
             __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-            if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 236, __pyx_L1_error)
+            if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 231, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_2);
             __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
           }
           __pyx_t_6 = __pyx_t_2;
           __pyx_t_2 = 0;
         } else {
-          __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_datetime); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 236, __pyx_L1_error)
+          __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_datetime); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 231, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
-          __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_strptime); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 236, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_strptime); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 231, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-          __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_end_time); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 236, __pyx_L1_error)
+          __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_end_time); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 231, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
           __pyx_t_5 = NULL;
           __pyx_t_8 = 0;
@@ -7903,7 +7873,7 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
             __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_8, 2+__pyx_t_8);
             __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
             __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-            if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 236, __pyx_L1_error)
+            if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 231, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_2);
             __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
           }
@@ -7913,26 +7883,26 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
         __Pyx_XDECREF_SET(__pyx_v_end_time, __pyx_t_6);
         __pyx_t_6 = 0;
 
-        /* "itr_windows.pyx":237
- *                 start_time = datetime.strptime(task["start_time"], "%H:%M") if len(task["start_time"]) == 5 else datetime.strptime(task["start_time"], "%H:%M:%S")
- *                 end_time = datetime.strptime(task["end_time"], "%H:%M") if len(task["end_time"]) == 5 else datetime.strptime(task["end_time"], "%H:%M:%S")
- *                 duration = end_time - start_time             # <<<<<<<<<<<<<<
- *                 dur_secs = (duration).total_seconds()
- *                 dur_mins = dur_secs / 60
+        /* "itr_windows.pyx":232
+ *                     start_time = datetime.strptime(task["start_time"], "%H:%M") if len(task["start_time"]) == 5 else datetime.strptime(task["start_time"], "%H:%M:%S")
+ *                     end_time = datetime.strptime(task["end_time"], "%H:%M") if len(task["end_time"]) == 5 else datetime.strptime(task["end_time"], "%H:%M:%S")
+ *                     duration = end_time - start_time             # <<<<<<<<<<<<<<
+ *                     dur_secs = (duration).total_seconds()
+ *                     dur_mins = dur_secs / 60
  */
-        __pyx_t_6 = PyNumber_Subtract(__pyx_v_end_time, __pyx_v_start_time); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 237, __pyx_L1_error)
+        __pyx_t_6 = PyNumber_Subtract(__pyx_v_end_time, __pyx_v_start_time); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 232, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
         __Pyx_XDECREF_SET(__pyx_v_duration, __pyx_t_6);
         __pyx_t_6 = 0;
 
-        /* "itr_windows.pyx":238
- *                 end_time = datetime.strptime(task["end_time"], "%H:%M") if len(task["end_time"]) == 5 else datetime.strptime(task["end_time"], "%H:%M:%S")
- *                 duration = end_time - start_time
- *                 dur_secs = (duration).total_seconds()             # <<<<<<<<<<<<<<
- *                 dur_mins = dur_secs / 60
- *                 dur_hrs = dur_mins / 60
+        /* "itr_windows.pyx":233
+ *                     end_time = datetime.strptime(task["end_time"], "%H:%M") if len(task["end_time"]) == 5 else datetime.strptime(task["end_time"], "%H:%M:%S")
+ *                     duration = end_time - start_time
+ *                     dur_secs = (duration).total_seconds()             # <<<<<<<<<<<<<<
+ *                     dur_mins = dur_secs / 60
+ *                     dur_hrs = dur_mins / 60
  */
-        __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_duration, __pyx_n_s_total_seconds); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 238, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_duration, __pyx_n_s_total_seconds); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 233, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __pyx_t_1 = NULL;
         __pyx_t_8 = 0;
@@ -7952,45 +7922,45 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
           PyObject *__pyx_callargs[2] = {__pyx_t_1, NULL};
           __pyx_t_6 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_8, 0+__pyx_t_8);
           __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
-          if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 238, __pyx_L1_error)
+          if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 233, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         }
         __Pyx_XDECREF_SET(__pyx_v_dur_secs, __pyx_t_6);
         __pyx_t_6 = 0;
 
-        /* "itr_windows.pyx":239
- *                 duration = end_time - start_time
- *                 dur_secs = (duration).total_seconds()
- *                 dur_mins = dur_secs / 60             # <<<<<<<<<<<<<<
- *                 dur_hrs = dur_mins / 60
+        /* "itr_windows.pyx":234
+ *                     duration = end_time - start_time
+ *                     dur_secs = (duration).total_seconds()
+ *                     dur_mins = dur_secs / 60             # <<<<<<<<<<<<<<
+ *                     dur_hrs = dur_mins / 60
  * 
  */
-        __pyx_t_6 = __Pyx_PyInt_TrueDivideObjC(__pyx_v_dur_secs, __pyx_int_60, 60, 0, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 239, __pyx_L1_error)
+        __pyx_t_6 = __Pyx_PyInt_TrueDivideObjC(__pyx_v_dur_secs, __pyx_int_60, 60, 0, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 234, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
         __Pyx_XDECREF_SET(__pyx_v_dur_mins, __pyx_t_6);
         __pyx_t_6 = 0;
 
-        /* "itr_windows.pyx":240
- *                 dur_secs = (duration).total_seconds()
- *                 dur_mins = dur_secs / 60
- *                 dur_hrs = dur_mins / 60             # <<<<<<<<<<<<<<
+        /* "itr_windows.pyx":235
+ *                     dur_secs = (duration).total_seconds()
+ *                     dur_mins = dur_secs / 60
+ *                     dur_hrs = dur_mins / 60             # <<<<<<<<<<<<<<
  * 
- *                 if 'subproject' in task.keys():
+ *                     if 'subproject' in task.keys():
  */
-        __pyx_t_6 = __Pyx_PyInt_TrueDivideObjC(__pyx_v_dur_mins, __pyx_int_60, 60, 0, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 240, __pyx_L1_error)
+        __pyx_t_6 = __Pyx_PyInt_TrueDivideObjC(__pyx_v_dur_mins, __pyx_int_60, 60, 0, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 235, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
         __Pyx_XDECREF_SET(__pyx_v_dur_hrs, __pyx_t_6);
         __pyx_t_6 = 0;
 
-        /* "itr_windows.pyx":242
- *                 dur_hrs = dur_mins / 60
+        /* "itr_windows.pyx":237
+ *                     dur_hrs = dur_mins / 60
  * 
- *                 if 'subproject' in task.keys():             # <<<<<<<<<<<<<<
- *                     subproject = task['subproject']
- *                 else:
+ *                     if 'subproject' in task.keys():             # <<<<<<<<<<<<<<
+ *                         subproject = task['subproject']
+ *                     else:
  */
-        __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_task, __pyx_n_s_keys); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 242, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_task, __pyx_n_s_keys); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 237, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __pyx_t_1 = NULL;
         __pyx_t_8 = 0;
@@ -8010,42 +7980,42 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
           PyObject *__pyx_callargs[2] = {__pyx_t_1, NULL};
           __pyx_t_6 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_8, 0+__pyx_t_8);
           __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
-          if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 242, __pyx_L1_error)
+          if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 237, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         }
-        __pyx_t_10 = (__Pyx_PySequence_ContainsTF(__pyx_n_s_subproject, __pyx_t_6, Py_EQ)); if (unlikely((__pyx_t_10 < 0))) __PYX_ERR(0, 242, __pyx_L1_error)
+        __pyx_t_10 = (__Pyx_PySequence_ContainsTF(__pyx_n_s_subproject, __pyx_t_6, Py_EQ)); if (unlikely((__pyx_t_10 < 0))) __PYX_ERR(0, 237, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
         if (__pyx_t_10) {
 
-          /* "itr_windows.pyx":243
+          /* "itr_windows.pyx":238
  * 
- *                 if 'subproject' in task.keys():
- *                     subproject = task['subproject']             # <<<<<<<<<<<<<<
- *                 else:
- *                     subproject = "None"
+ *                     if 'subproject' in task.keys():
+ *                         subproject = task['subproject']             # <<<<<<<<<<<<<<
+ *                     else:
+ *                         subproject = "None"
  */
-          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_subproject); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 243, __pyx_L1_error)
+          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_subproject); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 238, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
           __Pyx_XDECREF_SET(__pyx_v_subproject, __pyx_t_6);
           __pyx_t_6 = 0;
 
-          /* "itr_windows.pyx":242
- *                 dur_hrs = dur_mins / 60
+          /* "itr_windows.pyx":237
+ *                     dur_hrs = dur_mins / 60
  * 
- *                 if 'subproject' in task.keys():             # <<<<<<<<<<<<<<
- *                     subproject = task['subproject']
- *                 else:
+ *                     if 'subproject' in task.keys():             # <<<<<<<<<<<<<<
+ *                         subproject = task['subproject']
+ *                     else:
  */
           goto __pyx_L36;
         }
 
-        /* "itr_windows.pyx":245
- *                     subproject = task['subproject']
- *                 else:
- *                     subproject = "None"             # <<<<<<<<<<<<<<
+        /* "itr_windows.pyx":240
+ *                         subproject = task['subproject']
+ *                     else:
+ *                         subproject = "None"             # <<<<<<<<<<<<<<
  * 
- *                 if task["project"] not in projects:
+ *                     if task["project"] not in projects:
  */
         /*else*/ {
           __Pyx_INCREF(__pyx_n_s_None);
@@ -8053,174 +8023,174 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
         }
         __pyx_L36:;
 
-        /* "itr_windows.pyx":247
- *                     subproject = "None"
+        /* "itr_windows.pyx":242
+ *                         subproject = "None"
  * 
- *                 if task["project"] not in projects:             # <<<<<<<<<<<<<<
- *                     projects[task["project"]] = {
- *                         'project': task["project"],
+ *                     if task["project"] not in projects:             # <<<<<<<<<<<<<<
+ *                         projects[task["project"]] = {
+ *                             'project': task["project"],
  */
-        __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 247, __pyx_L1_error)
+        __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 242, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
-        __pyx_t_10 = (__Pyx_PyDict_ContainsTF(__pyx_t_6, __pyx_v_projects, Py_NE)); if (unlikely((__pyx_t_10 < 0))) __PYX_ERR(0, 247, __pyx_L1_error)
+        __pyx_t_10 = (__Pyx_PyDict_ContainsTF(__pyx_t_6, __pyx_v_projects, Py_NE)); if (unlikely((__pyx_t_10 < 0))) __PYX_ERR(0, 242, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
         if (__pyx_t_10) {
 
-          /* "itr_windows.pyx":249
- *                 if task["project"] not in projects:
- *                     projects[task["project"]] = {
- *                         'project': task["project"],             # <<<<<<<<<<<<<<
- *                         'subprojects': {subproject: 1},
- *                         'total_hours': dur_hrs,
+          /* "itr_windows.pyx":244
+ *                     if task["project"] not in projects:
+ *                         projects[task["project"]] = {
+ *                             'project': task["project"],             # <<<<<<<<<<<<<<
+ *                             'subprojects': {subproject: 1},
+ *                             'total_hours': dur_hrs,
  */
-          __pyx_t_6 = __Pyx_PyDict_NewPresized(10); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 249, __pyx_L1_error)
+          __pyx_t_6 = __Pyx_PyDict_NewPresized(10); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 244, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
-          __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 249, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 244, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
-          if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_project, __pyx_t_2) < 0) __PYX_ERR(0, 249, __pyx_L1_error)
+          if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_project, __pyx_t_2) < 0) __PYX_ERR(0, 244, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-          /* "itr_windows.pyx":250
- *                     projects[task["project"]] = {
- *                         'project': task["project"],
- *                         'subprojects': {subproject: 1},             # <<<<<<<<<<<<<<
- *                         'total_hours': dur_hrs,
- *                         'total_min': dur_mins,
+          /* "itr_windows.pyx":245
+ *                         projects[task["project"]] = {
+ *                             'project': task["project"],
+ *                             'subprojects': {subproject: 1},             # <<<<<<<<<<<<<<
+ *                             'total_hours': dur_hrs,
+ *                             'total_min': dur_mins,
  */
-          __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 250, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 245, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
-          if (PyDict_SetItem(__pyx_t_2, __pyx_v_subproject, __pyx_int_1) < 0) __PYX_ERR(0, 250, __pyx_L1_error)
-          if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_subprojects, __pyx_t_2) < 0) __PYX_ERR(0, 249, __pyx_L1_error)
+          if (PyDict_SetItem(__pyx_t_2, __pyx_v_subproject, __pyx_int_1) < 0) __PYX_ERR(0, 245, __pyx_L1_error)
+          if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_subprojects, __pyx_t_2) < 0) __PYX_ERR(0, 244, __pyx_L1_error)
+          __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+          /* "itr_windows.pyx":246
+ *                             'project': task["project"],
+ *                             'subprojects': {subproject: 1},
+ *                             'total_hours': dur_hrs,             # <<<<<<<<<<<<<<
+ *                             'total_min': dur_mins,
+ *                             'total_secs': dur_secs,
+ */
+          if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_total_hours, __pyx_v_dur_hrs) < 0) __PYX_ERR(0, 244, __pyx_L1_error)
+
+          /* "itr_windows.pyx":247
+ *                             'subprojects': {subproject: 1},
+ *                             'total_hours': dur_hrs,
+ *                             'total_min': dur_mins,             # <<<<<<<<<<<<<<
+ *                             'total_secs': dur_secs,
+ *                             'tasks_uploaded_this_week': week_details.count(task["project"]),
+ */
+          if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_total_min, __pyx_v_dur_mins) < 0) __PYX_ERR(0, 244, __pyx_L1_error)
+
+          /* "itr_windows.pyx":248
+ *                             'total_hours': dur_hrs,
+ *                             'total_min': dur_mins,
+ *                             'total_secs': dur_secs,             # <<<<<<<<<<<<<<
+ *                             'tasks_uploaded_this_week': week_details.count(task["project"]),
+ *                             'total_tasks_last_one_day': total_tasks_last_one_day.count(task["project"]),
+ */
+          if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_total_secs, __pyx_v_dur_secs) < 0) __PYX_ERR(0, 244, __pyx_L1_error)
+
+          /* "itr_windows.pyx":249
+ *                             'total_min': dur_mins,
+ *                             'total_secs': dur_secs,
+ *                             'tasks_uploaded_this_week': week_details.count(task["project"]),             # <<<<<<<<<<<<<<
+ *                             'total_tasks_last_one_day': total_tasks_last_one_day.count(task["project"]),
+ *                             'total_tasks_last_one_week': total_tasks_last_one_week.count(task["project"]),
+ */
+          __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 249, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_2);
+          __pyx_t_1 = __Pyx_CallUnboundCMethod1(&__pyx_umethod_PyList_Type_count, __pyx_v_week_details, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 249, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_1);
+          __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+          if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_tasks_uploaded_this_week, __pyx_t_1) < 0) __PYX_ERR(0, 244, __pyx_L1_error)
+          __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+          /* "itr_windows.pyx":250
+ *                             'total_secs': dur_secs,
+ *                             'tasks_uploaded_this_week': week_details.count(task["project"]),
+ *                             'total_tasks_last_one_day': total_tasks_last_one_day.count(task["project"]),             # <<<<<<<<<<<<<<
+ *                             'total_tasks_last_one_week': total_tasks_last_one_week.count(task["project"]),
+ *                             'total_tasks': 1,
+ */
+          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 250, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_1);
+          __pyx_t_2 = __Pyx_CallUnboundCMethod1(&__pyx_umethod_PyList_Type_count, __pyx_v_total_tasks_last_one_day, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 250, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_2);
+          __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+          if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_total_tasks_last_one_day, __pyx_t_2) < 0) __PYX_ERR(0, 244, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
           /* "itr_windows.pyx":251
- *                         'project': task["project"],
- *                         'subprojects': {subproject: 1},
- *                         'total_hours': dur_hrs,             # <<<<<<<<<<<<<<
- *                         'total_min': dur_mins,
- *                         'total_secs': dur_secs,
+ *                             'tasks_uploaded_this_week': week_details.count(task["project"]),
+ *                             'total_tasks_last_one_day': total_tasks_last_one_day.count(task["project"]),
+ *                             'total_tasks_last_one_week': total_tasks_last_one_week.count(task["project"]),             # <<<<<<<<<<<<<<
+ *                             'total_tasks': 1,
+ *                             'tasks': [task]}
  */
-          if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_total_hours, __pyx_v_dur_hrs) < 0) __PYX_ERR(0, 249, __pyx_L1_error)
-
-          /* "itr_windows.pyx":252
- *                         'subprojects': {subproject: 1},
- *                         'total_hours': dur_hrs,
- *                         'total_min': dur_mins,             # <<<<<<<<<<<<<<
- *                         'total_secs': dur_secs,
- *                         'tasks_uploaded_this_week': week_details.count(task["project"]),
- */
-          if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_total_min, __pyx_v_dur_mins) < 0) __PYX_ERR(0, 249, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 251, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_2);
+          __pyx_t_1 = __Pyx_CallUnboundCMethod1(&__pyx_umethod_PyList_Type_count, __pyx_v_total_tasks_last_one_week, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 251, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_1);
+          __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+          if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_total_tasks_last_one_week, __pyx_t_1) < 0) __PYX_ERR(0, 244, __pyx_L1_error)
+          __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+          if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_total_tasks, __pyx_int_1) < 0) __PYX_ERR(0, 244, __pyx_L1_error)
 
           /* "itr_windows.pyx":253
- *                         'total_hours': dur_hrs,
- *                         'total_min': dur_mins,
- *                         'total_secs': dur_secs,             # <<<<<<<<<<<<<<
- *                         'tasks_uploaded_this_week': week_details.count(task["project"]),
- *                         'total_tasks_last_one_day': total_tasks_last_one_day.count(task["project"]),
+ *                             'total_tasks_last_one_week': total_tasks_last_one_week.count(task["project"]),
+ *                             'total_tasks': 1,
+ *                             'tasks': [task]}             # <<<<<<<<<<<<<<
+ *                     else:
+ *                         projects[task["project"]]['subprojects'][subproject] = projects[task["project"]]['subprojects'].get(subproject, 0) + 1
  */
-          if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_total_secs, __pyx_v_dur_secs) < 0) __PYX_ERR(0, 249, __pyx_L1_error)
-
-          /* "itr_windows.pyx":254
- *                         'total_min': dur_mins,
- *                         'total_secs': dur_secs,
- *                         'tasks_uploaded_this_week': week_details.count(task["project"]),             # <<<<<<<<<<<<<<
- *                         'total_tasks_last_one_day': total_tasks_last_one_day.count(task["project"]),
- *                         'total_tasks_last_one_week': total_tasks_last_one_week.count(task["project"]),
- */
-          __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 254, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_2);
-          __pyx_t_1 = __Pyx_CallUnboundCMethod1(&__pyx_umethod_PyList_Type_count, __pyx_v_week_details, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 254, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_1);
-          __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-          if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_tasks_uploaded_this_week, __pyx_t_1) < 0) __PYX_ERR(0, 249, __pyx_L1_error)
-          __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-          /* "itr_windows.pyx":255
- *                         'total_secs': dur_secs,
- *                         'tasks_uploaded_this_week': week_details.count(task["project"]),
- *                         'total_tasks_last_one_day': total_tasks_last_one_day.count(task["project"]),             # <<<<<<<<<<<<<<
- *                         'total_tasks_last_one_week': total_tasks_last_one_week.count(task["project"]),
- *                         'total_tasks': 1,
- */
-          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 255, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_1);
-          __pyx_t_2 = __Pyx_CallUnboundCMethod1(&__pyx_umethod_PyList_Type_count, __pyx_v_total_tasks_last_one_day, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 255, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_2);
-          __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_total_tasks_last_one_day, __pyx_t_2) < 0) __PYX_ERR(0, 249, __pyx_L1_error)
-          __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-
-          /* "itr_windows.pyx":256
- *                         'tasks_uploaded_this_week': week_details.count(task["project"]),
- *                         'total_tasks_last_one_day': total_tasks_last_one_day.count(task["project"]),
- *                         'total_tasks_last_one_week': total_tasks_last_one_week.count(task["project"]),             # <<<<<<<<<<<<<<
- *                         'total_tasks': 1,
- *                         'tasks': [task]}
- */
-          __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 256, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_2);
-          __pyx_t_1 = __Pyx_CallUnboundCMethod1(&__pyx_umethod_PyList_Type_count, __pyx_v_total_tasks_last_one_week, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 256, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_1);
-          __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-          if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_total_tasks_last_one_week, __pyx_t_1) < 0) __PYX_ERR(0, 249, __pyx_L1_error)
-          __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_total_tasks, __pyx_int_1) < 0) __PYX_ERR(0, 249, __pyx_L1_error)
-
-          /* "itr_windows.pyx":258
- *                         'total_tasks_last_one_week': total_tasks_last_one_week.count(task["project"]),
- *                         'total_tasks': 1,
- *                         'tasks': [task]}             # <<<<<<<<<<<<<<
- *                 else:
- *                     projects[task["project"]]['subprojects'][subproject] = projects[task["project"]]['subprojects'].get(subproject, 0) + 1
- */
-          __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 258, __pyx_L1_error)
+          __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 253, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_INCREF(__pyx_v_task);
           __Pyx_GIVEREF(__pyx_v_task);
-          if (__Pyx_PyList_SET_ITEM(__pyx_t_1, 0, __pyx_v_task)) __PYX_ERR(0, 258, __pyx_L1_error);
-          if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_tasks, __pyx_t_1) < 0) __PYX_ERR(0, 249, __pyx_L1_error)
+          if (__Pyx_PyList_SET_ITEM(__pyx_t_1, 0, __pyx_v_task)) __PYX_ERR(0, 253, __pyx_L1_error);
+          if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_tasks, __pyx_t_1) < 0) __PYX_ERR(0, 244, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-          /* "itr_windows.pyx":248
+          /* "itr_windows.pyx":243
  * 
- *                 if task["project"] not in projects:
- *                     projects[task["project"]] = {             # <<<<<<<<<<<<<<
- *                         'project': task["project"],
- *                         'subprojects': {subproject: 1},
+ *                     if task["project"] not in projects:
+ *                         projects[task["project"]] = {             # <<<<<<<<<<<<<<
+ *                             'project': task["project"],
+ *                             'subprojects': {subproject: 1},
  */
-          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 248, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 243, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
-          if (unlikely((PyDict_SetItem(__pyx_v_projects, __pyx_t_1, __pyx_t_6) < 0))) __PYX_ERR(0, 248, __pyx_L1_error)
+          if (unlikely((PyDict_SetItem(__pyx_v_projects, __pyx_t_1, __pyx_t_6) < 0))) __PYX_ERR(0, 243, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-          /* "itr_windows.pyx":247
- *                     subproject = "None"
+          /* "itr_windows.pyx":242
+ *                         subproject = "None"
  * 
- *                 if task["project"] not in projects:             # <<<<<<<<<<<<<<
- *                     projects[task["project"]] = {
- *                         'project': task["project"],
+ *                     if task["project"] not in projects:             # <<<<<<<<<<<<<<
+ *                         projects[task["project"]] = {
+ *                             'project': task["project"],
  */
           goto __pyx_L37;
         }
 
-        /* "itr_windows.pyx":260
- *                         'tasks': [task]}
- *                 else:
- *                     projects[task["project"]]['subprojects'][subproject] = projects[task["project"]]['subprojects'].get(subproject, 0) + 1             # <<<<<<<<<<<<<<
- *                     projects[task["project"]]['total_hours'] += dur_hrs
- *                     projects[task["project"]]['total_min'] += dur_mins
+        /* "itr_windows.pyx":255
+ *                             'tasks': [task]}
+ *                     else:
+ *                         projects[task["project"]]['subprojects'][subproject] = projects[task["project"]]['subprojects'].get(subproject, 0) + 1             # <<<<<<<<<<<<<<
+ *                         projects[task["project"]]['total_hours'] += dur_hrs
+ *                         projects[task["project"]]['total_min'] += dur_mins
  */
         /*else*/ {
-          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 260, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 255, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
-          __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_projects, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 260, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_projects, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 255, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_t_2, __pyx_n_s_subprojects); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 260, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_t_2, __pyx_n_s_subprojects); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 255, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-          __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_get); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 260, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_get); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 255, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
           __pyx_t_1 = NULL;
@@ -8241,243 +8211,243 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
             PyObject *__pyx_callargs[3] = {__pyx_t_1, __pyx_v_subproject, __pyx_int_0};
             __pyx_t_6 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_8, 2+__pyx_t_8);
             __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
-            if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 260, __pyx_L1_error)
+            if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 255, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_6);
             __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
           }
-          __pyx_t_2 = __Pyx_PyInt_AddObjC(__pyx_t_6, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 260, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyInt_AddObjC(__pyx_t_6, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 255, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 260, __pyx_L1_error)
+          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 255, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
-          __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_projects, __pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 260, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_projects, __pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 255, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_t_1, __pyx_n_s_subprojects); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 260, __pyx_L1_error)
+          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_t_1, __pyx_n_s_subprojects); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 255, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          if (unlikely((PyObject_SetItem(__pyx_t_6, __pyx_v_subproject, __pyx_t_2) < 0))) __PYX_ERR(0, 260, __pyx_L1_error)
+          if (unlikely((PyObject_SetItem(__pyx_t_6, __pyx_v_subproject, __pyx_t_2) < 0))) __PYX_ERR(0, 255, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-          /* "itr_windows.pyx":261
- *                 else:
- *                     projects[task["project"]]['subprojects'][subproject] = projects[task["project"]]['subprojects'].get(subproject, 0) + 1
- *                     projects[task["project"]]['total_hours'] += dur_hrs             # <<<<<<<<<<<<<<
- *                     projects[task["project"]]['total_min'] += dur_mins
- *                     projects[task["project"]]['total_secs'] += dur_secs
+          /* "itr_windows.pyx":256
+ *                     else:
+ *                         projects[task["project"]]['subprojects'][subproject] = projects[task["project"]]['subprojects'].get(subproject, 0) + 1
+ *                         projects[task["project"]]['total_hours'] += dur_hrs             # <<<<<<<<<<<<<<
+ *                         projects[task["project"]]['total_min'] += dur_mins
+ *                         projects[task["project"]]['total_secs'] += dur_secs
  */
-          __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 261, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 256, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
-          __pyx_t_6 = __Pyx_PyDict_GetItem(__pyx_v_projects, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 261, __pyx_L1_error)
+          __pyx_t_6 = __Pyx_PyDict_GetItem(__pyx_v_projects, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 256, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
           __Pyx_INCREF(__pyx_n_s_total_hours);
           __pyx_t_14 = __pyx_n_s_total_hours;
-          __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_t_6, __pyx_t_14); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 261, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_t_6, __pyx_t_14); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 256, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
-          __pyx_t_1 = PyNumber_InPlaceAdd(__pyx_t_2, __pyx_v_dur_hrs); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 261, __pyx_L1_error)
+          __pyx_t_1 = PyNumber_InPlaceAdd(__pyx_t_2, __pyx_v_dur_hrs); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 256, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-          if (unlikely((PyObject_SetItem(__pyx_t_6, __pyx_t_14, __pyx_t_1) < 0))) __PYX_ERR(0, 261, __pyx_L1_error)
+          if (unlikely((PyObject_SetItem(__pyx_t_6, __pyx_t_14, __pyx_t_1) < 0))) __PYX_ERR(0, 256, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
           __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-          /* "itr_windows.pyx":262
- *                     projects[task["project"]]['subprojects'][subproject] = projects[task["project"]]['subprojects'].get(subproject, 0) + 1
- *                     projects[task["project"]]['total_hours'] += dur_hrs
- *                     projects[task["project"]]['total_min'] += dur_mins             # <<<<<<<<<<<<<<
- *                     projects[task["project"]]['total_secs'] += dur_secs
- *                     projects[task["project"]]['tasks_uploaded_this_week'] = week_details.count(task["project"])
+          /* "itr_windows.pyx":257
+ *                         projects[task["project"]]['subprojects'][subproject] = projects[task["project"]]['subprojects'].get(subproject, 0) + 1
+ *                         projects[task["project"]]['total_hours'] += dur_hrs
+ *                         projects[task["project"]]['total_min'] += dur_mins             # <<<<<<<<<<<<<<
+ *                         projects[task["project"]]['total_secs'] += dur_secs
+ *                         projects[task["project"]]['tasks_uploaded_this_week'] = week_details.count(task["project"])
  */
-          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 262, __pyx_L1_error)
+          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 257, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
-          __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_projects, __pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 262, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_projects, __pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 257, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
           __Pyx_INCREF(__pyx_n_s_total_min);
           __pyx_t_14 = __pyx_n_s_total_min;
-          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_t_1, __pyx_t_14); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 262, __pyx_L1_error)
+          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_t_1, __pyx_t_14); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 257, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
-          __pyx_t_2 = PyNumber_InPlaceAdd(__pyx_t_6, __pyx_v_dur_mins); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 262, __pyx_L1_error)
+          __pyx_t_2 = PyNumber_InPlaceAdd(__pyx_t_6, __pyx_v_dur_mins); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 257, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-          if (unlikely((PyObject_SetItem(__pyx_t_1, __pyx_t_14, __pyx_t_2) < 0))) __PYX_ERR(0, 262, __pyx_L1_error)
+          if (unlikely((PyObject_SetItem(__pyx_t_1, __pyx_t_14, __pyx_t_2) < 0))) __PYX_ERR(0, 257, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
           __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-          /* "itr_windows.pyx":263
- *                     projects[task["project"]]['total_hours'] += dur_hrs
- *                     projects[task["project"]]['total_min'] += dur_mins
- *                     projects[task["project"]]['total_secs'] += dur_secs             # <<<<<<<<<<<<<<
- *                     projects[task["project"]]['tasks_uploaded_this_week'] = week_details.count(task["project"])
- *                     projects[task["project"]]['total_tasks_last_one_day'] = total_tasks_last_one_day.count(task["project"])
+          /* "itr_windows.pyx":258
+ *                         projects[task["project"]]['total_hours'] += dur_hrs
+ *                         projects[task["project"]]['total_min'] += dur_mins
+ *                         projects[task["project"]]['total_secs'] += dur_secs             # <<<<<<<<<<<<<<
+ *                         projects[task["project"]]['tasks_uploaded_this_week'] = week_details.count(task["project"])
+ *                         projects[task["project"]]['total_tasks_last_one_day'] = total_tasks_last_one_day.count(task["project"])
  */
-          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 263, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 258, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
-          __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_projects, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 263, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_projects, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 258, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
           __Pyx_INCREF(__pyx_n_s_total_secs);
           __pyx_t_14 = __pyx_n_s_total_secs;
-          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_t_2, __pyx_t_14); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 263, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_t_2, __pyx_t_14); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 258, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
-          __pyx_t_6 = PyNumber_InPlaceAdd(__pyx_t_1, __pyx_v_dur_secs); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 263, __pyx_L1_error)
+          __pyx_t_6 = PyNumber_InPlaceAdd(__pyx_t_1, __pyx_v_dur_secs); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 258, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          if (unlikely((PyObject_SetItem(__pyx_t_2, __pyx_t_14, __pyx_t_6) < 0))) __PYX_ERR(0, 263, __pyx_L1_error)
+          if (unlikely((PyObject_SetItem(__pyx_t_2, __pyx_t_14, __pyx_t_6) < 0))) __PYX_ERR(0, 258, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
           __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-          /* "itr_windows.pyx":264
- *                     projects[task["project"]]['total_min'] += dur_mins
- *                     projects[task["project"]]['total_secs'] += dur_secs
- *                     projects[task["project"]]['tasks_uploaded_this_week'] = week_details.count(task["project"])             # <<<<<<<<<<<<<<
- *                     projects[task["project"]]['total_tasks_last_one_day'] = total_tasks_last_one_day.count(task["project"])
- *                     projects[task["project"]]['total_tasks_last_one_week'] = total_tasks_last_one_week.count(task["project"])
+          /* "itr_windows.pyx":259
+ *                         projects[task["project"]]['total_min'] += dur_mins
+ *                         projects[task["project"]]['total_secs'] += dur_secs
+ *                         projects[task["project"]]['tasks_uploaded_this_week'] = week_details.count(task["project"])             # <<<<<<<<<<<<<<
+ *                         projects[task["project"]]['total_tasks_last_one_day'] = total_tasks_last_one_day.count(task["project"])
+ *                         projects[task["project"]]['total_tasks_last_one_week'] = total_tasks_last_one_week.count(task["project"])
  */
-          __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 264, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 259, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
-          __pyx_t_6 = __Pyx_CallUnboundCMethod1(&__pyx_umethod_PyList_Type_count, __pyx_v_week_details, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 264, __pyx_L1_error)
+          __pyx_t_6 = __Pyx_CallUnboundCMethod1(&__pyx_umethod_PyList_Type_count, __pyx_v_week_details, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 259, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-          __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 264, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 259, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
-          __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_projects, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 264, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_projects, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 259, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-          if (unlikely((PyObject_SetItem(__pyx_t_1, __pyx_n_s_tasks_uploaded_this_week, __pyx_t_6) < 0))) __PYX_ERR(0, 264, __pyx_L1_error)
+          if (unlikely((PyObject_SetItem(__pyx_t_1, __pyx_n_s_tasks_uploaded_this_week, __pyx_t_6) < 0))) __PYX_ERR(0, 259, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-          /* "itr_windows.pyx":265
- *                     projects[task["project"]]['total_secs'] += dur_secs
- *                     projects[task["project"]]['tasks_uploaded_this_week'] = week_details.count(task["project"])
- *                     projects[task["project"]]['total_tasks_last_one_day'] = total_tasks_last_one_day.count(task["project"])             # <<<<<<<<<<<<<<
- *                     projects[task["project"]]['total_tasks_last_one_week'] = total_tasks_last_one_week.count(task["project"])
- *                     projects[task["project"]]['total_tasks'] += 1
+          /* "itr_windows.pyx":260
+ *                         projects[task["project"]]['total_secs'] += dur_secs
+ *                         projects[task["project"]]['tasks_uploaded_this_week'] = week_details.count(task["project"])
+ *                         projects[task["project"]]['total_tasks_last_one_day'] = total_tasks_last_one_day.count(task["project"])             # <<<<<<<<<<<<<<
+ *                         projects[task["project"]]['total_tasks_last_one_week'] = total_tasks_last_one_week.count(task["project"])
+ *                         projects[task["project"]]['total_tasks'] += 1
  */
-          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 265, __pyx_L1_error)
+          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 260, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
-          __pyx_t_1 = __Pyx_CallUnboundCMethod1(&__pyx_umethod_PyList_Type_count, __pyx_v_total_tasks_last_one_day, __pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 265, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_CallUnboundCMethod1(&__pyx_umethod_PyList_Type_count, __pyx_v_total_tasks_last_one_day, __pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 260, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 265, __pyx_L1_error)
+          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 260, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
-          __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_projects, __pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 265, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_projects, __pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 260, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-          if (unlikely((PyObject_SetItem(__pyx_t_2, __pyx_n_s_total_tasks_last_one_day, __pyx_t_1) < 0))) __PYX_ERR(0, 265, __pyx_L1_error)
+          if (unlikely((PyObject_SetItem(__pyx_t_2, __pyx_n_s_total_tasks_last_one_day, __pyx_t_1) < 0))) __PYX_ERR(0, 260, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-          /* "itr_windows.pyx":266
- *                     projects[task["project"]]['tasks_uploaded_this_week'] = week_details.count(task["project"])
- *                     projects[task["project"]]['total_tasks_last_one_day'] = total_tasks_last_one_day.count(task["project"])
- *                     projects[task["project"]]['total_tasks_last_one_week'] = total_tasks_last_one_week.count(task["project"])             # <<<<<<<<<<<<<<
- *                     projects[task["project"]]['total_tasks'] += 1
- *                     projects[task["project"]]['tasks'].append(task)
+          /* "itr_windows.pyx":261
+ *                         projects[task["project"]]['tasks_uploaded_this_week'] = week_details.count(task["project"])
+ *                         projects[task["project"]]['total_tasks_last_one_day'] = total_tasks_last_one_day.count(task["project"])
+ *                         projects[task["project"]]['total_tasks_last_one_week'] = total_tasks_last_one_week.count(task["project"])             # <<<<<<<<<<<<<<
+ *                         projects[task["project"]]['total_tasks'] += 1
+ *                         projects[task["project"]]['tasks'].append(task)
  */
-          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 266, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 261, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
-          __pyx_t_2 = __Pyx_CallUnboundCMethod1(&__pyx_umethod_PyList_Type_count, __pyx_v_total_tasks_last_one_week, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 266, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_CallUnboundCMethod1(&__pyx_umethod_PyList_Type_count, __pyx_v_total_tasks_last_one_week, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 261, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 266, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 261, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
-          __pyx_t_6 = __Pyx_PyDict_GetItem(__pyx_v_projects, __pyx_t_1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 266, __pyx_L1_error)
+          __pyx_t_6 = __Pyx_PyDict_GetItem(__pyx_v_projects, __pyx_t_1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 261, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          if (unlikely((PyObject_SetItem(__pyx_t_6, __pyx_n_s_total_tasks_last_one_week, __pyx_t_2) < 0))) __PYX_ERR(0, 266, __pyx_L1_error)
+          if (unlikely((PyObject_SetItem(__pyx_t_6, __pyx_n_s_total_tasks_last_one_week, __pyx_t_2) < 0))) __PYX_ERR(0, 261, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-          /* "itr_windows.pyx":267
- *                     projects[task["project"]]['total_tasks_last_one_day'] = total_tasks_last_one_day.count(task["project"])
- *                     projects[task["project"]]['total_tasks_last_one_week'] = total_tasks_last_one_week.count(task["project"])
- *                     projects[task["project"]]['total_tasks'] += 1             # <<<<<<<<<<<<<<
- *                     projects[task["project"]]['tasks'].append(task)
+          /* "itr_windows.pyx":262
+ *                         projects[task["project"]]['total_tasks_last_one_day'] = total_tasks_last_one_day.count(task["project"])
+ *                         projects[task["project"]]['total_tasks_last_one_week'] = total_tasks_last_one_week.count(task["project"])
+ *                         projects[task["project"]]['total_tasks'] += 1             # <<<<<<<<<<<<<<
+ *                         projects[task["project"]]['tasks'].append(task)
  * 
  */
-          __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 267, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 262, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
-          __pyx_t_6 = __Pyx_PyDict_GetItem(__pyx_v_projects, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 267, __pyx_L1_error)
+          __pyx_t_6 = __Pyx_PyDict_GetItem(__pyx_v_projects, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 262, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
           __Pyx_INCREF(__pyx_n_s_total_tasks);
           __pyx_t_14 = __pyx_n_s_total_tasks;
-          __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_t_6, __pyx_t_14); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 267, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_t_6, __pyx_t_14); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 262, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
-          __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_t_2, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 267, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_t_2, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 262, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-          if (unlikely((PyObject_SetItem(__pyx_t_6, __pyx_t_14, __pyx_t_1) < 0))) __PYX_ERR(0, 267, __pyx_L1_error)
+          if (unlikely((PyObject_SetItem(__pyx_t_6, __pyx_t_14, __pyx_t_1) < 0))) __PYX_ERR(0, 262, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
           __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-          /* "itr_windows.pyx":268
- *                     projects[task["project"]]['total_tasks_last_one_week'] = total_tasks_last_one_week.count(task["project"])
- *                     projects[task["project"]]['total_tasks'] += 1
- *                     projects[task["project"]]['tasks'].append(task)             # <<<<<<<<<<<<<<
+          /* "itr_windows.pyx":263
+ *                         projects[task["project"]]['total_tasks_last_one_week'] = total_tasks_last_one_week.count(task["project"])
+ *                         projects[task["project"]]['total_tasks'] += 1
+ *                         projects[task["project"]]['tasks'].append(task)             # <<<<<<<<<<<<<<
  * 
- *     data['task_report'] = [i for i in projects.values()]
+ *         data['task_report'] = [i for i in projects.values()]
  */
-          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 268, __pyx_L1_error)
+          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_v_task, __pyx_n_s_project); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 263, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
-          __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_projects, __pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 268, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_projects, __pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 263, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_t_1, __pyx_n_s_tasks); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 268, __pyx_L1_error)
+          __pyx_t_6 = __Pyx_PyObject_Dict_GetItem(__pyx_t_1, __pyx_n_s_tasks); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 263, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          __pyx_t_15 = __Pyx_PyObject_Append(__pyx_t_6, __pyx_v_task); if (unlikely(__pyx_t_15 == ((int)-1))) __PYX_ERR(0, 268, __pyx_L1_error)
+          __pyx_t_15 = __Pyx_PyObject_Append(__pyx_t_6, __pyx_v_task); if (unlikely(__pyx_t_15 == ((int)-1))) __PYX_ERR(0, 263, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
         }
         __pyx_L37:;
 
-        /* "itr_windows.pyx":203
- *             task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
- *             _year, month, mcnt = get_month_details(task["task_created_date"])
- *             if _year == year:             # <<<<<<<<<<<<<<
- *                 task_added+=1
- *                 complete =["Completed","completed", 'Complete', 'complete', True, "true", "True"]
+        /* "itr_windows.pyx":198
+ *                 task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
+ *                 _year, month, mcnt = get_month_details(task["task_created_date"])
+ *                 if _year == year:             # <<<<<<<<<<<<<<
+ *                     task_added+=1
+ *                     complete =["Completed","completed", 'Complete', 'complete', True, "true", "True"]
  */
       }
 
-      /* "itr_windows.pyx":200
- *     tasks_you_marked_as_incomplete=0
- *     for task in task_details:
- *         if "task_created_date" in task.keys():             # <<<<<<<<<<<<<<
- *             task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
- *             _year, month, mcnt = get_month_details(task["task_created_date"])
+      /* "itr_windows.pyx":195
+ *         tasks_you_marked_as_incomplete=0
+ *         for task in task_details:
+ *             if "task_created_date" in task.keys():             # <<<<<<<<<<<<<<
+ *                 task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
+ *                 _year, month, mcnt = get_month_details(task["task_created_date"])
  */
     }
 
-    /* "itr_windows.pyx":199
- *     tasks_you_marked_as_complete=0
- *     tasks_you_marked_as_incomplete=0
- *     for task in task_details:             # <<<<<<<<<<<<<<
- *         if "task_created_date" in task.keys():
- *             task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
+    /* "itr_windows.pyx":194
+ *         tasks_you_marked_as_complete=0
+ *         tasks_you_marked_as_incomplete=0
+ *         for task in task_details:             # <<<<<<<<<<<<<<
+ *             if "task_created_date" in task.keys():
+ *                 task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
  */
   }
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-  /* "itr_windows.pyx":270
- *                     projects[task["project"]]['tasks'].append(task)
+  /* "itr_windows.pyx":265
+ *                         projects[task["project"]]['tasks'].append(task)
  * 
- *     data['task_report'] = [i for i in projects.values()]             # <<<<<<<<<<<<<<
- *     return data
+ *         data['task_report'] = [i for i in projects.values()]             # <<<<<<<<<<<<<<
+ *         return data
  */
   { /* enter inner scope */
-    __pyx_t_7 = PyList_New(0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 270, __pyx_L41_error)
+    __pyx_t_7 = PyList_New(0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 265, __pyx_L41_error)
     __Pyx_GOTREF(__pyx_t_7);
     __pyx_t_3 = 0;
-    __pyx_t_1 = __Pyx_dict_iterator(__pyx_v_projects, 1, __pyx_n_s_values, (&__pyx_t_16), (&__pyx_t_8)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 270, __pyx_L41_error)
+    __pyx_t_1 = __Pyx_dict_iterator(__pyx_v_projects, 1, __pyx_n_s_values, (&__pyx_t_16), (&__pyx_t_8)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 265, __pyx_L41_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_XDECREF(__pyx_t_6);
     __pyx_t_6 = __pyx_t_1;
@@ -8485,11 +8455,11 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
     while (1) {
       __pyx_t_17 = __Pyx_dict_iter_next(__pyx_t_6, __pyx_t_16, &__pyx_t_3, NULL, &__pyx_t_1, NULL, __pyx_t_8);
       if (unlikely(__pyx_t_17 == 0)) break;
-      if (unlikely(__pyx_t_17 == -1)) __PYX_ERR(0, 270, __pyx_L41_error)
+      if (unlikely(__pyx_t_17 == -1)) __PYX_ERR(0, 265, __pyx_L41_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_XDECREF_SET(__pyx_7genexpr__pyx_v_i, __pyx_t_1);
       __pyx_t_1 = 0;
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_7, (PyObject*)__pyx_7genexpr__pyx_v_i))) __PYX_ERR(0, 270, __pyx_L41_error)
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_7, (PyObject*)__pyx_7genexpr__pyx_v_i))) __PYX_ERR(0, 265, __pyx_L41_error)
     }
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_XDECREF(__pyx_7genexpr__pyx_v_i); __pyx_7genexpr__pyx_v_i = 0;
@@ -8499,13 +8469,13 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
     goto __pyx_L1_error;
     __pyx_L44_exit_scope:;
   } /* exit inner scope */
-  if (unlikely((PyDict_SetItem(__pyx_v_data, __pyx_n_s_task_report, __pyx_t_7) < 0))) __PYX_ERR(0, 270, __pyx_L1_error)
+  if (unlikely((PyDict_SetItem(__pyx_v_data, __pyx_n_s_task_report, __pyx_t_7) < 0))) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-  /* "itr_windows.pyx":271
+  /* "itr_windows.pyx":266
  * 
- *     data['task_report'] = [i for i in projects.values()]
- *     return data             # <<<<<<<<<<<<<<
+ *         data['task_report'] = [i for i in projects.values()]
+ *         return data             # <<<<<<<<<<<<<<
  */
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(__pyx_v_data);
@@ -8516,8 +8486,8 @@ static PyObject *__pyx_pf_11itr_windows_6itr_function(CYTHON_UNUSED PyObject *__
  *     return (str(datime.year), month_name, months.count(month_name))
  * 
  * def itr_function(user_id,username, company_id, year):             # <<<<<<<<<<<<<<
- *     # Initialize the data dictionary
- *     data = {'tasks_details': {}}
+ *         # Initialize the data dictionary
+ *         data = {'tasks_details': {}}
  */
 
   /* function exit code */
@@ -8623,6 +8593,7 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_collection, __pyx_k_collection, sizeof(__pyx_k_collection), 0, 0, 1, 1},
     {&__pyx_n_s_command, __pyx_k_command, sizeof(__pyx_k_command), 0, 0, 1, 1},
     {&__pyx_n_s_comment_report_module, __pyx_k_comment_report_module, sizeof(__pyx_k_comment_report_module), 0, 0, 1, 1},
+    {&__pyx_n_s_comments_added, __pyx_k_comments_added, sizeof(__pyx_k_comments_added), 0, 0, 1, 1},
     {&__pyx_n_s_company_id, __pyx_k_company_id, sizeof(__pyx_k_company_id), 0, 0, 1, 1},
     {&__pyx_n_s_complete, __pyx_k_complete, sizeof(__pyx_k_complete), 0, 0, 1, 1},
     {&__pyx_n_s_completed, __pyx_k_completed, sizeof(__pyx_k_completed), 0, 0, 1, 1},
@@ -8659,6 +8630,8 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_initializing, __pyx_k_initializing, sizeof(__pyx_k_initializing), 0, 0, 1, 1},
     {&__pyx_n_s_is_coroutine, __pyx_k_is_coroutine, sizeof(__pyx_k_is_coroutine), 0, 0, 1, 1},
     {&__pyx_n_s_iso_format, __pyx_k_iso_format, sizeof(__pyx_k_iso_format), 0, 0, 1, 1},
+    {&__pyx_n_s_issues_raised, __pyx_k_issues_raised, sizeof(__pyx_k_issues_raised), 0, 0, 1, 1},
+    {&__pyx_n_s_issues_resolved, __pyx_k_issues_resolved, sizeof(__pyx_k_issues_resolved), 0, 0, 1, 1},
     {&__pyx_n_s_itr_function, __pyx_k_itr_function, sizeof(__pyx_k_itr_function), 0, 0, 1, 1},
     {&__pyx_n_s_itr_windows, __pyx_k_itr_windows, sizeof(__pyx_k_itr_windows), 0, 0, 1, 1},
     {&__pyx_kp_s_itr_windows_pyx, __pyx_k_itr_windows_pyx, sizeof(__pyx_k_itr_windows_pyx), 0, 0, 1, 0},
@@ -8677,7 +8650,6 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
     {&__pyx_n_s_payload, __pyx_k_payload, sizeof(__pyx_k_payload), 0, 0, 1, 1},
     {&__pyx_n_s_percentage_tasks_completed, __pyx_k_percentage_tasks_completed, sizeof(__pyx_k_percentage_tasks_completed), 0, 0, 1, 1},
-    {&__pyx_n_s_percentage_team_tasks_completed, __pyx_k_percentage_team_tasks_completed, sizeof(__pyx_k_percentage_team_tasks_completed), 0, 0, 1, 1},
     {&__pyx_n_s_platform, __pyx_k_platform, sizeof(__pyx_k_platform), 0, 0, 1, 1},
     {&__pyx_n_s_project, __pyx_k_project, sizeof(__pyx_k_project), 0, 0, 1, 1},
     {&__pyx_n_s_projects, __pyx_k_projects, sizeof(__pyx_k_projects), 0, 0, 1, 1},
@@ -8717,13 +8689,6 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_team_management_modules, __pyx_k_team_management_modules, sizeof(__pyx_k_team_management_modules), 0, 0, 1, 1},
     {&__pyx_n_s_team_management_report, __pyx_k_team_management_report, sizeof(__pyx_k_team_management_report), 0, 0, 1, 1},
     {&__pyx_n_s_team_member_ID, __pyx_k_team_member_ID, sizeof(__pyx_k_team_member_ID), 0, 0, 1, 1},
-    {&__pyx_n_s_team_tasks, __pyx_k_team_tasks, sizeof(__pyx_k_team_tasks), 0, 0, 1, 1},
-    {&__pyx_n_s_team_tasks_approved, __pyx_k_team_tasks_approved, sizeof(__pyx_k_team_tasks_approved), 0, 0, 1, 1},
-    {&__pyx_n_s_team_tasks_comments_added, __pyx_k_team_tasks_comments_added, sizeof(__pyx_k_team_tasks_comments_added), 0, 0, 1, 1},
-    {&__pyx_n_s_team_tasks_completed, __pyx_k_team_tasks_completed, sizeof(__pyx_k_team_tasks_completed), 0, 0, 1, 1},
-    {&__pyx_n_s_team_tasks_issues_raised, __pyx_k_team_tasks_issues_raised, sizeof(__pyx_k_team_tasks_issues_raised), 0, 0, 1, 1},
-    {&__pyx_n_s_team_tasks_issues_resolved, __pyx_k_team_tasks_issues_resolved, sizeof(__pyx_k_team_tasks_issues_resolved), 0, 0, 1, 1},
-    {&__pyx_n_s_team_tasks_uncompleted, __pyx_k_team_tasks_uncompleted, sizeof(__pyx_k_team_tasks_uncompleted), 0, 0, 1, 1},
     {&__pyx_n_s_teams, __pyx_k_teams, sizeof(__pyx_k_teams), 0, 0, 1, 1},
     {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
     {&__pyx_n_s_text, __pyx_k_text, sizeof(__pyx_k_text), 0, 0, 1, 1},
@@ -8812,8 +8777,8 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *     return (str(datime.year), month_name, months.count(month_name))
  * 
  * def itr_function(user_id,username, company_id, year):             # <<<<<<<<<<<<<<
- *     # Initialize the data dictionary
- *     data = {'tasks_details': {}}
+ *         # Initialize the data dictionary
+ *         data = {'tasks_details': {}}
  */
   __pyx_tuple__11 = PyTuple_Pack(35, __pyx_n_s_user_id, __pyx_n_s_username, __pyx_n_s_company_id, __pyx_n_s_year, __pyx_n_s_data, __pyx_n_s_month, __pyx_n_s_field, __pyx_n_s_task_details, __pyx_n_s_today, __pyx_n_s_st, __pyx_n_s_start, __pyx_n_s_end, __pyx_n_s_projects, __pyx_n_s_week_details, __pyx_n_s_total_tasks_last_one_day, __pyx_n_s_total_tasks_last_one_week, __pyx_n_s_task_added, __pyx_n_s_tasks_completed, __pyx_n_s_tasks_uncompleted, __pyx_n_s_tasks_you_approved, __pyx_n_s_tasks_you_marked_as_complete, __pyx_n_s_tasks_you_marked_as_incomplete, __pyx_n_s_task, __pyx_n_s_task_created_date, __pyx_n_s_year_2, __pyx_n_s_mcnt, __pyx_n_s_complete, __pyx_n_s_start_time, __pyx_n_s_end_time, __pyx_n_s_duration, __pyx_n_s_dur_secs, __pyx_n_s_dur_mins, __pyx_n_s_dur_hrs, __pyx_n_s_subproject, __pyx_n_s_i); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 150, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__11);
@@ -9427,8 +9392,8 @@ if (!__Pyx_RefNanny) {
  *     return (str(datime.year), month_name, months.count(month_name))
  * 
  * def itr_function(user_id,username, company_id, year):             # <<<<<<<<<<<<<<
- *     # Initialize the data dictionary
- *     data = {'tasks_details': {}}
+ *         # Initialize the data dictionary
+ *         data = {'tasks_details': {}}
  */
   __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_11itr_windows_7itr_function, 0, __pyx_n_s_itr_function, NULL, __pyx_n_s_itr_windows, __pyx_d, ((PyObject *)__pyx_codeobj__12)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 150, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
