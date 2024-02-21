@@ -41,6 +41,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
   const [leaveOverlayVisibility, setLeaveOverlayVisibility] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [noOfWeeks, setNoOfWeeks] = useState('');
   const [viewOverlayVisibility, setViewOverlayVisibility] = useState(false);
   const updateListingRef = useRef();
 
@@ -204,6 +205,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
   const handleClosingLeaveItemClick = () => {
     setStartDate('');
     setEndDate('');
+    setNoOfWeeks('');
     setLeaveOverlayVisibility(false);
   };
   const handleSubmitClick = async () => {
@@ -233,6 +235,29 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
     } catch (error) {
       toast.error('Unable to set leave. Please try again.')
     }
+  }
+
+  const handleWeekChange = (e) => {
+    if (!startDate) {
+      return toast.error('Please select start date first!');
+    }
+    const selectedStartDate = new Date(startDate);
+    const numberOfWeeks = parseInt(e.target.value);
+    if (numberOfWeeks <= 0) {
+      setEndDate('');
+      setNoOfWeeks('');
+    }
+    if (numberOfWeeks > 0) {
+      const endDate = new Date(selectedStartDate.setDate(selectedStartDate.getDate() + (numberOfWeeks * 7)));
+      setEndDate(endDate.toISOString().split('T')[0]);
+      setNoOfWeeks(numberOfWeeks);
+    }
+  }
+
+  const handleStartDateChange = (e) => {
+    setStartDate(e.target.value);
+    setNoOfWeeks('');
+    setEndDate('');
   }
 
   return (
@@ -401,14 +426,24 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
                 <span>Start Date:</span>
                 <input type='date'
                   value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
+                  onChange={(e) => handleStartDateChange(e)}
+                />
+              </label>
+              <label>
+                <span>Number of week(s):</span>
+                <input type='number'
+                  value={noOfWeeks}
+                  onChange={(e) =>
+                    handleWeekChange(e)
+                  }
                 />
               </label>
               <label>
                 <span>End Date:</span>
                 <input type='date'
                   value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
+                  // onChange={(e) => setEndDate(e.target.value)}
+                  disabled
                 />
               </label>
               <button className={styles.edit__Btn} onClick={handleSubmitClick}>Submit</button>
