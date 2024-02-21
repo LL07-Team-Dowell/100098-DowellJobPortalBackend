@@ -140,11 +140,6 @@ import platform
 is_windows = True if (platform.system() == "Windows") else False
 if not is_windows:
     """for linux server"""
-    try:
-        from .linux_cython.itr_linux import itr_function
-    except Exception as e:
-        print(e)
-    
     load_dotenv("/home/100098/100098-DowellJobPortal/.env")
     API_KEY = str(os.getenv("API_KEY"))
     DB_Name = str(os.getenv("DB_Name"))
@@ -161,12 +156,6 @@ if not is_windows:
 if is_windows:
     """for windows local"""
     
-    try:
-        from .windows_cython.itr_windows import itr_function
-    except Exception as e:
-        print(e)
-    
-
     load_dotenv(f"{os.getcwd()}/env")
     API_KEY = str(os.getenv("API_KEY"))
     DB_Name = str(os.getenv("DB_Name"))
@@ -6886,7 +6875,7 @@ class Generate_Report(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
     
-    """def itr_function_py(user_id,username, company_id, year):
+    def itr_function(self,user_id,username, company_id, year):
         # Initialize the data dictionary
         data = {'tasks_details': {}}
 
@@ -7003,7 +6992,6 @@ class Generate_Report(APIView):
                         
         data['task_report'] = [i for i in projects.values()]
         return data
-"""
     
     def generate_individual_c_report(self, request):
         payload = request.data
@@ -7043,7 +7031,7 @@ class Generate_Report(APIView):
                         + " ".join([va for va in field.values()])
                     },status=status.HTTP_204_NO_CONTENT)
 
-            response = itr_function(
+            response = self.itr_function(
                 payload.get("user_id"), payload.get("username"), payload.get("company_id"), payload.get("year")
             )
             data={"personal_info":info[0]}
