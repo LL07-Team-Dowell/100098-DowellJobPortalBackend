@@ -7,9 +7,23 @@ import GenerateInvoice from "./components/GenerateInvoice";
 
 const InvoicePayment = ({ isGroupLead }) => {
   const [showInvoicePopup, setShowInvoicePopup] = useState(false);
-  const { currentUser } = useCurrentUserContext();
+  const {
+    currentUser,
+    currentUserHiredApplications,
+    currentUserHiredApplicationsLoaded,
+  } = useCurrentUserContext();
 
-  const requiredLogCount = isGroupLead ? 640 : 320;
+  useEffect(() => {
+    const attendance = currentUserHiredApplications
+      .map((item) => {
+        return item.project;
+      })
+      .flat();
+
+    console.log(attendance);
+  }, [currentUserHiredApplicationsLoaded]);
+
+  const requiredLogCount = isGroupLead ? 160 : 80;
 
   const handleInvoicePopup = () => {
     setShowInvoicePopup(true);
@@ -34,6 +48,10 @@ const InvoicePayment = ({ isGroupLead }) => {
           <GenerateInvoice
             handleCloseModal={handleCloseModal}
             requiredLogCount={requiredLogCount}
+            currentUserHiredApplications={currentUserHiredApplications}
+            currentUserHiredApplicationsLoaded={
+              currentUserHiredApplicationsLoaded
+            }
           />
         )}
       </div>

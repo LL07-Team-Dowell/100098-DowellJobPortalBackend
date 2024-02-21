@@ -10,62 +10,102 @@ import {
   workFlowdetails,
 } from "../../../../services/paymentService";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
-import { formatDateForAPI } from "../../../../helpers/helpers";
+import {
+  formatDateForAPI,
+  getDaysDifferenceBetweenDates,
+  getMondayAndFridayOfWeek,
+  getWeekdaysBetweenDates,
+} from "../../../../helpers/helpers";
 import HorizontalBarLoader from "../../../../components/HorizontalBarLoader/HorizontalBarLoader";
 import { TbCopy } from "react-icons/tb";
 import { PiArrowElbowRightThin } from "react-icons/pi";
 import { toast } from "react-toastify";
+import { getInternetSpeedTest } from "../../../../services/speedTestServices";
+import { getUserWiseAttendance } from "../../../../services/hrServices";
 
-const GenerateInvoice = ({ handleCloseModal, requiredLogCount }) => {
+const GenerateInvoice = ({
+  handleCloseModal,
+  requiredLogCount,
+  currentUserHiredApplications,
+  currentUserHiredApplicationsLoaded,
+}) => {
   const [dataProcessing, setDataProcessing] = useState(false);
   const [showInvoicePage, setShowInvoicePage] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
+  const [paymentFrom, setPaymentFrom] = useState("");
+  const [paymentTo, setPaymentTo] = useState("");
   const { currentUser } = useCurrentUserContext();
   const [showMasterLink, setShowMasterLink] = useState("");
   const [showMasterCode, setShowMasterCode] = useState("");
   const [copied, setCopiedId] = useState("");
-
-  // const [dataForProcess, setDataForProcess] = useState({
-  //   payment_month: "",
-  //   payment_year: "",
-  // });
-
-  const monthsWith30Days = ["April", "June", "September", "November"];
-  const monthsWith28Days = ["February"];
-
-  let endDayOfMonth = 31;
-
-  if (monthsWith30Days.includes(selectedMonth)) endDayOfMonth = 30;
-  if (monthsWith28Days.includes(selectedMonth)) endDayOfMonth = 28;
 
   const handleProcessInvoice = async () => {
     if (!selectedMonth) return toast.info("Select Month");
 
     if (!selectedYear) return toast.info("Select Year");
 
+    if (!paymentFrom || !paymentTo)
+      return toast.info("Select a both start and end dates");
+
+    if (getDaysDifferenceBetweenDates(paymentFrom, paymentTo) >= 7) {
+      return toast.info(
+        "Difference between start and end date should be equal to 7 days!"
+      );
+    }
+
+    const { monday, friday } = getMondayAndFridayOfWeek(paymentFrom);
+    console.log(monday, friday);
+
+    // if (paymentFrom && paymentTo !== selectedMonth)
+    //   return toast.info("Invoice must be within selected month");
+
+    const attendanceProjects = currentUserHiredApplications
+      .map((item) => {
+        return item.project;
+      })
+      .flat();
+
     setDataProcessing(true);
 
     Promise.all([
       getLogsBetweenRange({
-        start_date: formatDateForAPI(
-          `${selectedYear.value}-${selectedMonth.value}-01`
-        ),
-        end_date: formatDateForAPI(
-          `${selectedYear.value}-${selectedMonth.value}-${endDayOfMonth}`
-        ),
+        start_date: paymentFrom,
+        end_date: paymentTo,
         user_id: currentUser.userinfo.userID,
         company_id: currentUser.portfolio_info[0].org_id,
       }),
       getleaveDays(currentUser.userinfo.userID),
+      // getInternetSpeedTest(currentUser.userinfo.email),
+      attendanceProjects.map((project) => {
+        return getUserWiseAttendance({
+          usernames: [currentUser.userinfo.username],
+          start_date: formatDateForAPI(monday),
+          end_date: formatDateForAPI(friday),
+          company_id: currentUser.portfolio_info[0].org_id,
+          limit: "0",
+          offset: "0",
+          project: project,
+        });
+      }),
     ])
       .then((res) => {
-        console.log(res[1]);
         console.log(res[0]?.data);
+        console.log(
+          res[1].data.response.filter((leave) =>
+            leave.Leave_Approval === "True" ? true : false
+          )
+        );
+        // console.log(res[2]);
+        console.log(res[3]);
 
         const taskDetails = res[0]?.data?.task_details;
 
         const approvedLogs = taskDetails.filter((log) => log.approved === true);
+
+        const getUserOnLeave = res[1].data.response.filter((leave) =>
+          leave.Leave_Approval === "True" ? true : false
+        );
 
         const templateID = "64ece51ba57293efb539e5b7";
 
@@ -73,10 +113,21 @@ const GenerateInvoice = ({ handleCloseModal, requiredLogCount }) => {
           user_id: currentUser.userinfo.userID,
           payment_month: selectedMonth.label,
           payment_year: selectedYear.label,
-          number_of_leave_days: 5,
+          payment_from: paymentFrom,
+          payment_to: paymentTo,
+          user_was_on_leave: getUserOnLeave,
           approved_logs_count: approvedLogs.length,
           total_logs_required: requiredLogCount,
         };
+
+        if (
+          dataForInvoice.payment_from &&
+          dataForInvoice.payment_to === dataForInvoice.payment_month
+        ) {
+          setDataProcessing(false);
+
+          return toast.info("Invoice already created for this week");
+        }
 
         const dataForWorkflow = {
           company_id: currentUser.portfolio_info[0].org_id,
@@ -199,6 +250,24 @@ const GenerateInvoice = ({ handleCloseModal, requiredLogCount }) => {
                         placeholder="Select year"
                       />
                     </div>
+                  </label>
+                  <label>
+                    <span>Payment From</span>
+                    <input
+                      type="date"
+                      value={formatDateForAPI(paymentFrom)}
+                      onChange={({ target }) => setPaymentFrom(target.value)}
+                      id="payment_from"
+                    />
+                  </label>
+                  <label>
+                    <span>Payment To</span>
+                    <input
+                      type="date"
+                      value={formatDateForAPI(paymentTo)}
+                      onChange={({ target }) => setPaymentTo(target.value)}
+                      id="payment_to"
+                    />
                   </label>
                 </div>
                 <div className={styles.process_btn}>
