@@ -141,7 +141,7 @@ is_windows = True if (platform.system() == "Windows") else False
 if not is_windows:
     """for linux server"""
     try:
-        from .itr_linux import itr_function
+        from .linux_cython.itr_linux import itr_function
     except Exception as e:
         print(e)
     
@@ -162,7 +162,7 @@ if is_windows:
     """for windows local"""
     
     try:
-        from .itr_windows import itr_function
+        from .windows_cython.itr_windows import itr_function
     except Exception as e:
         print(e)
     
