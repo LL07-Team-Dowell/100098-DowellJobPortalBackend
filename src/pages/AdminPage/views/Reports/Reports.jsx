@@ -82,8 +82,8 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
   const [loadingButton, setLoadingButton] = useState(false);
   const { currentUser, reportsUserDetails } = useCurrentUserContext();
   const [datasetForApplications, setDatasetForApplications] = useState(null);
-  const [ reportDataToDownload, setReportDataToDownload ] = useState([]);
-  const [ PDFbtnDisabled, setPDFBtnDisabled ] = useState(false);
+  const [reportDataToDownload, setReportDataToDownload] = useState([]);
+  const [PDFbtnDisabled, setPDFBtnDisabled] = useState(false);
   const csvLinkRef = useRef();
   const graphDivRef = useRef();
 
@@ -152,8 +152,8 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
       generateCommonAdminReport(data)
         .then((resp) => {
           setLoading(false);
-          console.log(resp.data.response);
-          setdata(resp.data.response);
+          // console.log(resp.data.response);
+          setdata(resp?.data?.response);
         })
         .catch((err) => console.log(err));
     }
@@ -178,18 +178,18 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
       .then((resp) => {
         closeModal();
         setLoadingButton(false);
-        console.log(resp.data.response);
-        setdata(resp.data.response);
+        console.log(resp?.data?.response);
+        setdata(resp?.data?.response);
 
         const months = Object.keys(
-          resp.data.response.job_applications.months || {}
+          resp?.data?.response?.job_applications?.months || {}
         );
         let currentTrack = 0;
         const datasetData = months
           .map((month, index) => {
-            if (resp.data.response.job_applications.months[month] === 0)
+            if (resp?.data?.response?.job_applications?.months[month] === 0)
               return null;
-            return resp.data.response.job_applications.months[month].map(
+            return resp?.data?.response?.job_applications?.months[month].map(
               (item) => {
                 if (currentTrack > colors.length - 1) {
                   currentTrack = 0;
@@ -222,7 +222,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
           err.response
             ? err.response.status === 500
               ? "Report generation failed"
-              : err.response.data.message
+              : err?.response?.data?.message
             : "Report generation failed"
         );
       });
@@ -252,18 +252,18 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
     generateCommonAdminReport(data)
       .then((resp) => {
         setLoading(false);
-        console.log(resp.data.response);
-        setdata(resp.data.response);
+        console.log(resp?.data?.response);
+        setdata(resp?.data?.response);
 
         const months = Object.keys(
-          resp.data.response.job_applications.months || {}
+          resp?.data?.response?.job_applications?.months || {}
         );
 
         const datasetData = months
           .map((month, index) => {
-            if (resp.data.response.job_applications.months[month] === 0)
+            if (resp?.data?.response?.job_applications?.months[month] === 0)
               return null;
-            return resp.data.response.job_applications.months[month].map(
+            return resp?.data?.response?.job_applications?.months[month].map(
               (item) => {
                 if (currentTrack > colors.length - 1) {
                   currentTrack = 0;
@@ -321,12 +321,12 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
       });
   }, []);
   console.log((data?.hired / data?.job_applications?.total) * 100);
-  
+
   useEffect(() => {
     console.log(data);
 
     const reportDataKeys = ['ITEM', 'COUNT', 'TITLE'];
-    
+
     const reportDataVals = Object.keys(data || {}).map(dataKey => {
       if (dataKey === 'job_applications') return null
 
@@ -342,7 +342,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
           data[dataKey]?.no_job_applications,
           data[dataKey]?.job_title,
         ]
-        
+
         return null
       }
 
@@ -370,23 +370,23 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
 
     }).filter(item => item);
 
-    const [ 
+    const [
       jobApplicationHeaderTitle,
       jobApplicationDataKeys,
       jobApplicationDataVals,
     ] = [
-      ['MONTHLY JOB APPLICATION DATA'],
-      [
-        'MONTH',
-        'COUNT OF APPLICATIONS',
-      ],
-      Object.keys(data?.job_applications?.months || {}).map(key => {
-        return [
-          key,
-          data?.job_applications?.months[key],
-        ]
-      }),
-    ];
+        ['MONTHLY JOB APPLICATION DATA'],
+        [
+          'MONTH',
+          'COUNT OF APPLICATIONS',
+        ],
+        Object.keys(data?.job_applications?.months || {}).map(key => {
+          return [
+            key,
+            data?.job_applications?.months[key],
+          ]
+        }),
+      ];
 
     setReportDataToDownload([
       reportDataKeys,
@@ -403,10 +403,10 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
 
   }, [data]);
 
-  console.log(data.hiring_rate);
+  // console.log(data?.hiring_rate);
 
   const handleDownloadExcelData = () => {
-    
+
     if (!csvLinkRef.current) return
 
     csvLinkRef.current?.link?.click();
@@ -428,8 +428,8 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
         unit: "px",
         format: [elemRef.current.scrollHeight, elemRef.current.scrollWidth]
       });
-      
-      doc.addImage(dataURL, 'PNG',  1, 1);
+
+      doc.addImage(dataURL, 'PNG', 1, 1);
       doc.save("report.pdf");
 
       setPDFBtnDisabled(false);
@@ -502,7 +502,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                   </>
                 )}
               </div>
-              <CSVLink 
+              <CSVLink
                 data={reportDataToDownload}
                 ref={csvLinkRef}
                 style={{ display: 'none' }}
@@ -548,8 +548,8 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                 }}
               >
                 <div style={{ width: "48%" }}>
-                  {data.no_of_active_jobs === 0 &&
-                  data.no_of_inactive_jobs === 0 ? (
+                  {data?.no_of_active_jobs === 0 &&
+                    data?.no_of_inactive_jobs === 0 ? (
                     <h4>
                       There are no active or inactive jobs created between{" "}
                       {firstDateState.split(" ")[0]} and{" "}
@@ -576,8 +576,8 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                               {
                                 label: "Poll",
                                 data: [
-                                  data.no_of_active_jobs,
-                                  data.no_of_inactive_jobs,
+                                  data?.no_of_active_jobs,
+                                  data?.no_of_inactive_jobs,
                                 ],
                                 backgroundColor: ["#005734", "#D3D3D3"],
                                 borderColor: ["#005734", "#D3D3D3"],
@@ -611,14 +611,14 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                     <Pie
                       data={{
                         labels: [
-                          data.most_applied_job?.job_title,
-                          data.least_applied_job?.job_title,
+                          data?.most_applied_job?.job_title,
+                          data?.least_applied_job?.job_title,
                         ],
                         datasets: [
                           {
                             data: [
-                              data.most_applied_job?.no_job_applications,
-                              data.least_applied_job?.no_job_applications,
+                              data?.most_applied_job?.no_job_applications,
+                              data?.least_applied_job?.no_job_applications,
                             ],
                             backgroundColor: ["#005734", "#d3d3d3"],
                             borderColor: ["#005734", "#d3d3d3"],
@@ -649,8 +649,8 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                 }}
               >
                 {!(
-                  data.job_applications ||
-                  data.nojob_applications_from_start_date_to_end_date
+                  data?.job_applications ||
+                  data?.nojob_applications_from_start_date_to_end_date
                 ) ? (
                   <h4>
                     There are no applications submitted between{" "}
@@ -677,7 +677,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                         <Line
                           data={{
                             labels: Object.keys(
-                              data.job_applications.months || {}
+                              data?.job_applications.months || {}
                             ),
                             datasets: datasetForApplications,
                           }}
@@ -715,7 +715,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                   ></Doughnut> */}
                   </div>
                 )}
-                {!extractNumber(data.hiring_rate) ? (
+                {!extractNumber(data?.hiring_rate) ? (
                   <h4>
                     No candidates were hired between{" "}
                     {firstDateState.split(" ")[0]} and{" "}
@@ -760,19 +760,19 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                           margin: "auto",
                         }}
                         value={
-                          data.job_applications.total
+                          data?.job_applications?.total
                             ? (
-                                (data.hired / data.job_applications.total) *
-                                100
-                              ).toFixed(2)
+                              (data?.hired / data?.job_applications?.total) *
+                              100
+                            ).toFixed(2)
                             : "0"
                         }
                         text={
-                          data.job_applications.total
+                          data?.job_applications?.total
                             ? `${(
-                                (data.hired / data.job_applications.total) *
-                                100
-                              ).toFixed(2)}%`
+                              (data?.hired / data?.job_applications?.total) *
+                              100
+                            ).toFixed(2)}%`
                             : "00%"
                         }
                         styles={buildStyles({
@@ -792,11 +792,11 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
               <h6>candidates</h6>
               <div className='candidates_graph'>
                 {!(
-                  data.hired ||
-                  data.rejected ||
-                  data.probationary_candidates ||
-                  data.rehired ||
-                  data.selected
+                  data?.hired ||
+                  data?.rejected ||
+                  data?.probationary_candidates ||
+                  data?.rehired ||
+                  data?.selected
                 ) ? (
                   <h4>
                     There is no candidate data between{" "}
@@ -828,42 +828,42 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                         datasets: [
                           {
                             label: "Hired candidates",
-                            data: [data.onboarded],
+                            data: [data?.onboarded],
                             backgroundColor: ["#005734"],
                             borderColor: ["#005734"],
                             maxBarThickness: 40,
                           },
                           {
                             label: "Rejected candidates",
-                            data: [data.rejected],
+                            data: [data?.rejected],
                             backgroundColor: ["#9146FF"],
                             borderColor: ["#9146FF"],
                             maxBarThickness: 40,
                           },
                           {
                             label: "Probationary candidates",
-                            data: [data.probationary_candidates],
+                            data: [data?.probationary_candidates],
                             backgroundColor: ["black"],
                             borderColor: [],
                             maxBarThickness: 40,
                           },
                           {
                             label: "Rehired candidates",
-                            data: [data.rehired],
+                            data: [data?.rehired],
                             backgroundColor: ["pink"],
                             borderColor: ["pink"],
                             maxBarThickness: 40,
                           },
                           {
                             label: "Selected candidates",
-                            data: [data.selected],
+                            data: [data?.selected],
                             backgroundColor: ["blue"],
                             borderColor: ["blue"],
                             maxBarThickness: 40,
                           },
                           {
                             label: "Shortlisted candidates",
-                            data: [data.shortlisted],
+                            data: [data?.shortlisted],
                             backgroundColor: ["orange"],
                             borderColor: ["orange"],
                             maxBarThickness: 40,
@@ -880,7 +880,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
             <div style={{ marginBottom: 20 }} className='graph__Item'>
               <h6>Teams and work logs</h6>
               <div className='teams__And_Tasks__Wrapper'>
-                {!(data.teams || data.team_tasks || data.tasks) ? (
+                {!(data?.teams || data?.team_tasks || data?.tasks) ? (
                   <h4>
                     There is no teams data between{" "}
                     {firstDateState.split(" ")[0]} and{" "}
@@ -901,7 +901,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                           ],
                           datasets: [
                             {
-                              data: [data.teams, data.tasks, data.tasks],
+                              data: [data?.teams, data?.tasks, data?.tasks],
                               backgroundColor: [
                                 "#D3D3D3",
                                 "#005734",
@@ -917,7 +917,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                   </div>
                 )}
                 <div>
-                  {!(data.tasks_completed || data.tasks) ? (
+                  {!(data?.tasks_completed || data?.tasks) ? (
                     <h4>
                       There is no data between {firstDateState.split(" ")[0]}{" "}
                       and {lastDateState.split(" ")[0]}
@@ -937,21 +937,21 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                             {
                               label: "Poll",
                               data: [
-                                data.tasks_uncompleted,
-                                data.tasks_completed,
+                                data?.tasks_uncompleted,
+                                data?.tasks_completed,
                               ],
                               backgroundColor: ["#D3D3D3", "#005734"],
                               borderColor: ["#D3D3D3", "#005734"],
                             },
                           ],
                         }}
-                        // asdsadsad
+                      // asdsadsad
                       ></Doughnut>
                     </div>
                   )}
                 </div>
                 <div>
-                  {!(data.tasks_completed_on_time || data.tasks) ? (
+                  {!(data?.tasks_completed_on_time || data?.tasks) ? (
                     <h4>
                       there is no data between {firstDateState.split(" ")[0]}{" "}
                       and {lastDateState.split(" ")[0]}
@@ -969,7 +969,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                           datasets: [
                             {
                               label: "Poll",
-                              data: [data.tasks_completed_on_time],
+                              data: [data?.tasks_completed_on_time],
                               backgroundColor: ["#005734"],
                               borderColor: ["#005734"],
                             },
@@ -989,8 +989,8 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
             <p>
               project with least tasks: {data.project_with_least_tasks?.title}
             </p> */}
-              {!data.project_with_most_tasks?.title ||
-              !data.project_with_most_tasks?.title ? (
+              {!data?.project_with_most_tasks?.title ||
+                !data?.project_with_most_tasks?.title ? (
                 <>
                   <h4>
                     there is no data between {firstDateState.split(" ")[0]} and{" "}
@@ -1022,14 +1022,14 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                     <Doughnut
                       data={{
                         labels: [
-                          data.project_with_most_tasks?.title,
-                          data.project_with_least_tasks?.title,
+                          data?.project_with_most_tasks?.title,
+                          data?.project_with_least_tasks?.title,
                         ],
                         datasets: [
                           {
                             data: [
-                              data.project_with_most_tasks?.tasks_added,
-                              data.project_with_least_tasks?.tasks_added,
+                              data?.project_with_most_tasks?.tasks_added,
+                              data?.project_with_least_tasks?.tasks_added,
                             ],
                             backgroundColor: ["#005734", "#d3d3d3"],
                             borderColor: ["#005734", "#d3d3d3"],
@@ -1102,7 +1102,7 @@ export const FormDatePopup = ({
       <div className='form_date_popup_container'>
         <div
           className='closebutton'
-          onClick={loading ? () => {} : () => closeModal()}
+          onClick={loading ? () => { } : () => closeModal()}
         >
           {loading ? <></> : <AiOutlineClose />}
         </div>

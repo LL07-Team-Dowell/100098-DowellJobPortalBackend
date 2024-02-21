@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import styles from "./styles.module.css";
 import { IoIosArrowBack } from "react-icons/io";
-import React, { useEffect, useState , useRef} from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { calculateHoursOfLogs, formatDateForAPI } from "../../../../helpers/helpers";
 import { IoFilterOutline } from "react-icons/io5";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
@@ -36,10 +36,9 @@ const AdminAgendaPage = () => {
     const [agendaAddedDates, setAgendaAddedDates] = useState([]);
     const [startSelectedDate, setStartSelectedDate] = useState(new Date());
     const firstRender = useRef(true);
+    const [datesFetched, setDatesFetched] = useState(true);
 
     const handleAgendaDetailUpdate = (keyToUpdate, newVal) => {
-        // console.log(">>>>>>>>>>>>>>",newVal);
-        // console.log(">>>>>>>>>>>>>>>>>>>>>>",keyToUpdate);
         setAgendaDetails((prevDetails) => {
             return {
                 ...prevDetails,
@@ -60,9 +59,11 @@ const AdminAgendaPage = () => {
                     currentUser.portfolio_info[0].org_id,
                     agendaDetails.sub_project.replaceAll(' ', '-')
                 );
-                setAgendaAddedDates(res.data.response.map(firstDate => firstDate[0]));
+                setAgendaAddedDates(res?.data?.response?.map(firstDate => firstDate[0]));
+                setDatesFetched(true);
             } catch (err) {
                 console.error(err);
+                setDatesFetched(true);
             }
         };
 
@@ -70,7 +71,7 @@ const AdminAgendaPage = () => {
     }, [agendaDetails.sub_project]);
 
 
-    const handleStartDateChange = (date) =>{
+    const handleStartDateChange = (date) => {
         setStartSelectedDate(date);
         const endDate = new Date(date);
         endDate.setDate(endDate.getDate() + 7);
@@ -214,7 +215,15 @@ const AdminAgendaPage = () => {
                             <IoFilterOutline />
                             <select
                                 value={agendaDetails.project}
-                                onChange={({ target }) => handleAgendaDetailUpdate('project', target.value)}
+                                onChange={({ target }) => {
+                                    handleAgendaDetailUpdate('project', target.value);
+                                    setAgendaDetails((prevDetails) => {
+                                        return {
+                                            ...prevDetails,
+                                            sub_project: '',
+                                        }
+                                    })
+                                }}
                                 defaultValue={''}
                             >
                                 <option value={''} disabled>Select project</option>
@@ -232,7 +241,10 @@ const AdminAgendaPage = () => {
                             <IoFilterOutline />
                             <select
                                 value={agendaDetails.sub_project}
-                                onChange={({ target }) => handleAgendaDetailUpdate('sub_project', target.value)}
+                                onChange={({ target }) => {
+                                    handleAgendaDetailUpdate('sub_project', target.value);
+                                    setDatesFetched(false);
+                                }}
                                 defaultValue={''}
                             >
                                 <option value={''} disabled>Select subproject</option>
@@ -247,38 +259,32 @@ const AdminAgendaPage = () => {
                     <label>
                         <span>Start Date - End Date</span>
                         <div className={styles.select__item}>
-                            {/* <BsCalendar2Date /> */}
-                            <div className={styles.date__Select}>
-                                {/* <input
-                                    type="date"
-                                    className={styles.date__Input}
-                                    value={agendaDetails.week_start}
-                                    name="week_start"
-                                    onChange={({ target }) => handleAgendaDetailUpdate(target.name, target.value)}
-                                />   */}
-                                <DatePicker
-                                    // showIcon
-                                    // toggleCalendarOnIconClick
-                                    dateFormat="dd/MM/yyyy"
-                                    className="date_start_input"
-                                    selected={startSelectedDate}
-                                    onChange={(target) => {
-                                        handleAgendaDetailUpdate('week_start', formatDateForAPI(target));
-                                        handleStartDateChange(target);
-                                    }
-                                    }
-                                    includeDates={agendaAddedDates?.map(dates => new Date(dates))}
-                                />
-                                <span>-</span>
-                                <input
-                                    readOnly
-                                    type="date"
-                                    className={styles.date__Input}
-                                    value={agendaDetails.week_end}
-                                    // name="week_end"
-                                    // onChange={({ target }) => handleAgendaDetailUpdate(target.name, target.value)}
-                                />
-                            </div>
+                            {
+                                datesFetched ?
+                                    <div className={styles.date__Select}>
+                                        <DatePicker
+                                            dateFormat="dd/MM/yyyy"
+                                            className="date_start_input"
+                                            selected={startSelectedDate}
+                                            onChange={(target) => {
+                                                handleAgendaDetailUpdate('week_start', formatDateForAPI(target));
+                                                handleStartDateChange(target);
+                                            }
+                                            }
+                                            includeDates={agendaAddedDates?.map(dates => new Date(dates))}
+                                        />
+                                        <span>-</span>
+                                        <input
+                                            readOnly
+                                            type="date"
+                                            className={styles.date__Input}
+                                            value={agendaDetails.week_end}
+                                        />
+                                    </div> :
+                                    <>
+                                        <LoadingSpinner width={15} height={15} color="#fff" />
+                                    </>
+                            }
                         </div>
                     </label>
 
