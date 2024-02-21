@@ -6878,6 +6878,7 @@ class Generate_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+    
     """def itr_function(user_id,username, company_id, year):
         # Initialize the data dictionary
         data = {'tasks_details': {}}
@@ -6996,6 +6997,7 @@ class Generate_Report(APIView):
         data['task_report'] = [i for i in projects.values()]
         return data
 """
+    
     def generate_individual_c_report(self, request):
         payload = request.data
 
