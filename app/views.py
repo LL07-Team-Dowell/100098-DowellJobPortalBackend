@@ -140,7 +140,10 @@ import platform
 is_windows = True if (platform.system() == "Windows") else False
 if not is_windows:
     """for linux server"""
-    #from cython_files.itr_windows import itr_function
+    try:
+        from .itr_linux import itr_function
+    except Exception as e:
+        print(e)
     
     load_dotenv("/home/100098/100098-DowellJobPortal/.env")
     API_KEY = str(os.getenv("API_KEY"))
@@ -157,8 +160,12 @@ if not is_windows:
     
 if is_windows:
     """for windows local"""
-    #from .cython_files.itr_windows import itr_function
-    #from .cython_files.itr_windows import itr_function
+    
+    try:
+        from .itr_windows import itr_function
+    except Exception as e:
+        print(e)
+    
 
     load_dotenv(f"{os.getcwd()}/env")
     API_KEY = str(os.getenv("API_KEY"))
@@ -6879,7 +6886,7 @@ class Generate_Report(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
     
-    """def itr_function(user_id,username, company_id, year):
+    """def itr_function_py(user_id,username, company_id, year):
         # Initialize the data dictionary
         data = {'tasks_details': {}}
 
