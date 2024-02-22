@@ -6808,7 +6808,6 @@ class Generate_Report(APIView):
         
         field = {"user_id": user_id, "company_id": company_id}
         
-        
         today = datetime.today()
         st = today - timedelta(days=today.weekday())
         
@@ -6817,7 +6816,6 @@ class Generate_Report(APIView):
 
         projects={}
         week_details,total_tasks_last_one_day,total_tasks_last_one_week = [],[],[]
-        
         
         def call_dowellconnection(*args):
             task_added=0
@@ -6915,7 +6913,7 @@ class Generate_Report(APIView):
                                 projects[task["project"]]['total_tasks'] += 1
                                 projects[task["project"]]['tasks'].append(task)
 
-        arguments = [(*team_management_modules,"fetch",{"company_id": company_id}, {}), (*task_details_module, "fetch", field, {})]
+        arguments = [(*team_management_modules, "fetch", field, {}),(*task_details_module, "fetch", field, {})]
         
         #---------------------start of threads--------------------------------------------------
         threads=[]
@@ -6954,6 +6952,9 @@ class Generate_Report(APIView):
             user_id = payload.get("user_id")
             if not user_id:
                 return Response({'success':False,"message": f"user_id is empty"},status=status.HTTP_400_BAD_REQUEST)
+            username = payload.get("username")
+            if not user_id:
+                return Response({'success':False,"message": f"username is empty"},status=status.HTTP_400_BAD_REQUEST)
             
             # check if the user has any data------------------------------------------------
             field = {
@@ -6968,13 +6969,9 @@ class Generate_Report(APIView):
                         "message": f"There is no candidate with such parameters --> "
                         + " ".join([va for va in field.values()])
                     },status=status.HTTP_204_NO_CONTENT)
+        
+            response =self.itr_function(user_id, username, company_id, year)
 
-            
-
-
-            response = self.itr_function(
-                payload.get("user_id"), payload.get("username"), payload.get("company_id"), payload.get("year")
-            )
             data={"personal_info":info[0]}
             data.update(response)
             return Response(
@@ -9046,13 +9043,12 @@ class candidate_leave(APIView):
         email = request.data.get("email")
         data_type=request.data.get("data_type")
     
-        difference_in_days = ((datetime.strptime(leave_end_date, '%Y-%m-%d') - datetime.strptime(leave_start_date, '%Y-%m-%d')).days + 1 ) /7
-        
-        if not difference_in_days.is_integer():
+        if not (datetime.strptime(leave_end_date, '%Y-%m-%d')-datetime.strptime(leave_start_date, '%Y-%m-%d')).days % 6 == 0:
             return Response({
-                "success": False,
-                "error": "Leave periods are based on weeks."
-            }, status=status.HTTP_400_BAD_REQUEST)
+                "success":False,
+                "error":"You can only apply leave for week periods only"
+            },status=status.HTTP_400_BAD_REQUEST)
+
         field = {
             "user_id": user_id,
             "applicant": applicant,
@@ -11134,7 +11130,7 @@ class Company_Structure(APIView):
         
         members = list(set(_m))
         if len(members)>=1:
-            update_data["members"] = members
+            update_data["members"] = res_projects['data']['members']+members
 
             for user in members:
                 info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':user}, update_field=None))
