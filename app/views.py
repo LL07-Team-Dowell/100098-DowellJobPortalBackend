@@ -123,7 +123,8 @@ from .serializers import (
     UpdateEventSerializer,
     GetEventSerializer,
     UpdateAttendanceSerializer,
-    GetEventAttendanceSerializer
+    GetEventAttendanceSerializer,
+    LeaveRejectSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -9267,7 +9268,7 @@ class candidate_leave(APIView):
     def candidate_leave_reject(self, request):
         leave_id = request.GET.get("leave_id")
 
-        serializer = leaveapproveserializers(data={"leave_id":leave_id})
+        serializer = LeaveRejectSerializer(data={"leave_id":leave_id})
 
         if not serializer.is_valid():
             return Response(
