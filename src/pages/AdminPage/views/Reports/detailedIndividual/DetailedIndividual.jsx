@@ -51,8 +51,12 @@ export default function DetailedIndividual({
   isProjectLead,
   subAdminView,
 }) {
-  const { currentUser, setCurrentUser, reportsUserDetails } =
-    useCurrentUserContext();
+  const { 
+    currentUser, 
+    setCurrentUser, 
+    reportsUserDetails, 
+    allCompanyApplications 
+  } = useCurrentUserContext();
 
   const {
     closeModal: closeReportCaptureModal,
@@ -253,46 +257,31 @@ export default function DetailedIndividual({
 
   useEffect(() => {
     setFirstLoading(true);
-    Promise.all([
-      getCandidateJobApplication(
-        isPublicReportUser
-          ? reportsUserDetails?.company_id
-          : currentUser?.portfolio_info[0].org_id
-      ),
-      getSettingUserProfileInfo(),
-    ])
+
+    if (isPublicReportUser) {
+      Promise.all([
+        getCandidateJobApplication(
+          reportsUserDetails?.company_id
+        ),
+        getSettingUserProfileInfo(),
+      ])
       .then((promiseRes) => {
-        const candidatesRes = isPublicReportUser ?
-          promiseRes[0]?.data?.response?.data?.filter(
-            item => item.data_type === reportsUserDetails?.data_type
-          )?.reverse()
-        :
-          promiseRes[0]?.data?.response?.data?.filter(
-            item => item.data_type === currentUser?.portfolio_info[0]?.data_type
-          )?.reverse()
+        const candidatesRes = promiseRes[0]?.data?.response?.data?.filter(
+          item => item.data_type === reportsUserDetails?.data_type
+        )?.reverse();
 
         setcandidates(candidatesRes);
         setcandidates2(candidatesRes);
 
-        const settingsInfo = isPublicReportUser
-          ? promiseRes[1]?.data
-              ?.reverse()
-              ?.filter(
-                (item) => item.company_id === reportsUserDetails?.company_id
-              )
-              ?.filter(
-                (item) => item.data_type === reportsUserDetails?.data_type
-              )
-          : promiseRes[1]?.data
-              ?.reverse()
-              ?.filter(
-                (item) =>
-                  item.company_id === currentUser.portfolio_info[0].org_id
-              )
-              ?.filter(
-                (item) =>
-                  item.data_type === currentUser.portfolio_info[0].data_type
-              );
+        const settingsInfo = promiseRes[1]?.data
+        ?.reverse()
+        ?.filter(
+          (item) => item.company_id === reportsUserDetails?.company_id
+        )
+        ?.filter(
+          (item) => item.data_type === reportsUserDetails?.data_type
+        );
+        
         setSettingsUserList(settingsInfo);
         setFirstLoading(false);
       })
@@ -300,6 +289,33 @@ export default function DetailedIndividual({
         console.log(err);
         setFirstLoading(false);
       });
+
+      return
+    }
+
+    getSettingUserProfileInfo().then(res => {
+  
+      setcandidates(allCompanyApplications);
+      setcandidates2(allCompanyApplications);
+
+      const settingsInfo = res?.data
+      ?.reverse()
+      ?.filter(
+        (item) =>
+          item.company_id === currentUser.portfolio_info[0].org_id
+      )
+      ?.filter(
+        (item) =>
+          item.data_type === currentUser.portfolio_info[0].data_type
+      );
+
+      setSettingsUserList(settingsInfo);
+      setFirstLoading(false);
+        
+    }).catch(err => {
+      console.log(err);
+      setFirstLoading(false);
+    })
   }, []);
 
   useEffect(() => {
