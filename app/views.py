@@ -156,7 +156,8 @@ if not is_windows:
 if is_windows:
     """for windows local"""
     
-    load_dotenv(f"{os.getcwd()}/env")
+    dotenv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.env')
+    load_dotenv(dotenv_path)
     API_KEY = str(os.getenv("API_KEY"))
     DB_Name = str(os.getenv("DB_Name"))
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
@@ -9108,7 +9109,9 @@ class candidate_leave(APIView):
         elif type_request == "applicants_on_leave":
             return self.applicants_on_leave(request) 
         elif type_request == "get_user_leave":
-            return self.get_user_leave(request)     
+            return self.get_user_leave(request) 
+        elif type_request == "candidate_leave_reject":
+            return self.candidate_leave_reject(request)
           
         else:
             return self.handle_error(request)
@@ -9123,10 +9126,10 @@ class candidate_leave(APIView):
         email = request.data.get("email")
         data_type=request.data.get("data_type")
     
-        if not (datetime.strptime(leave_start_date, '%Y-%m-%d')-datetime.strptime(leave_end_date, '%Y-%m-%d')).days % 6 == 0:
+        if not (datetime.strptime(leave_end_date, '%Y-%m-%d')-datetime.strptime(leave_start_date, '%Y-%m-%d')).days % 6 == 0:
             return Response({
                 "success":False,
-                "error":"You can only apply leave for week period"
+                "error":"You can only apply leave for week periods only"
             },status=status.HTTP_400_BAD_REQUEST)
 
         field = {
@@ -9138,7 +9141,8 @@ class candidate_leave(APIView):
             "leave_end_date": leave_end_date,
             "email": email,
             "data_type":data_type,
-            "Leave_Approved":False
+            "Leave_Approved":False,
+            "Leave_Denied":False
         }
 
         query={
@@ -9257,6 +9261,51 @@ class candidate_leave(APIView):
                     "success": False,
                     "message": "candidate leave could not be added please check the aplicant id and try again",
                     "error": res["error"],
+                }
+            )
+        
+    def candidate_leave_reject(self, request):
+        leave_id = request.GET.get("leave_id")
+
+        serializer = leaveapproveserializers(data={"leave_id":leave_id})
+
+        if not serializer.is_valid():
+            return Response(
+                {
+                    "success": False,
+                    "message": "posting wrong data",
+                    "error": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        update_field = {
+            "Leave_Denied": True
+        }
+
+        try:
+            update_datacube=json.loads(datacube_data_update(API_KEY,LEAVE_DB,leave_report_collection,{"_id":leave_id},update_field))
+        except:
+            return Response({
+                "success":False,
+                "error":"Datacube is not responding"
+            },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        print(update_datacube)
+        if update_datacube["success"]:
+            return Response(
+                {
+                    
+                    "isSuccess": True,
+                    "message": "candidate leave request has been denied",
+                },
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {
+                    "success": False,
+                    "message": "candidate leave could not be rejected please check the leave id and try again",
+                    "error": update_datacube['message'],
                 }
             )
 
