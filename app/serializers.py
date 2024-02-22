@@ -718,7 +718,7 @@ class UpdateProjectTimeEnabledSerializer(serializers.Serializer):
 class leaveapplyserializers(serializers.Serializer):
     leave_start_date = serializers.DateField(allow_null=False)
     leave_end_date = serializers.DateField(allow_null=False)
-    project = serializers.CharField(max_length=255, allow_null=False)
+    project = serializers.ListField(max_length=255, allow_null=False)
     user_id = serializers.CharField(max_length=255, allow_null=False)
     applicant = serializers.CharField(max_length=255, allow_null=False)
     email = serializers.EmailField(allow_null=False)
@@ -732,7 +732,10 @@ class leaveapplyserializers(serializers.Serializer):
 
 
 class leaveapproveserializers(serializers.Serializer):
+    leave_id = serializers.CharField(allow_null=False)
     user_id = serializers.CharField(allow_null=False)
+
+class LeaveRejectSerializer(serializers.Serializer):
     leave_id = serializers.CharField(allow_null=False)
 
 
