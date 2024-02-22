@@ -9071,7 +9071,7 @@ class candidate_leave(APIView):
         email = request.data.get("email")
         data_type=request.data.get("data_type")
     
-        if not (datetime.strptime(leave_start_date, '%Y-%m-%d')-datetime.strptime(leave_end_date, '%Y-%m-%d')).days % 5 == 0:
+        if not (datetime.strptime(leave_start_date, '%Y-%m-%d')-datetime.strptime(leave_end_date, '%Y-%m-%d')).days % 6 == 0:
             return Response({
                 "success":False,
                 "error":"You can only apply leave for week period"
@@ -9167,7 +9167,7 @@ class candidate_leave(APIView):
         }
 
         update_datacube_field = {
-            "Leave_Approved": "True"
+            "Leave_Approved": True
         }
         try:
             candidate_report = dowellconnection(
