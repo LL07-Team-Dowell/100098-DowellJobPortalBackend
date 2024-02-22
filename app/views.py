@@ -156,9 +156,7 @@ if not is_windows:
     
 if is_windows:
     """for windows local"""
-    
-    dotenv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.env')
-    load_dotenv(dotenv_path)
+    load_dotenv(f"{os.getcwd()}/env")
     API_KEY = str(os.getenv("API_KEY"))
     DB_Name = str(os.getenv("DB_Name"))
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
@@ -6785,98 +6783,6 @@ class Generate_Report(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-    def generate_individual_report(self, request):
-        payload = request.data
-        
-        if payload:
-            # intializing query parameters-----------------------------------------------------
-            year = payload.get("year")
-            if not year:
-                return Response({'success':False,"message": f"year is empty"},status=status.HTTP_400_BAD_REQUEST)
-            # ensuring the given year is a valid year------------------------------------------
-            if int(year) > datetime.today().year:
-                return Response(
-                    {
-                        "message": "You cannot get a report on a future date",
-                        "error": f"{year} is bigger than current year {datetime.today().year}",
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            # -------------------------------------------------------------------------------
-            
-            
-            company_id = payload.get("company_id")
-            if not company_id:
-                return Response({'success':False,"message": f"Company id is empty"},status=status.HTTP_400_BAD_REQUEST)
-            user_id = payload.get("user_id")
-            if not user_id:
-                return Response({'success':False,"message": f"user_id is empty"},status=status.HTTP_400_BAD_REQUEST)
-            
-            # check if the user has any data------------------------------------------------
-            field = {
-                "user_id": user_id,
-                "company_id": company_id,
-            }
-            info = json.loads(dowellconnection(*candidate_management_reports, "fetch", field, update_field=None ))["data"]
-            if len(info) <= 0:
-                return Response(
-                    {
-                        'success':False,
-                        "message": f"There is no candidate with such parameters --> "
-                        + " ".join([va for va in field.values()])
-                    },status=status.HTTP_204_NO_CONTENT)
-
-            
-            data = {"personal_info":info[0]}
-
-            coll_name = REPORT_UUID+user_id
-            query ={
-                "report_record_year": year,
-                "db_report_type": "report"
-            }
-            get_collection = json.loads(datacube_data_retrival_function(API_KEY,REPORT_DB_NAME,coll_name,query,10,0, False))
-            if get_collection['success']==False:
-                return Response({'success':False,"message": f"This candidate has no report data collection created"},status=status.HTTP_204_NO_CONTENT)
-            if len(get_collection['data']) <= 0:
-                return Response({'success':False,"message": f"This candidate has no report data inserted in collection"},status=status.HTTP_204_NO_CONTENT)
-            
-            months=[calendar.month_name[i] for i in range(1,13)]
-            #print(months)
-            t={"task_added": 0,
-            "tasks_completed": 0,
-            "tasks_uncompleted": 0,
-            "tasks_approved": 0,
-            "percentage_tasks_completed": 0.0,
-            "tasks_you_approved": 0,
-            "tasks_you_marked_as_complete": 0,
-            "tasks_you_marked_as_incomplete": 0,
-            "teams": 0,
-            "team_tasks": 0,
-            "team_tasks_completed": 0,
-            "team_tasks_uncompleted": 0,
-            "percentage_team_tasks_completed": 0.0,
-            "team_tasks_approved": 0,
-            "team_tasks_issues_raised": 0,
-            "team_tasks_issues_resolved": 0,
-            "team_tasks_comments_added": 0}
-            _data={m:t for m in months}
-            
-            for x in get_collection['data']:
-                if ('report_record_month' in x.keys() and x['report_record_month'] in months):
-                    del x['_id']
-                    report_record_month = x['report_record_month']
-                    del x['report_record_month']
-                    del x['report_record_year']
-                    del x['db_report_type']
-                    _data[report_record_month] = x
-            data["monthly_data"] =_data
-            return Response(data, status=status.HTTP_200_OK)
-        else:
-            return Response(
-                {"message": "Parameters are not valid"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-    
     def itr_function(self,user_id,username, company_id, year):
         # Initialize the data dictionary
         data = {'tasks_details': {}}
@@ -6921,6 +6827,19 @@ class Generate_Report(APIView):
         tasks_you_approved=0
         tasks_you_marked_as_complete=0
         tasks_you_marked_as_incomplete=0
+        get_team = json.loads(dowellconnection(*team_management_modules,"fetch",{"company_id": company_id},update_field=None))['data']
+        for team in get_team:
+            if "date_created" in team.keys():
+                date_created = datetime.strptime(set_date_format(team["date_created"]), "%m/%d/%Y %H:%M:%S")
+                _year, month, mcnt = get_month_details(team["date_created"])
+                if _year == year:
+                    if ("members" in team.keys() and username in team["members"]):
+                        data['tasks_details'][month]["teams"]+=1
+                        insert_response = json.loads(dowellconnection(*thread_report_module, "fetch", {"team_id": team["_id"],"date_created":team["date_created"]}, update_field=None))['data']
+                        data['tasks_details'][month]["issues_raised"]+=len(insert_response)
+                        #for issue in insert_response:
+
+
         for task in task_details:
             if "task_created_date" in task.keys():
                 task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
@@ -6959,8 +6878,7 @@ class Generate_Report(APIView):
                         total_tasks_last_one_week.append(task["project"])
                     start_time = datetime.strptime(task["start_time"], "%H:%M") if len(task["start_time"]) == 5 else datetime.strptime(task["start_time"], "%H:%M:%S")
                     end_time = datetime.strptime(task["end_time"], "%H:%M") if len(task["end_time"]) == 5 else datetime.strptime(task["end_time"], "%H:%M:%S")
-                    duration = end_time - start_time
-                    dur_secs = (duration).total_seconds()
+                    dur_secs = (end_time - start_time).total_seconds()
                     dur_mins = dur_secs / 60
                     dur_hrs = dur_mins / 60
 
@@ -6995,7 +6913,7 @@ class Generate_Report(APIView):
         data['task_report'] = [i for i in projects.values()]
         return data
     
-    def generate_individual_c_report(self, request):
+    def generate_individual_report(self, request):
         payload = request.data
 
         if payload:
@@ -7040,24 +6958,6 @@ class Generate_Report(APIView):
             data.update(response)
             return Response(
                 {"success":True,"message": "Individual report generated", "response": data},
-                status=status.HTTP_201_CREATED,
-            )
-        else:
-            return Response(
-                {"message": "Parameters are not valid"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-    def generate_individual_task_report(self, request):
-        payload = request.data
-
-        if payload:
-            
-            response = itr_function(
-                payload.get("user_id"), payload.get("username"), payload.get("company_id"), payload.get("year")
-            )
-            return Response(
-                {"message": "Individual report task generated", "response": response},
                 status=status.HTTP_201_CREATED,
             )
         else:
@@ -7375,9 +7275,7 @@ class Generate_Report(APIView):
             elif request.data["report_type"] == "Lead":
                 return self.generate_lead_report(request)
             elif request.data["report_type"] == "Individual":
-                return self.generate_individual_c_report(request)
-            elif request.data["report_type"] == "Individual Task":
-                return self.generate_individual_task_report(request)
+                return self.generate_individual_report(request)
             elif request.data["report_type"] == "Project":
                 return self.generate_project_report(request)
             
