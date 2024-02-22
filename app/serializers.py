@@ -733,6 +733,10 @@ class leaveapplyserializers(serializers.Serializer):
 
 class leaveapproveserializers(serializers.Serializer):
     leave_id = serializers.CharField(allow_null=False)
+    user_id = serializers.CharField(allow_null=False)
+
+class LeaveRejectSerializer(serializers.Serializer):
+    leave_id = serializers.CharField(allow_null=False)
 
 
 class AddCollectionSerializer(serializers.Serializer):
