@@ -3,7 +3,6 @@ import Overlay from "../../../../components/Overlay";
 import { AiOutlineClose } from "react-icons/ai";
 import styles from "./styles.module.css";
 import Select from "react-select";
-import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import {
   getLogsBetweenRange,
   getleaveDays,
@@ -11,68 +10,124 @@ import {
   workFlowdetails,
 } from "../../../../services/paymentService";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
-import { formatDateForAPI } from "../../../../helpers/helpers";
+import {
+  formatDateForAPI,
+  getDaysDifferenceBetweenDates,
+  getMondayAndFridayOfWeek,
+  getWeekdaysBetweenDates,
+} from "../../../../helpers/helpers";
 import HorizontalBarLoader from "../../../../components/HorizontalBarLoader/HorizontalBarLoader";
 import { TbCopy } from "react-icons/tb";
 import { PiArrowElbowRightThin } from "react-icons/pi";
+import { toast } from "react-toastify";
+import { getInternetSpeedTest } from "../../../../services/speedTestServices";
+import { getUserWiseAttendance } from "../../../../services/hrServices";
 
-const GenerateInvoice = ({ handleCloseModal, requiredLogCount }) => {
+const GenerateInvoice = ({
+  handleCloseModal,
+  requiredLogCount,
+  currentUserHiredApplications,
+  currentUserHiredApplicationsLoaded,
+}) => {
   const [dataProcessing, setDataProcessing] = useState(false);
   const [showInvoicePage, setShowInvoicePage] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
+  const [paymentFrom, setPaymentFrom] = useState("");
+  const [paymentTo, setPaymentTo] = useState("");
   const { currentUser } = useCurrentUserContext();
   const [showMasterLink, setShowMasterLink] = useState("");
   const [showMasterCode, setShowMasterCode] = useState("");
   const [copied, setCopiedId] = useState("");
 
-  const [dataForProcess, setDataForProcess] = useState({
-    payment_month: "",
-    payment_year: "",
-  });
-
-  const monthsWith30Days = ["April", "June", "September", "November"];
-  const monthsWith28Days = ["Feburary"];
-
-  let endDayOfMonth = 31;
-
-  if (monthsWith30Days.includes(selectedMonth)) endDayOfMonth = 30;
-  if (monthsWith28Days.includes(selectedMonth)) endDayOfMonth = 28;
-
   const handleProcessInvoice = async () => {
+    if (!selectedMonth) return toast.info("Select Month");
+
+    if (!selectedYear) return toast.info("Select Year");
+
+    if (!paymentFrom || !paymentTo)
+      return toast.info("Select a both start and end dates");
+
+    if (getDaysDifferenceBetweenDates(paymentFrom, paymentTo) >= 7) {
+      return toast.info(
+        "Difference between start and end date should be equal to 7 days!"
+      );
+    }
+
+    const { monday, friday } = getMondayAndFridayOfWeek(paymentFrom);
+    console.log(monday, friday);
+
+    // if (paymentFrom && paymentTo !== selectedMonth)
+    //   return toast.info("Invoice must be within selected month");
+
+    const attendanceProjects = currentUserHiredApplications
+      .map((item) => {
+        return item.project;
+      })
+      .flat();
+
     setDataProcessing(true);
 
     Promise.all([
       getLogsBetweenRange({
-        start_date: formatDateForAPI(
-          `${dataForProcess.payment_year}-${dataForProcess.payment_month}-01`
-        ),
-        end_date: formatDateForAPI(
-          `${dataForProcess.payment_year}-${dataForProcess.payment_month}-${endDayOfMonth}`
-        ),
+        start_date: paymentFrom,
+        end_date: paymentTo,
         user_id: currentUser.userinfo.userID,
         company_id: currentUser.portfolio_info[0].org_id,
       }),
       getleaveDays(currentUser.userinfo.userID),
+      // getInternetSpeedTest(currentUser.userinfo.email),
+      attendanceProjects.map((project) => {
+        return getUserWiseAttendance({
+          usernames: [currentUser.userinfo.username],
+          start_date: formatDateForAPI(monday),
+          end_date: formatDateForAPI(friday),
+          company_id: currentUser.portfolio_info[0].org_id,
+          limit: "0",
+          offset: "0",
+          project: project,
+        });
+      }),
     ])
       .then((res) => {
-        console.log(res[1]);
         console.log(res[0]?.data);
+        console.log(
+          res[1].data.response.filter((leave) =>
+            leave.Leave_Approval === "True" ? true : false
+          )
+        );
+        // console.log(res[2]);
+        console.log(res[3]);
 
         const taskDetails = res[0]?.data?.task_details;
 
         const approvedLogs = taskDetails.filter((log) => log.approved === true);
 
+        const getUserOnLeave = res[1].data.response.filter((leave) =>
+          leave.Leave_Approval === "True" ? true : false
+        );
+
         const templateID = "64ece51ba57293efb539e5b7";
 
         const dataForInvoice = {
           user_id: currentUser.userinfo.userID,
-          payment_month: dataForProcess.payment_month,
-          payment_year: dataForProcess.payment_year,
-          number_of_leave_days: 5,
+          payment_month: selectedMonth.label,
+          payment_year: selectedYear.label,
+          payment_from: paymentFrom,
+          payment_to: paymentTo,
+          user_was_on_leave: getUserOnLeave,
           approved_logs_count: approvedLogs.length,
           total_logs_required: requiredLogCount,
         };
+
+        if (
+          dataForInvoice.payment_from &&
+          dataForInvoice.payment_to === dataForInvoice.payment_month
+        ) {
+          setDataProcessing(false);
+
+          return toast.info("Invoice already created for this week");
+        }
 
         const dataForWorkflow = {
           company_id: currentUser.portfolio_info[0].org_id,
@@ -81,8 +136,8 @@ const GenerateInvoice = ({ handleCloseModal, requiredLogCount }) => {
           created_by: currentUser.userinfo.username,
           portfolio: currentUser.portfolio_info[0].portfolio_name,
           data_type: currentUser.portfolio_info[0].data_type,
-          payment_month: dataForProcess.payment_month,
-          payment_year: dataForProcess.payment_year,
+          payment_month: selectedMonth.label,
+          payment_year: selectedYear.label,
           hr_username: "DummyHR",
           hr_portfolio: "DummyHR_Portfolio",
           accounts_username: "DummyAC",
@@ -164,24 +219,20 @@ const GenerateInvoice = ({ handleCloseModal, requiredLogCount }) => {
                     <div className={styles.invoice_details_select}>
                       <Select
                         options={[
-                          { label: "January", value: "January" },
-                          { label: "Feburary", value: "Feburary" },
-                          { label: "March", value: "March" },
-                          { label: "April", value: "April" },
-                          { label: "May", value: "May" },
-                          { label: "June", value: "June" },
-                          { label: "July", value: "July" },
-                          { label: "August", value: "August" },
-                          { label: "September", value: "September" },
-                          { label: "October", value: "October" },
-                          { label: "November", value: "November" },
-                          { label: "December", value: "December" },
+                          { label: "January", value: "01" },
+                          { label: "February", value: "02" },
+                          { label: "March", value: "03" },
+                          { label: "April", value: "04" },
+                          { label: "May", value: "05" },
+                          { label: "June", value: "06" },
+                          { label: "July", value: "07" },
+                          { label: "August", value: "08" },
+                          { label: "September", value: "09" },
+                          { label: "October", value: "10" },
+                          { label: "November", value: "11" },
+                          { label: "December", value: "12" },
                         ]}
                         onChange={(selectedOption) => {
-                          setDataForProcess((prevValue) => ({
-                            ...prevValue,
-                            payment_month: selectedOption.value,
-                          }));
                           setSelectedMonth(selectedOption);
                         }}
                         className={styles.invoice__select__date}
@@ -193,16 +244,30 @@ const GenerateInvoice = ({ handleCloseModal, requiredLogCount }) => {
                           { label: "2023", value: "2023" },
                         ]}
                         onChange={(selectedOption) => {
-                          setDataForProcess((prevValue) => ({
-                            ...prevValue,
-                            payment_year: selectedOption.value,
-                          }));
                           setSelectedYear(selectedOption);
                         }}
                         className={styles.invoice__select__year}
                         placeholder="Select year"
                       />
                     </div>
+                  </label>
+                  <label>
+                    <span>Payment From</span>
+                    <input
+                      type="date"
+                      value={formatDateForAPI(paymentFrom)}
+                      onChange={({ target }) => setPaymentFrom(target.value)}
+                      id="payment_from"
+                    />
+                  </label>
+                  <label>
+                    <span>Payment To</span>
+                    <input
+                      type="date"
+                      value={formatDateForAPI(paymentTo)}
+                      onChange={({ target }) => setPaymentTo(target.value)}
+                      id="payment_to"
+                    />
                   </label>
                 </div>
                 <div className={styles.process_btn}>
