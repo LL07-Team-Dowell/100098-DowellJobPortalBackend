@@ -9046,12 +9046,13 @@ class candidate_leave(APIView):
         email = request.data.get("email")
         data_type=request.data.get("data_type")
     
-        if not (datetime.strptime(leave_end_date, '%Y-%m-%d')-datetime.strptime(leave_start_date, '%Y-%m-%d')).days % 6 == 0:
+        difference_in_days = ((datetime.strptime(leave_end_date, '%Y-%m-%d') - datetime.strptime(leave_start_date, '%Y-%m-%d')).days + 1 ) /7
+        
+        if not difference_in_days.is_integer():
             return Response({
-                "success":False,
-                "error":"You can only apply leave for week periods only"
-            },status=status.HTTP_400_BAD_REQUEST)
-
+                "success": False,
+                "error": "Leave periods are based on weeks."
+            }, status=status.HTTP_400_BAD_REQUEST)
         field = {
             "user_id": user_id,
             "applicant": applicant,
