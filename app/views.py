@@ -15,7 +15,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt,csrf_protect
 
 from dotenv import load_dotenv
-
+import speedtest
 from rest_framework import status, generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -10558,6 +10558,27 @@ class dowell_speed_test(APIView):
             "response": results
         })
 
+@method_decorator(csrf_exempt, name="dispatch")
+class speedtest_module(APIView):
+    def get(self, request, *args, **kwargs):
+        st = speedtest.Speedtest()
+        download_speed = st.download() / 1000000 
+        upload_speed = st.upload() / 1000000  # in Mbps
+
+        if download_speed >= 100 and upload_speed >= 100:
+            return Response({
+                "success": True,
+                "message": "Speed test was successfully performed",
+                "download_speed": download_speed,
+                "upload_speed": upload_speed
+            })
+        else:
+            return Response({
+                "success": False,
+                "message": "Speed test failed. Download or Upload speed is less than 100 Mbps.",
+                "download_speed": download_speed,
+                "upload_speed": upload_speed
+            })
 @method_decorator(csrf_exempt, name="dispatch")   
 class Company_Structure(APIView):
     def rearrange(self,word):
