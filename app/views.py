@@ -5338,7 +5338,8 @@ class Thread_Apis(APIView):
             "steps_to_reproduce_thread": data.get("steps_to_reproduce_thread"),
             "expected_product_behavior": data.get("expected_product_behavior"),
             "actual_product_behavior": data.get("actual_product_behavior"),
-            "thread_type": data.get("thread_type")
+            "thread_type": data.get("thread_type"),
+            "user_id": data.get("user_id"),
         }
 
         field = {
@@ -5356,7 +5357,8 @@ class Thread_Apis(APIView):
             "steps_to_reproduce_thread": data.get("steps_to_reproduce_thread"),
             "expected_product_behavior": data.get("expected_product_behavior"),
             "actual_product_behavior": data.get("actual_product_behavior"),
-            "thread_type": data.get("thread_type")
+            "thread_type": data.get("thread_type"),
+            "user_id": data.get("user_id")
         }
         update_field = {}
         serializer = ThreadsSerializer(data=serializer_data)
