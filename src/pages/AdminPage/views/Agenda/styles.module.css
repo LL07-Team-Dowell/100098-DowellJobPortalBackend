@@ -117,6 +117,7 @@
 .select__item select {
     background-color: #fff;
     cursor: pointer;
+    max-width: 10rem;
 }
 
 .date__Select {
@@ -458,6 +459,11 @@
 
 .agenda__Overdue {
     color: #F00;
+}
+
+.date_start_input {
+    width: max-content;
+    max-width: 5rem;
 }
 
 @media screen and (max-width: 500px) {

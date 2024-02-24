@@ -264,7 +264,7 @@ const AdminAgendaPage = () => {
                                     <div className={styles.date__Select}>
                                         <DatePicker
                                             dateFormat="dd/MM/yyyy"
-                                            className="date_start_input"
+                                            className={styles.date_start_input}
                                             selected={startSelectedDate}
                                             onChange={(target) => {
                                                 handleAgendaDetailUpdate('week_start', formatDateForAPI(target));
