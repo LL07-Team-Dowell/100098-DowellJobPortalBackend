@@ -51,6 +51,7 @@ import userNotFoundImage from "../../../../assets/images/user-not-found.jpg";
 import { Translate } from "@mui/icons-material";
 import { getInternetSpeedTest } from "../../../../services/speedTestServices";
 import CurrentJobNotFound from "./JobNotFound";
+import InternetSpeedLoaderModal from "../../components/InternetSpeedLoaderModal/InternetSpeedLoaderModal";
 
 const JobApplicationScreen = () => {
   const location = useLocation();
@@ -1065,6 +1066,8 @@ const JobApplicationScreen = () => {
                             padding: "0.3rem",
                             borderRadius: "0.3rem",
                             marginBottom: "0.2rem",
+                            fontSize: "0.8rem",
+                            fontFamily: "Poppins, sans-serif",
                           }}
                           disabled={speedTestCheckLoading ? true : false}
                         >
@@ -1628,6 +1631,14 @@ const JobApplicationScreen = () => {
           btnDisabled={publicSuccessModalBtnDisabled}
         />
       )}
+
+      {/* {
+        speedTestCheckLoading &&
+        <InternetSpeedLoaderModal 
+          closeModal={() => setSpeedTestCheckLoading(false)}
+          handleRetakeTest={(e) => netSpeed(e)}
+        />
+      } */}
     </>
   );
 };
