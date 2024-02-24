@@ -134,7 +134,8 @@ export default function DetailedIndividual({
     const payloadForIndividualReport = {
       report_type: "Individual",
       year: new Date().getFullYear().toString(),
-      applicant_id: id,
+      // applicant_id: id,
+      username: foundCandidate?.username,
       company_id: foundCandidate?.company_id,
       user_id: foundCandidate?.user_id,
     };
