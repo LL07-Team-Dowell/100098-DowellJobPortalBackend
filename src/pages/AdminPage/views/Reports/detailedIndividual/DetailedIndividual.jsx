@@ -2,9 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import "./DetailedIndividual.scss";
 import StaffJobLandingLayout from "../../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import {
-  getAllOnBoardCandidate,
-  generateindividualReport,
-  generateIndividualTaskReport,
   getCandidateJobApplication,
 } from "../../../../../services/adminServices";
 import { IoFilterOutline } from "react-icons/io5";
@@ -12,15 +9,6 @@ import { RiH1 } from "react-icons/ri";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../../../../../components/LoadingSpinner/LoadingSpinner";
-import {
-  Chart as ChartJs,
-  ArcElement,
-  Tooltip,
-  Legend,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-} from "chart.js";
 import { Doughnut, Bar } from "react-chartjs-2";
 import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContext";
 import { generateCommonAdminReport } from "../../../../../services/commonServices";
@@ -34,8 +22,8 @@ import { toast } from "react-toastify";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { CSVLink } from "react-csv";
-import { AiOutlineSearch } from "react-icons/ai";
 import { candidateStatuses } from "../../../../CandidatePage/utils/candidateStatuses";
+import { indiv_report_img } from "../../../../../assets/assetsIndex";
 
 export const chartOptions = {
   responsive: true,
@@ -67,7 +55,7 @@ export default function DetailedIndividual({
   const [candidates, setcandidates] = useState([]);
   const [candidates2, setcandidates2] = useState([]);
   const [id, setId] = useState("");
-  const [candidateData, setCandidateDate] = useState([]);
+  const [candidateData, setCandidateData] = useState([]);
   const [personalInfo, setPersonalInfo] = useState({});
   const [candidateName, setCandidateName] = useState("");
   const [firstLoading, setFirstLoading] = useState(false);
@@ -148,6 +136,7 @@ export default function DetailedIndividual({
       year: new Date().getFullYear().toString(),
       applicant_id: id,
       company_id: foundCandidate?.company_id,
+      user_id: foundCandidate?.user_id,
     };
 
     const payloadForIndividualTaskReport = {
@@ -161,95 +150,53 @@ export default function DetailedIndividual({
       payloadForIndividualReport.applicant_username = foundCandidate?.username;
     }
 
-    setPersonalInfo(foundCandidate)
-    setCandidateName(foundCandidate.applicant)
-    
-    if (foundUserSettingItem) {
-      setSelectedUserRoleSetting(currentUserSetting);
-    }
-    
-    setTaskReportData([]);
-    const dataForProjectGraph = {
-      labels: [],
-      datasets: [
-        {
-          label: "Hours",
-          data: [],
-          backgroundColor: "blue",
-          maxBarThickness: 40,
-        },
-        {
-          label: "Work logs",
-          data: [],
-          backgroundColor: "#005734",
-          maxBarThickness: 40,
-        },
-        {
-          label: "Work logs uploaded this week",
-          data: [],
-          backgroundColor: "yellow",
-          maxBarThickness: 40,
-        },
-      ],
-    };
-    setTaskProjectReportData(dataForProjectGraph);
-    setProjectSelectedForSubprojectBox([]);
-    setProjectSelectedForTasksBox(null);
+    generateCommonAdminReport(payloadForIndividualReport)
+    .then((resp) => {
+      console.log({ id });
+      console.log(resp?.data?.response);
+      setCandidateData(resp?.data?.response?.tasks_details);
+      setPersonalInfo(resp?.data?.response?.personal_info);
+      setCandidateName(resp?.data?.response?.personal_info?.applicant);
 
-    return
+      setTaskReportData(resp?.data?.response?.task_report);
+      const dataForProjectGraph = {
+        labels: resp?.data?.response?.task_report?.map((item) => item.project),
+        datasets: [
+          {
+            label: "Hours",
+            data: resp?.data?.response?.task_report?.map((item) => item.total_hours),
+            backgroundColor: "blue",
+            maxBarThickness: 40,
+          },
+          {
+            label: "Work logs",
+            data: resp?.data?.response?.task_report?.map((item) => item.total_tasks),
+            backgroundColor: "#005734",
+            maxBarThickness: 40,
+          },
+          {
+            label: "Work logs uploaded this week",
+            data: resp?.data?.response?.task_report?.map(
+              (item) => item.tasks_uploaded_this_week
+            ),
+            backgroundColor: "yellow",
+            maxBarThickness: 40,
+          },
+        ],
+      };
+      setTaskProjectReportData(dataForProjectGraph);
+      setProjectSelectedForSubprojectBox(resp?.data?.response?.task_report[0]?.project);
+      setProjectSelectedForTasksBox(null);
 
-    Promise.all([
-      generateCommonAdminReport(payloadForIndividualReport),
-      generateCommonAdminReport(payloadForIndividualTaskReport),
-    ])
-      .then((resp) => {
-        console.log({ id });
-        console.log(resp[0].data);
-        setCandidateDate(resp[0].data.data[0]);
-        setPersonalInfo(resp[0].data.personal_info);
-        console.log(resp[0].data.personal_info);
-        setCandidateName(resp[0].data.personal_info.applicant);
-
-        console.log(resp[1].data);
-        setTaskReportData(resp[1].data?.response);
-        const dataForProjectGraph = {
-          labels: resp[1].data?.response.map((item) => item.project),
-          datasets: [
-            {
-              label: "Hours",
-              data: resp[1].data?.response.map((item) => item.total_hours),
-              backgroundColor: "blue",
-              maxBarThickness: 40,
-            },
-            {
-              label: "Work logs",
-              data: resp[1].data?.response.map((item) => item.total_tasks),
-              backgroundColor: "#005734",
-              maxBarThickness: 40,
-            },
-            {
-              label: "Work logs uploaded this week",
-              data: resp[1].data?.response.map(
-                (item) => item.tasks_uploaded_this_week
-              ),
-              backgroundColor: "yellow",
-              maxBarThickness: 40,
-            },
-          ],
-        };
-        setTaskProjectReportData(dataForProjectGraph);
-        setProjectSelectedForSubprojectBox(resp[1].data?.response[0]?.project);
-        setProjectSelectedForTasksBox(null);
-
-        if (foundUserSettingItem) {
-          setSelectedUserRoleSetting(currentUserSetting);
-        }
-        setSecondLoadng(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setSecondLoadng(false);
-      });
+      if (foundUserSettingItem) {
+        setSelectedUserRoleSetting(currentUserSetting);
+      }
+      setSecondLoadng(false);
+    })
+    .catch((err) => {
+      console.error(err);
+      setSecondLoadng(false);
+    });
   };
   const handleSelectChange = (id) => {
     getIndividualData(id);
@@ -267,7 +214,8 @@ export default function DetailedIndividual({
       ])
       .then((promiseRes) => {
         const candidatesRes = promiseRes[0]?.data?.response?.data?.filter(
-          item => item.data_type === reportsUserDetails?.data_type
+          item => item.data_type === reportsUserDetails?.data_type &&
+            item.user_id
         )?.reverse();
 
         setcandidates(candidatesRes);
@@ -295,8 +243,8 @@ export default function DetailedIndividual({
 
     getSettingUserProfileInfo().then(res => {
   
-      setcandidates(allCompanyApplications);
-      setcandidates2(allCompanyApplications);
+      setcandidates(allCompanyApplications.filter(item => item.user_id));
+      setcandidates2(allCompanyApplications.filter(item => item.user_id));
 
       const settingsInfo = res?.data
       ?.reverse()
@@ -635,7 +583,7 @@ export default function DetailedIndividual({
                                   backgroundColor: "#005734",
                                   data: Object.keys(candidateData).map(
                                     (key) => {
-                                      return candidateData[key].tasks_added;
+                                      return candidateData[key].task_added;
                                     }
                                   ),
                                   maxBarThickness: 40,
@@ -701,7 +649,7 @@ export default function DetailedIndividual({
                                   backgroundColor: "#005734",
                                   data: Object.keys(candidateData).map(
                                     (key) => {
-                                      return candidateData[key].tasks_added;
+                                      return candidateData[key].task_added;
                                     }
                                   ),
                                   maxBarThickness: 40,
@@ -1071,7 +1019,7 @@ export default function DetailedIndividual({
                             ) ? (
                               <>
                                 <img
-                                  src="https://img.freepik.com/free-vector/no-data-concept-illustration_114360-626.jpg?w=1480&t=st=1694763189~exp=1694763789~hmac=e4b01d8c6a162b7170700df535471c9972009c0bdf2679a1c63eefffb7401809"
+                                  src={indiv_report_img}
                                   alt="illustration"
                                 />
                                 <p
@@ -1201,13 +1149,13 @@ export default function DetailedIndividual({
                                                 className={
                                                   task.is_active &&
                                                   task.is_active === true
-                                                    ? task.approved
+                                                    ? (task?.approved === true || task?.approval === true)
                                                       ? "approved"
                                                       : "not__Approved"
                                                     : "deleted"
                                                 }
                                               >
-                                                {task.approved ? "Yes" : "No"}
+                                                {(task?.approved === true || task?.approval === true) ? "Yes" : "No"}
                                               </td>
                                               <td
                                                 className={
@@ -1247,7 +1195,7 @@ export default function DetailedIndividual({
           ) : (
             <>
               <img
-                src="https://img.freepik.com/free-vector/no-data-concept-illustration_114360-626.jpg?w=1480&t=st=1694763189~exp=1694763789~hmac=e4b01d8c6a162b7170700df535471c9972009c0bdf2679a1c63eefffb7401809"
+                src={indiv_report_img}
                 alt="illustration"
               />
               <p style={{ fontSize: "0.9rem", textAlign: "center" }}>
