@@ -5429,7 +5429,7 @@ class Thread_Apis(APIView):
                         "message": "Thread failed to be Created",
                         "info": json.loads(insert_response),
                     },
-                    status=status.HTTP_304_NOT_MODIFIED,
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
         else:
             return Response(
@@ -5782,7 +5782,7 @@ class Comment_Apis(APIView):
                         "message": "Comment failed to be Created",
                         "info": json.loads(insert_response),
                     },
-                    status=status.HTTP_304_NOT_MODIFIED,
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
         else:
             return Response(
