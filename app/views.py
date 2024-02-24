@@ -5338,7 +5338,8 @@ class Thread_Apis(APIView):
             "steps_to_reproduce_thread": data.get("steps_to_reproduce_thread"),
             "expected_product_behavior": data.get("expected_product_behavior"),
             "actual_product_behavior": data.get("actual_product_behavior"),
-            "thread_type": data.get("thread_type")
+            "thread_type": data.get("thread_type"),
+            "user_id": data.get("user_id"),
         }
 
         field = {
@@ -5356,7 +5357,8 @@ class Thread_Apis(APIView):
             "steps_to_reproduce_thread": data.get("steps_to_reproduce_thread"),
             "expected_product_behavior": data.get("expected_product_behavior"),
             "actual_product_behavior": data.get("actual_product_behavior"),
-            "thread_type": data.get("thread_type")
+            "thread_type": data.get("thread_type"),
+            "user_id": data.get("user_id")
         }
         update_field = {}
         serializer = ThreadsSerializer(data=serializer_data)
@@ -5427,7 +5429,7 @@ class Thread_Apis(APIView):
                         "message": "Thread failed to be Created",
                         "info": json.loads(insert_response),
                     },
-                    status=status.HTTP_304_NOT_MODIFIED,
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
         else:
             return Response(
@@ -5780,7 +5782,7 @@ class Comment_Apis(APIView):
                         "message": "Comment failed to be Created",
                         "info": json.loads(insert_response),
                     },
-                    status=status.HTTP_304_NOT_MODIFIED,
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
         else:
             return Response(

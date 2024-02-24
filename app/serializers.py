@@ -415,12 +415,14 @@ class ThreadsSerializer(serializers.Serializer):
     steps_to_reproduce_thread = serializers.CharField(
         allow_null=False, allow_blank=False
     )
+    user_id = serializers.CharField(allow_null=False, allow_blank=False)
 
 
 class CommentsSerializer(serializers.Serializer):
     created_by = serializers.CharField(allow_null=False, allow_blank=False)
     comment = serializers.CharField(allow_null=False, allow_blank=False)
     thread_id = serializers.CharField(allow_null=False, allow_blank=False)
+    user_id = serializers.CharField(allow_null=False, allow_blank=False)
 
 
 class PublicProductURLSerializer(serializers.Serializer):
@@ -503,7 +505,6 @@ class ReportSerializer(serializers.Serializer):
         ("Team", "Team"),
         ("Lead", "Lead"),
         ("Individual", "Individual"),
-        ("Individual Task", "Individual Task"),
         ("Project", "Project"),
         ("Public", "Public"),
         ("Level", "Level"),
