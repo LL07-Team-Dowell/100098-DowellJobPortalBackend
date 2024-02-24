@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/100098-DowellJobPortal/static/css/main.052c18cd.css",
-    "main.js": "/100098-DowellJobPortal/static/js/main.cd0df385.js",
+    "main.css": "/100098-DowellJobPortal/static/css/main.db1941d7.css",
+    "main.js": "/100098-DowellJobPortal/static/js/main.0a62474c.js",
     "static/js/413.7303401b.chunk.js": "/100098-DowellJobPortal/static/js/413.7303401b.chunk.js",
     "static/js/52.22f7291a.chunk.js": "/100098-DowellJobPortal/static/js/52.22f7291a.chunk.js",
     "static/js/988.44d73894.chunk.js": "/100098-DowellJobPortal/static/js/988.44d73894.chunk.js",
@@ -26,6 +26,7 @@
     "static/media/frontend-image.png": "/100098-DowellJobPortal/static/media/frontend-image.4e31d567e39692434305.png",
     "static/media/lock.png": "/100098-DowellJobPortal/static/media/lock.1d03a885ef68a36812c2.png",
     "static/media/developr-img.png": "/100098-DowellJobPortal/static/media/developr-img.a10dc9e765d77a07b460.png",
+    "static/media/indiv_report.avif": "/100098-DowellJobPortal/static/media/indiv_report.44f324f02e71b6337d23.avif",
     "static/media/Socialmedia2.png": "/100098-DowellJobPortal/static/media/Socialmedia2.ad1874f592f3f8aa8e7b.png",
     "static/media/team-management-logo.png": "/100098-DowellJobPortal/static/media/team-management-logo.ad1874f592f3f8aa8e7b.png",
     "static/media/system3.svg": "/100098-DowellJobPortal/static/media/system3.4c89f2349cf48ce02680571d5675c613.svg",
@@ -41,14 +42,14 @@
     "static/media/one.svg": "/100098-DowellJobPortal/static/media/one.abdd2ec6e726dc94acbbd4cc0ed89714.svg",
     "static/media/arrowright.svg": "/100098-DowellJobPortal/static/media/arrowright.8a3c10467b0e2d35029396ceb599082d.svg",
     "static/media/selectorArrow.svg": "/100098-DowellJobPortal/static/media/selectorArrow.f38bb34f6d4cf04e456f542b92a487d0.svg",
-    "main.052c18cd.css.map": "/100098-DowellJobPortal/static/css/main.052c18cd.css.map",
-    "main.cd0df385.js.map": "/100098-DowellJobPortal/static/js/main.cd0df385.js.map",
+    "main.db1941d7.css.map": "/100098-DowellJobPortal/static/css/main.db1941d7.css.map",
+    "main.0a62474c.js.map": "/100098-DowellJobPortal/static/js/main.0a62474c.js.map",
     "413.7303401b.chunk.js.map": "/100098-DowellJobPortal/static/js/413.7303401b.chunk.js.map",
     "52.22f7291a.chunk.js.map": "/100098-DowellJobPortal/static/js/52.22f7291a.chunk.js.map",
     "988.44d73894.chunk.js.map": "/100098-DowellJobPortal/static/js/988.44d73894.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.052c18cd.css",
-    "static/js/main.cd0df385.js"
+    "static/css/main.db1941d7.css",
+    "static/js/main.0a62474c.js"
   ]
 }
