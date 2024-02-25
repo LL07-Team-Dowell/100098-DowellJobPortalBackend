@@ -6784,7 +6784,35 @@ class Generate_Report(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-    def itr_function(self,user_id,username, company_id, year):
+    def valid_teamlead(self, info):
+        profiles = SettingUserProfileInfo.objects.all()
+        serializer = SettingUserProfileInfoSerializer(profiles, many=True)
+        # print(serializer.data,"----")
+        
+        if len(info) > 0:
+            user_id = [users['user_id'] for users in info if "user_id" in users.keys()][0]
+            portfolio_name = [
+                names["portfolio_name"] for names in info if "portfolio_name" in names.keys()
+            ]
+            valid_profiles = []
+            for data in serializer.data:
+                for d in data["profile_info"]:
+                    if "profile_title" in d.keys():
+                        if d["profile_title"] in portfolio_name:
+                            if (
+                                d["Role"] == "Project_Lead"
+                                or d["Role"] == "Proj_Lead"
+                                or d["Role"] == "super_admin"
+                            ):
+                                valid_profiles.append(d["profile_title"])
+            if len(valid_profiles) > 0:
+                if valid_profiles[-1] in portfolio_name:
+                    return True,user_id
+                else:
+                    return False,user_id
+        return False,''
+
+    def itr_function(self,user_id,username, company_id, year,isteamlead):
         # Initialize the data dictionary
         data = {'tasks_details': {}}
 
@@ -6825,6 +6853,16 @@ class Generate_Report(APIView):
             tasks_you_approved={}
             tasks_you_marked_as_complete={}
             tasks_you_marked_as_incomplete={}
+            for month in list(calendar.month_name)[1:]:
+                # Initialize data for the month
+                task_added[month] = 0
+                tasks_completed[month] = 0
+                tasks_uncompleted[month] = 0
+                tasks_approved[month] = 0
+                tasks_you_approved[month] = 0
+                tasks_you_marked_as_complete[month] = 0
+                tasks_you_marked_as_incomplete[month] = 0
+
             d = dowellconnection(*args)
             if "team_management_report" in args:
                 get_team = json.loads(d)['data']
@@ -6842,90 +6880,42 @@ class Generate_Report(APIView):
                                     comments = json.loads(dowellconnection(*comment_report_module, "fetch", {"thread_id": issue["_id"],"created_date":issue["date_created"]}, update_field=None))['data']
                                     data['tasks_details'][month]["comments_added"]+=len(comments)
 
-            if "task_details" in args:
+            if "task_details" in args and {'task_approved_by': username, 'company_id': company_id} in args:
                 task_details = json.loads(d)["data"]
                 for task in task_details:
                     if "task_created_date" in task.keys():
                         task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
                         _year, month, mcnt = get_month_details(task["task_created_date"])
                         if _year == year:
-                            if month in task_added.keys():
-                                task_added[month]+=1
-                            else:
-                                task_added[month]=1
+                            if ("task_approved_by" in task.keys() and task["task_approved_by"]==username):
+                                tasks_you_approved[month]+=1
+                                complete =["Completed","completed", 'Complete', 'complete', True, "true", "True"]
+                                if (("status" in task.keys() and task['status'] in complete ) or (("completed" in task.keys() and task["completed"] in complete ) or ("Completed" in task.keys() and task["Completed"] in complete ) or ("Complete" in task.keys() and task["Complete"] in complete ) or("complete" in task.keys() and task["complete"] in complete )) ):   
+                                    
+                                    tasks_you_marked_as_complete[month]+=1
+                                else:
+                                    tasks_you_marked_as_incomplete[month]+=1
+                                
+                            data["tasks_details"][month]["tasks_you_approved"] = tasks_you_approved[month]
+                            data["tasks_details"][month]["tasks_you_marked_as_complete"] = tasks_you_marked_as_complete[month]
+                            data["tasks_details"][month]["tasks_you_marked_as_incomplete"] = tasks_you_marked_as_incomplete[month]
+                                           
+            if "task_details" in args and {'user_id': user_id, 'company_id': company_id} in args:
+                task_details = json.loads(d)["data"]
+                for task in task_details:
+                    if "task_created_date" in task.keys():
+                        task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
+                        _year, month, mcnt = get_month_details(task["task_created_date"])
+                        if _year == year:
+                            task_added[month]+=1
                             
                             complete =["Completed","completed", 'Complete', 'complete', True, "true", "True"]
                             if (("status" in task.keys() and task['status'] in complete ) or (("completed" in task.keys() and task["completed"] in complete ) or ("Completed" in task.keys() and task["Completed"] in complete ) or ("Complete" in task.keys() and task["Complete"] in complete ) or("complete" in task.keys() and task["complete"] in complete )) ):
-                                
-                                if month in tasks_completed.keys():
-                                    tasks_completed[month]+=1
-                                else:
-                                    tasks_completed[month]=1
-                                if month in tasks_uncompleted.keys():
-                                    tasks_uncompleted[month]+=0
-                                else:
-                                    tasks_uncompleted[month]=0
-                                if ("approved_by" in task.keys() and task["approved_by"]==username):
-                                    if month in tasks_you_approved.keys():
-                                        tasks_you_approved[month]+=1
-                                    else:
-                                        tasks_you_approved[month]=1
-
-                                    if month in tasks_you_marked_as_complete.keys():
-                                        tasks_you_marked_as_complete[month]+=1
-                                    else:
-                                        tasks_you_marked_as_complete[month]=1
-                                    if month in tasks_you_marked_as_incomplete.keys():
-                                        tasks_you_marked_as_incomplete[month]+=1
-                                    else:
-                                        tasks_you_marked_as_incomplete[month]=1
-                                else:
-                                    if month in tasks_you_approved.keys():
-                                        tasks_you_approved[month]+=0
-                                    else:
-                                        tasks_you_approved[month]=0
-
-                                    if month in tasks_you_marked_as_complete.keys():
-                                        tasks_you_marked_as_complete[month]+=0
-                                    else:
-                                        tasks_you_marked_as_complete[month]=0
-                                    if month in tasks_you_marked_as_incomplete.keys():
-                                        tasks_you_marked_as_incomplete[month]+=0
-                                    else:
-                                        tasks_you_marked_as_incomplete[month]=0
-                                        
+                                tasks_completed[month]+=1
                             else:
-                                if month in tasks_completed.keys():
-                                    tasks_completed[month]+=0
-                                else:
-                                    tasks_completed[month]=0
-                                if month in tasks_uncompleted.keys():
-                                    tasks_uncompleted[month]+=1
-                                else:
-                                    tasks_uncompleted[month]=1
-                                if month in tasks_you_approved.keys():
-                                    tasks_you_approved[month]+=0
-                                else:
-                                    tasks_you_approved[month]=0
-
-                                if month in tasks_you_marked_as_complete.keys():
-                                    tasks_you_marked_as_complete[month]+=0
-                                else:
-                                    tasks_you_marked_as_complete[month]=0
-                                if month in tasks_you_marked_as_incomplete.keys():
-                                    tasks_you_marked_as_incomplete[month]+=0
-                                else:
-                                    tasks_you_marked_as_incomplete[month]=0
+                                tasks_uncompleted[month]+=1
                             if ("approved" in task.keys() and task['approved']==True):
-                                if month in tasks_approved.keys():
-                                    tasks_approved[month]+=1
-                                else:
-                                    tasks_approved[month]=1
-                            else:
-                                if month in tasks_approved.keys():
-                                    tasks_approved[month]+=1
-                                else:
-                                    tasks_approved[month]=1
+                                tasks_approved[month]+=1
                                 
                             #incomplete=["Incomplete", "incomplete", 'Incompleted', 'incompleted']
                                 
@@ -6934,9 +6924,7 @@ class Generate_Report(APIView):
                             data['tasks_details'][month]["tasks_uncompleted"]= tasks_uncompleted[month]
                             data['tasks_details'][month]["tasks_approved"] = tasks_approved[month]
                             data["tasks_details"][month]["percentage_tasks_completed"]=(tasks_completed[month]/task_added[month])*100
-                            data["tasks_details"][month]["tasks_you_approved"] = tasks_you_approved[month]
-                            data["tasks_details"][month]["tasks_you_marked_as_complete"] = tasks_you_marked_as_complete[month]
-                            data["tasks_details"][month]["tasks_you_marked_as_incomplete"] = tasks_you_marked_as_incomplete[month]
+                            
                             if task_created_date >= start and task_created_date <= end:
                                 week_details.append(task["project"])
 
@@ -6980,6 +6968,8 @@ class Generate_Report(APIView):
                                 projects[task["project"]]['tasks'].append(task)
 
         arguments = [(*team_management_modules, "fetch", field, {}),(*task_details_module, "fetch", field, {})]
+        if isteamlead ==True:
+            arguments.append( (*task_details_module, "fetch", {"task_approved_by": username, "company_id": company_id}, {}) )
         
         #---------------------start of threads--------------------------------------------------
         threads=[]
@@ -7035,8 +7025,9 @@ class Generate_Report(APIView):
                         "message": f"There is no candidate with such parameters --> "
                         + " ".join([va for va in field.values()])
                     },status=status.HTTP_204_NO_CONTENT)
+            isteamlead,_= self.valid_teamlead(info)
         
-            response =self.itr_function(user_id, username, company_id, year)
+            response =self.itr_function(user_id, username, company_id, year,isteamlead)
 
             data={"personal_info":info[0]}
             data.update(response)
