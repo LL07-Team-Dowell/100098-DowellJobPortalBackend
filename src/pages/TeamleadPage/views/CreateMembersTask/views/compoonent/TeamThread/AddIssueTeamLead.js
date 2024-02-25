@@ -364,6 +364,7 @@ const AddIssueTeamLead = ({
     thread_type: "",
     previous_status: "",
     company_id: currentUser.portfolio_info[0].org_id,
+    user_id: currentUser.userinfo.userID,
   });
 
   console.log(createIssue);

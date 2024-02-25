@@ -153,7 +153,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
         .then((resp) => {
           setLoading(false);
           // console.log(resp.data.response);
-          setdata(resp?.data?.response);
+          setdata(resp?.data?.data);
         })
         .catch((err) => console.log(err));
     }
@@ -178,18 +178,18 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
       .then((resp) => {
         closeModal();
         setLoadingButton(false);
-        console.log(resp?.data?.response);
-        setdata(resp?.data?.response);
+        console.log(resp?.data?.data);
+        setdata(resp?.data?.data);
 
         const months = Object.keys(
-          resp?.data?.response?.job_applications?.months || {}
+          resp?.data?.data?.job_applications?.months || {}
         );
         let currentTrack = 0;
         const datasetData = months
           .map((month, index) => {
-            if (resp?.data?.response?.job_applications?.months[month] === 0)
+            if (resp?.data?.data?.job_applications?.months[month] === 0)
               return null;
-            return resp?.data?.response?.job_applications?.months[month].map(
+            return resp?.data?.data?.job_applications?.months[month].map(
               (item) => {
                 if (currentTrack > colors.length - 1) {
                   currentTrack = 0;
@@ -252,18 +252,18 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
     generateCommonAdminReport(data)
       .then((resp) => {
         setLoading(false);
-        console.log(resp?.data?.response);
-        setdata(resp?.data?.response);
+        console.log(resp?.data?.data);
+        setdata(resp?.data?.data);
 
         const months = Object.keys(
-          resp?.data?.response?.job_applications?.months || {}
+          resp?.data?.data?.job_applications?.months || {}
         );
 
         const datasetData = months
           .map((month, index) => {
-            if (resp?.data?.response?.job_applications?.months[month] === 0)
+            if (resp?.data?.data?.job_applications?.months[month] === 0)
               return null;
-            return resp?.data?.response?.job_applications?.months[month].map(
+            return resp?.data?.data?.job_applications?.months[month].map(
               (item) => {
                 if (currentTrack > colors.length - 1) {
                   currentTrack = 0;

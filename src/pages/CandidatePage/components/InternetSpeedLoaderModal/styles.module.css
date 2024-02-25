@@ -1,0 +1,104 @@
+.modal__Wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 24%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  flex-direction: column;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 3rem 1rem;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  font-family: "Poppins", sans-serif;
+  max-height: 85%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.modal__Wrap::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.modal__Wrap::-webkit-scrollbar-track {
+  background: #efefef;
+}
+
+.modal__Wrap::-webkit-scrollbar-thumb {
+  background: #b8b8b8;
+}
+
+.modal__Wrap::-webkit-scrollbar-thumb:hover {
+  background: #005734;
+}
+
+.progress_item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.progress_item p,
+.result__Item {
+  font-size: 0.82rem;
+}
+
+.indicator {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+}
+
+.completed_Indicator {
+  background-color: #005734;
+}
+
+.pending_Indicator {
+  background-color: #efefef;
+  border: 1px solid #b8b8b8;
+}
+
+.progress_item > .pending_Indicator ~ p {
+  color: #b8b8b8;
+}
+
+.modal__Wrap h2 {
+  font-weight: 500;
+  color: #005734;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.retake__Test__Btn {
+  background-color: #005734;
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+  letter-spacing: 0.02em;
+  outline: none;
+  border: none;
+  min-width: 6.5rem;
+  width: max-content;
+  min-height: 2.5rem;
+  border-radius: 10px;
+  transition: 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.retake__Test__Btn:hover {
+  filter: brightness(0.85);
+}
+
+@media screen and (max-width: 767px) {
+  .modal__Wrap {
+    width: 80%;
+  }
+}

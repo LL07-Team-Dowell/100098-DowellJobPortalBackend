@@ -111,6 +111,7 @@ const ThreadComment = ({ comments, commentInput, user, updateComments, threadId,
       created_by: currentUser.userinfo.username,
       comment: text,
       thread_id: threadId,
+      user_id: currentUser.userinfo.userID,
     };
     try {
       const newCommentRes = (await postComment(newComment)).data;

@@ -45,7 +45,8 @@ const AddIssueScreen = ({
     expected_product_behavior: "",
     actual_product_behavior: "",
     thread_type: "",
-    company_id: currentUser.portfolio_info[0].org_id
+    company_id: currentUser.portfolio_info[0].org_id,
+    user_id: currentUser.userinfo.userID,
   });
 
   // useClickOutside(ref, () => {

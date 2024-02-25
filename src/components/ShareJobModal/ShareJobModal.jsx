@@ -353,12 +353,17 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink, isRepo
             <>
               <div className={styles.select__Items__Wrapper}>
                 {
-                  currentPage === 1 ? <p className={styles.select__Items__Text}>
-                    <span>Select number of public links</span>
-                    <span className={styles.indicator}>
-                      Count: {publicIdsSelected.length}
-                    </span>
-                  </p> : <>
+                  currentPage === 1 ? <>
+                    <p className={styles.select__Items__Text}>
+                      <span style={{ fontSize: '0.85rem', marginBottom: '0.8rem' }}>Total available links: {maximumNumberOfPublicIds}</span>
+                    </p>
+                    <p className={styles.select__Items__Text}>
+                      <span>Select public links</span>
+                      <span className={styles.indicator}>
+                        Selection Count: {publicIdsSelected.length}
+                      </span>
+                    </p>
+                  </> : <>
                     <div className={`${styles.select__Links__Num} ${styles.last__Page}`}>
                       <label>
                         <span>Enter name for link <span className={styles.required}>*</span></span>

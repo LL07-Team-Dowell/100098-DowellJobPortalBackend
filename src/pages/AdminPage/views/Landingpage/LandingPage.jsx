@@ -123,9 +123,6 @@ const LandingPage = ({ subAdminView }) => {
     setApplicationsLoaded(true);
   }, [userRemovalStatusChecked, currentUser]);
 
-  console.log("currentUser", currentUser);
-  // console.log("jobs", jobs);
-
   useEffect(() => {
     if (dashboardDataLoaded) {
       setJobs(jobs);
@@ -312,7 +309,7 @@ const LandingPage = ({ subAdminView }) => {
     getUserInfoFromLoginAPI(dataToPost)
       .then((res) => {
         setCurrentUser(res.data);
-        console.log(res.data.portfolio_info[0].data_type);
+        sessionStorage.setItem('user', JSON.stringify(res.data));
       })
       .catch((err) => {
         console.log("Failed to get user details from login API");
@@ -337,7 +334,6 @@ const LandingPage = ({ subAdminView }) => {
     toast.success("Link copied to clipboard!");
   };
 
-  console.log({ searchValue });
   const EditActiveCardStatus = (id) => {
     console.log({ id });
     setJobs(
@@ -380,7 +376,6 @@ const LandingPage = ({ subAdminView }) => {
         : true
     )
     ?.filter((v) => v.is_active === false).length;
-  console.log({ activeJobsLength, inactiveJobsLength });
 
   return (
     <StaffJobLandingLayout
