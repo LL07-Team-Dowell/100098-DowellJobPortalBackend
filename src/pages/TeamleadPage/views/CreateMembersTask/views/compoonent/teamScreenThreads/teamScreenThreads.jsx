@@ -112,6 +112,7 @@ const TeamScreenThreads = ({ status, id }) => {
       created_by: currentUser.userinfo.username,
       comment: text,
       thread_id: id,
+      user_id: currentUser.userinfo.userID,
     };
 
     const updatedThreads = threads.slice();
