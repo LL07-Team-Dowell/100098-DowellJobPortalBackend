@@ -27,7 +27,7 @@ const GenerateInvoice = ({
   handleCloseModal,
   requiredLogCount,
   currentUserHiredApplications,
-  currentUserHiredApplicationsLoaded,
+  // currentUserHiredApplicationsLoaded,
 }) => {
   const [dataProcessing, setDataProcessing] = useState(false);
   const [showInvoicePage, setShowInvoicePage] = useState(false);
@@ -104,7 +104,7 @@ const GenerateInvoice = ({
         const approvedLogs = taskDetails.filter((log) => log.approved === true);
 
         const getUserOnLeave = res[1].data.response.filter((leave) =>
-          leave.Leave_Approval === "True" ? true : false
+          leave.Leave_Approval === true ? true : false
         );
 
         const templateID = "64ece51ba57293efb539e5b7";
@@ -214,6 +214,24 @@ const GenerateInvoice = ({
               <>
                 <h2>New Invoice</h2>
                 <div>
+                  <label>
+                    <span>Select Payment From and To</span>
+                    <div className={styles.invoice_date_select}>
+                      <input
+                        type="date"
+                        value={formatDateForAPI(paymentFrom)}
+                        onChange={({ target }) => setPaymentFrom(target.value)}
+                        id="payment_from"
+                        className={styles.invoice_months}
+                      />
+                      <input
+                        type="date"
+                        value={formatDateForAPI(paymentTo)}
+                        onChange={({ target }) => setPaymentTo(target.value)}
+                        id="payment_to"
+                      />
+                    </div>
+                  </label>
                   <label htmlFor="new_event">
                     <span>Select Date</span>
                     <div className={styles.invoice_details_select}>
@@ -250,24 +268,6 @@ const GenerateInvoice = ({
                         placeholder="Select year"
                       />
                     </div>
-                  </label>
-                  <label>
-                    <span>Payment From</span>
-                    <input
-                      type="date"
-                      value={formatDateForAPI(paymentFrom)}
-                      onChange={({ target }) => setPaymentFrom(target.value)}
-                      id="payment_from"
-                    />
-                  </label>
-                  <label>
-                    <span>Payment To</span>
-                    <input
-                      type="date"
-                      value={formatDateForAPI(paymentTo)}
-                      onChange={({ target }) => setPaymentTo(target.value)}
-                      id="payment_to"
-                    />
                   </label>
                 </div>
                 <div className={styles.process_btn}>

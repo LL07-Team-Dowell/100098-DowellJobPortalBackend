@@ -113,6 +113,10 @@
   cursor: pointer;
 }
 
+.invoice_months {
+  padding: 0.6rem;
+}
+
 .process_btn {
   display: flex;
   justify-content: center;

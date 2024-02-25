@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
-import JobLandingLayout from "../../../layouts/CandidateJobLandingLayout/LandingLayout";
+import { useSearchParams, useParams } from "react-router-dom";
 import { useCurrentUserContext } from "../../../contexts/CurrentUserContext";
 import { AiOutlinePlus } from "react-icons/ai";
 import styles from "./styles.module.css";
 import GenerateInvoice from "./components/GenerateInvoice";
+import { getInvoice } from "../../../services/paymentService";
+import Select from "react-select";
+import LoadingSpinner from "../../../components/LoadingSpinner/LoadingSpinner";
 
 const InvoicePayment = ({ isGroupLead }) => {
   const [showInvoicePopup, setShowInvoicePopup] = useState(false);
@@ -12,18 +15,30 @@ const InvoicePayment = ({ isGroupLead }) => {
     currentUserHiredApplications,
     currentUserHiredApplicationsLoaded,
   } = useCurrentUserContext();
-
-  useEffect(() => {
-    const attendance = currentUserHiredApplications
-      .map((item) => {
-        return item.project;
-      })
-      .flat();
-
-    console.log(attendance);
-  }, [currentUserHiredApplicationsLoaded]);
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
+  const [dataLoading, setDataLoading] = useState(false);
+  const [invoiceDetails, setInvoiceDetails] = useState([]);
+  const [invoiceResults, setInvoiceResults] = useState(false);
 
   const requiredLogCount = isGroupLead ? 160 : 80;
+
+  const getInvoiceDetails = async () => {
+    setInvoiceResults(false);
+    setDataLoading(true);
+
+    getInvoice(currentUser.userinfo.userID, selectedYear.label)
+      .then((res) => {
+        console.log(res);
+        setInvoiceDetails(res.data.response);
+        setInvoiceResults(true);
+        setDataLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setDataLoading(false);
+      });
+  };
 
   const handleInvoicePopup = () => {
     setShowInvoicePopup(true);
@@ -34,28 +49,134 @@ const InvoicePayment = ({ isGroupLead }) => {
   };
 
   return (
-    <JobLandingLayout user={currentUser} afterSelection={true}>
-      <div className={styles.wrapper_invoice}>
-        <section className={styles.nav_content}>
-          <h2>Invoice</h2>
-          <button onClick={() => handleInvoicePopup()}>
-            <AiOutlinePlus />
-            <span>New</span>
-          </button>
-        </section>
-        <section>This is the invoice landing page</section>
-        {showInvoicePopup && (
-          <GenerateInvoice
-            handleCloseModal={handleCloseModal}
-            requiredLogCount={requiredLogCount}
-            currentUserHiredApplications={currentUserHiredApplications}
-            currentUserHiredApplicationsLoaded={
-              currentUserHiredApplicationsLoaded
-            }
-          />
-        )}
-      </div>
-    </JobLandingLayout>
+    <div className={styles.wrapper_invoice}>
+      <section className={styles.nav_content}>
+        <h2>Invoice</h2>
+        <button onClick={() => handleInvoicePopup()}>
+          <AiOutlinePlus />
+          <span>New</span>
+        </button>
+      </section>
+      <section className={styles.get_invoice_section}>
+        <label htmlFor="new_event">
+          <span>Select Date</span>
+          <div className={styles.invoice_details_select}>
+            <Select
+              options={[
+                { label: "January", value: "01" },
+                { label: "February", value: "02" },
+                { label: "March", value: "03" },
+                { label: "April", value: "04" },
+                { label: "May", value: "05" },
+                { label: "June", value: "06" },
+                { label: "July", value: "07" },
+                { label: "August", value: "08" },
+                { label: "September", value: "09" },
+                { label: "October", value: "10" },
+                { label: "November", value: "11" },
+                { label: "December", value: "12" },
+              ]}
+              onChange={(selectedOption) => {
+                setSelectedMonth(selectedOption);
+              }}
+              className={styles.invoice__select__date}
+              placeholder="Select month"
+            />
+            <Select
+              options={[
+                { label: "2024", value: "2024" },
+                { label: "2023", value: "2023" },
+              ]}
+              onChange={(selectedOption) => {
+                setSelectedYear(selectedOption);
+              }}
+              className={styles.invoice__select__year}
+              placeholder="Select year"
+            />
+
+            <div className={styles.process_btn}>
+              <button
+                className={styles.generate_invoice}
+                onClick={getInvoiceDetails}
+              >
+                <span>
+                  {dataLoading ? (
+                    <LoadingSpinner
+                      width={"1.5rem"}
+                      height={"1.5rem"}
+                      color={"white"}
+                    />
+                  ) : (
+                    "Get"
+                  )}
+                </span>
+              </button>
+            </div>
+          </div>
+        </label>
+      </section>
+      {invoiceResults && (
+        <>
+          <section className={styles.get_invoice_section}>
+            <div className={styles.progress_main_div}>
+              <div className={styles.agenda_report_wrap}>
+                <div className={styles.report_agenda_list}>
+                  <h3>Payment Details</h3>
+                  <div className={styles.weekly_agenda_list_table_div}>
+                    <table className={styles.weekly_agenda_list_table}>
+                      <thead>
+                        <tr>
+                          <th>Payment month</th>
+                          <th>Payment year</th>
+                          <th>Currency</th>
+                          <th>Monthly pay</th>
+                          <th>Required log count</th>
+                          <th>Approved logs</th>
+                          <th>Payment approved</th>
+                          <th>Payment approved date</th>
+                          <th>Payment from</th>
+                          <th>Payment to</th>
+                          <th>Amount paid</th>
+                          <th>Leave days</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {invoiceDetails.map((item, index) => (
+                          <tr key={index}>
+                            <td>{item.payment_month}</td>
+                            <td>{item.payment_year}</td>
+                            <td>{item.currency_paid}</td>
+                            <td>{item.actual_monthly_pay}</td>
+                            <td>{item.requried_logs_count}</td>
+                            <td>{item.approved_logs_count}</td>
+                            <td>{item.payment_approved}</td>
+                            <td>{item.payment_approved_on}</td>
+                            <td>{item.payment_from}</td>
+                            <td>{item.payment_to}</td>
+                            <td>{item.amount_paid}</td>
+                            <td>{item.leave_days}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </>
+      )}
+      {showInvoicePopup && (
+        <GenerateInvoice
+          handleCloseModal={handleCloseModal}
+          requiredLogCount={requiredLogCount}
+          currentUserHiredApplications={currentUserHiredApplications}
+          currentUserHiredApplicationsLoaded={
+            currentUserHiredApplicationsLoaded
+          }
+        />
+      )}
+    </div>
   );
 };
 
