@@ -9,6 +9,7 @@ import { GoOrganization, GoTasklist } from "react-icons/go";
 import { FaUsers } from "react-icons/fa";
 import { PiTreeStructure } from "react-icons/pi";
 import { RiCalendarEventLine } from "react-icons/ri";
+import { MdOutlineCoPresent } from "react-icons/md";
 
 export const adminNavigationLinks = [
 
@@ -64,6 +65,11 @@ export const adminNavigationLinks = [
         linkAddress: "/jobs",
         icon: <MdOutlineWorkOutline />,
         text: "Jobs",
+      },
+      {
+        linkAddress: "/leave",
+        icon: <MdOutlineCoPresent />,
+        text: "Leave",
       },
       {
         linkAddress: "/projects",

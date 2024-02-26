@@ -186,8 +186,8 @@ export const adminDeleteApplication = async (data) => {
   return await currentBackendAxiosInstance.post(`/dashboard_services/?type=delete_application`, data)
 }
 
-export const adminLeaveApplication = async (type, data) => {
-  return await currentBackendAxiosInstance.post(`/candidate_leave_apply/?type=${type}`, data)
+export const adminLeaveApplication = async (_id, user_id) => {
+  return await currentBackendAxiosInstance.post(`/candidate_leave_apply//?type=approved_leave&user_id=${user_id}&leave_id=${_id}`)
 }
 
 export const getCompanyStructure = async (companyId) => {
@@ -196,4 +196,16 @@ export const getCompanyStructure = async (companyId) => {
 
 export const updateCompanyStructure = async (type, data) => {
   return await currentBackendAxiosInstance.post(`/insert_company_structure/?type=${type}`, data)
+}
+
+export const adminLeaveApply = async (data) => {
+  return await currentBackendAxiosInstance.post(`candidate_leave_apply/?type=leave_apply`, data)
+}
+
+export const getAllLeaveApplication = async (company_id) => {
+  return await currentBackendAxiosInstance.post(`/candidate_leave_apply/?type=get_all_leave_application&limit=0&offset=0&company_id=${company_id}`)
+}
+
+export const denyLeaveApplication = async (_id) => {
+  return await currentBackendAxiosInstance.post(`/candidate_leave_apply/?type=candidate_leave_reject&leave_id=${_id}`)
 }

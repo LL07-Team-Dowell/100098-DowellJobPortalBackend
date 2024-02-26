@@ -17,6 +17,7 @@ import {
   adminDeleteApplication,
   adminLeaveApplication,
   updateCandidateApplicationDetail,
+  adminLeaveApply
 } from "../../../../../../services/adminServices";
 import { Link } from "react-router-dom";
 import useClickOutside from "../../../../../../hooks/useClickOutside";
@@ -44,6 +45,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
   const [noOfWeeks, setNoOfWeeks] = useState('');
   const [viewOverlayVisibility, setViewOverlayVisibility] = useState(false);
   const updateListingRef = useRef();
+  const [isLeaveLoading, setIsLeaveLoading] = useState(false);
 
   useClickOutside(updateListingRef, () => setShowEditOptions(false));
 
@@ -208,7 +210,9 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
     setNoOfWeeks('');
     setLeaveOverlayVisibility(false);
   };
+
   const handleSubmitClick = async () => {
+    setIsLeaveLoading(true);
     const start_Date = new Date(startDate);
     const end_Date = new Date(endDate);
 
@@ -223,32 +227,51 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
       return toast.info('Difference between start and end date should be greater than or equal to 7 days!');
     }
 
+    // const dataToPost = {
+    //   applicant_id: application._id,
+    //   leave_start: startDate,
+    //   leave_end: endDate,
+    // };
     const dataToPost = {
-      applicant_id: application._id,
-      leave_start: startDate,
-      leave_end: endDate,
-    };
+      "user_id": application?.user_id,
+      "applicant": application?.applicant,
+      "company_id": application?.company_id,
+      "project": application?.project,
+      "leave_start_date": startDate,
+      "leave_end_date": endDate,
+      "email": application?.applicant_email,
+      "data_type": currentUser?.portfolio_info[0]?.data_type,
+    }
 
     try {
-      await (await adminLeaveApplication('approved_leave', dataToPost)).data;
+      await (await adminLeaveApply(dataToPost)).data;
       toast.success('Leave assigned successfully.')
+      setIsLeaveLoading(false);
     } catch (error) {
       toast.error('Unable to set leave. Please try again.')
+      setIsLeaveLoading(false);
     }
   }
 
   const handleWeekChange = (e) => {
+    const inputValue = e.target.value;
+    const numericRegex = /^[0-9]*$/;
+
+    if (!numericRegex.test(inputValue)) {
+      return toast.error('Please enter only numbers and number greater than 0 for weeks!');
+    }
     if (!startDate) {
       return toast.error('Please select start date first!');
     }
     const selectedStartDate = new Date(startDate);
-    const numberOfWeeks = parseInt(e.target.value);
-    if (numberOfWeeks <= 0) {
+    const numberOfWeeks = parseInt(inputValue);
+    if (numberOfWeeks < 0) {
       setEndDate('');
       setNoOfWeeks('');
-    }
-    if (numberOfWeeks > 0) {
+    } else {
+      // if (numberOfWeeks >= 0) {
       const endDate = new Date(selectedStartDate.setDate(selectedStartDate.getDate() + (numberOfWeeks * 7)));
+      endDate.setDate(endDate.getDate() - 1);
       setEndDate(endDate.toISOString().split('T')[0]);
       setNoOfWeeks(numberOfWeeks);
     }
