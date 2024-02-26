@@ -32,6 +32,7 @@ import CreateTaskScreen from "../pages/TeamleadPage/views/CreateTaskScreen/Creat
 import EventScreen from "../pages/AdminPage/views/Event/EventScreen";
 import ProjectEdit from "../pages/AdminPage/views/Project/ProjectEdit";
 import AdminLogsApprovalPage from "../pages/AdminPage/views/LogsApprovalPage/AdminLogsApprovalPage";
+import LeaveScreen from '../pages/AdminPage/views/Leave/LeaveScreen'
 
 export const mainAdminRoutesInfo = [
   {
@@ -209,6 +210,10 @@ export const mainAdminRoutesInfo = [
   {
     path: "/company-structure",
     component: CompanyStructurePage,
+  },
+  {
+    path: "/leave",
+    component: LeaveScreen,
   },
   {
     path: "/event",

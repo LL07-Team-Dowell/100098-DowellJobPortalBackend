@@ -9,7 +9,7 @@ import { useHrJobScreenAllTasksContext } from "../../../../contexts/HrJobScreenA
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { getSettingUserProject } from "../../../../services/hrServices";
 import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuses";
-import { adminDeleteApplication, adminLeaveApplication, updateCandidateApplicationDetail } from "../../../../services/adminServices";
+import { adminDeleteApplication, adminLeaveApply, updateCandidateApplicationDetail } from "../../../../services/adminServices";
 import { changeToTitleCase } from "../../../../helpers/helpers";
 import { JOB_APPLICATION_CATEGORIES } from "../../../CandidatePage/utils/jobCategories";
 import Overlay from "../../../../components/Overlay";
@@ -39,6 +39,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
   const [noOfWeeks, setNoOfWeeks] = useState('');
   const [viewOverlayVisibility, setViewOverlayVisibility] = useState(false);
   const updateListingRef = useRef();
+  const [isLeaveLoading, setIsLeaveLoading] = useState(false);
 
   useClickOutside(updateListingRef, () => setShowEditOptions(false));
 
@@ -204,6 +205,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
     setLeaveOverlayVisibility(false);
   };
   const handleSubmitClick = async () => {
+    setIsLeaveLoading(true);
     const start_Date = new Date(startDate);
     const end_Date = new Date(endDate);
 
@@ -217,32 +219,53 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
       return toast.info('Start date should be less than end date');
     }
 
+    // const dataToPost = {
+    //   applicant_id: application._id,
+    //   leave_start: startDate,
+    //   leave_end: endDate,
+    // };
+
     const dataToPost = {
-      applicant_id: application._id,
-      leave_start: startDate,
-      leave_end: endDate,
-    };
+      "user_id": application?.user_id,
+      "applicant": application?.applicant,
+      "company_id": application?.company_id,
+      "project": application?.project,
+      "leave_start_date": startDate,
+      "leave_end_date": endDate,
+      "email": application?.applicant_email,
+      "data_type": currentUser?.portfolio_info[0]?.data_type,
+    }
+    // console.log(dataToPost);
 
     try {
-      const res = await (await adminLeaveApplication('approved_leave', dataToPost)).data;
-      console.log("set leave application responseeeeeeeeeeeeeeeeeeeee: ", res);
+      await (await adminLeaveApply(dataToPost)).data;
+      toast.success('Leave assigned successfully.')
+      setIsLeaveLoading(false);
     } catch (error) {
-      console.log("err setting leave");
+      toast.error('Unable to set leave. Please try again.')
+      setIsLeaveLoading(false);
     }
   }
 
   const handleWeekChange = (e) => {
+    const inputValue = e.target.value;
+    const numericRegex = /^[0-9]*$/;
+
+    if (!numericRegex.test(inputValue)) {
+      return toast.error('Please enter only numbers and number greater than 0 for weeks!');
+    }
     if (!startDate) {
       return toast.error('Please select start date first!');
     }
     const selectedStartDate = new Date(startDate);
-    const numberOfWeeks = parseInt(e.target.value);
-    if (numberOfWeeks <= 0) {
+    const numberOfWeeks = parseInt(inputValue);
+    if (numberOfWeeks < 0) {
       setEndDate('');
       setNoOfWeeks('');
-    }
-    if (numberOfWeeks > 0) {
+    } else {
+      // if (numberOfWeeks >= 0) {
       const endDate = new Date(selectedStartDate.setDate(selectedStartDate.getDate() + (numberOfWeeks * 7)));
+      endDate.setDate(endDate.getDate() - 1);
       setEndDate(endDate.toISOString().split('T')[0]);
       setNoOfWeeks(numberOfWeeks);
     }
@@ -440,7 +463,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
                   disabled
                 />
               </label>
-              <button className={styles.edit__Btn} onClick={handleSubmitClick}>Submit</button>
+              <button className={styles.edit__Btn} onClick={handleSubmitClick}>{isLeaveLoading ? <LoadingSpinner width={20} height={20} /> : 'Submit'}</button>
             </div>
           </Overlay>
         )}

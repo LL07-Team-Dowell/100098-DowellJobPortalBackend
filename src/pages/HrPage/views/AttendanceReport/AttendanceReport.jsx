@@ -39,10 +39,9 @@ const AttendanceReport = () => {
     const [eventNames, setEventNames] = useState([]);
     const [selectedEvent, setSelectedEvent] = useState("");
     const [allHiredCandidates, setAllHiredCandidates] = useState([]);
-    const screens = ['Project Wise', 'User Wise',];
+    const screens = ['Project Wise', 'User Wise'];
     const SCREEN_PROJECT_USER = 0;
     const SCREEN_PROJECT_USER_EVENT = 1;
-    const SCREEN_EVENT = 2;
     const [datesForToolTip, setDatesForToolTip] = useState([]);
     const [attendanceDetails, setAttendanceDetails] = useState([]);
     const [percentage, setPercentage] = useState('');
@@ -62,20 +61,15 @@ const AttendanceReport = () => {
     })
     const [selectedProjectForMulti, setSelectedProjectForMulti] = useState(null);
     const [foundUserEventAttendanceDetail, setFoundUserEventAttendanceDetail] = useState(null);
+    const [selectedEventForUserWise, setSelectedEventforUserWise] = useState([]);
 
     const isWeekend = (dayIndex) => dayIndex === 5 || dayIndex === 6;
     // const companyId = "6385c0f18eca0fb652c94561";
-
-    //dummy data
-    // const attendanceDetail = [
-    //     [true, false, true, true, false, false, false],
-    // ];
 
     useEffect(() => {
         setSelectedUser([]);
         setDataLoading({ ...dataLoading, isUserLoading: true });
         setShowAttendaceReport(false);
-        // currentUser?.portfolio_info[0].org_id
 
         if (!userRemovalStatusChecked) return;
         const hiredCandidates = allCompanyApplications.filter(candidate => candidate.status === candidateStatuses.ONBOARDING || candidate.status === candidateStatuses.RENEWCONTRACT);
@@ -85,7 +79,6 @@ const AttendanceReport = () => {
         );
 
         const options = candidatesInSelectedProject.map(candidate => ({
-            // username: candidate.username,
             value: candidate.username,
             label: candidate.applicant,
         }));
@@ -172,9 +165,6 @@ const AttendanceReport = () => {
                     setIsLoading(false);
                     toast.error('Unable to Retrieve Attendance!');
                 })
-                // if (projectWiseresponse) {
-                //     renderingAttendance(selectedUser[0].label);
-                // }
             }
         } else if (views.userWiseView) {
             if (selectedUser.length === 0 && startDate === null && selectedMultiProjects.length === 0 && selectedEvent === '') {
@@ -257,55 +247,7 @@ const AttendanceReport = () => {
         console.log(">>>>>>>>>>all hired candidates", allHiredCandidates);
     };
 
-    const renderingAttendance = (candidate, username) => {
-        setUserForAttendance(candidate);
-        console.log('candidate>>>>>>>>>>>>>', candidate);
 
-        // UPDATED THE LOGIC FOR THIS. CHECK THE 'handleSelectProjectForMulti' FUNCTION
-        // if (views.multiProjectView) {
-        //     const projectData = projectWiseresponse['Business development'];
-
-        //     if (Array.isArray(projectData)) {
-        //         const userData = projectData.filter(data =>
-        //             (data.user_present.includes(candidate) || data.user_absent.includes(candidate)) && data.meeting === selectedEvent.label
-        //         );
-
-        //         const userAttendance = Array(userData.length + 2).fill(false);
-
-        //         userData.forEach((data, index) => {
-        //             if (data.user_present.includes(candidate)) {
-        //                 userAttendance[index] = true;
-        //             }
-        //         });
-
-        //         const numberOfDaysPresent = userAttendance.filter(value => value === true).length;
-
-        //         setPercentage(numberOfDaysPresent);
-        //         setAttendanceDetails([userAttendance]);
-        //     }
-        // } 
-
-        if (views.userWiseView) {
-            const userAttendance = userWiseResponse[username];
-            if (userAttendance && userAttendance.length > 0) {
-                setPercentage('');
-                setAttendanceDetails(userAttendance);
-
-                // UPDATED THE FUNCTIONALITY FOR THIS AS WELL
-                // console.log(userAttendance);
-                // const allDates = [...userAttendance[0].dates_present, ...userAttendance[0].dates_absent];
-                // const sortedDates = allDates.sort();
-                // console.log('date', userAttendance[0].dates_present);
-                // const updatedAttendanceDetails = sortedDates.map(date => {
-                //     return userAttendance[0].dates_present.includes(date);
-                // });
-                // updatedAttendanceDetails.push(false, false);
-                // const numberOfDaysPresent = updatedAttendanceDetails.filter(value => value === true).length;
-                // setPercentage(numberOfDaysPresent);
-                // setAttendanceDetails([updatedAttendanceDetails]);
-            }
-        }
-    }
 
     useEffect(() => {
         const dataForFetchingEvents = {
@@ -362,9 +304,9 @@ const AttendanceReport = () => {
             case SCREEN_PROJECT_USER_EVENT:
                 setViews({ projectWiseView: true, multiProjectView: false, userWiseView: true, eventWiseView: false })
                 break;
-            case SCREEN_EVENT:
-                setViews({ projectWiseView: false, multiProjectView: false, userWiseView: false, eventWiseView: true })
-                break;
+            // case SCREEN_EVENT:
+            //     setViews({ projectWiseView: false, multiProjectView: false, userWiseView: false, eventWiseView: true })
+            //     break;
             default:
                 console.log(`${index} is not defined`)
                 break;
@@ -379,6 +321,27 @@ const AttendanceReport = () => {
         }
         return '';
     };
+
+    const renderingAttendance = (candidate, username) => {
+        setUserForAttendance(candidate);
+        if (views.userWiseView) {
+            const userAttendance = userWiseResponse[username];
+            console.log('user attttt', userAttendance);
+            if (userAttendance && userAttendance.length > 0) {
+                // setPercentage('');
+                setAttendanceDetails(userAttendance);
+                const foundEventAttendance = userAttendance?.find(attendance => attendance?.event_id === selectedEvent.id);
+
+                setPercentage(
+                    foundEventAttendance?.dates_present ?
+                        foundEventAttendance?.dates_present.length
+                        :
+                        ''
+                );
+                setFoundUserEventAttendanceDetail(foundEventAttendance);
+            }
+        }
+    }
 
     const renderingEventAttendance = (eventId) => {
         const foundEvent = eventNames?.find(event => event?.id === eventId);
@@ -404,31 +367,6 @@ const AttendanceReport = () => {
                 ''
         );
         setFoundUserEventAttendanceDetail(foundEventAttendance);
-
-        // const filteredUser = selectedUser?.filter((user) => user.label === userForAttendance);
-
-        // if (filteredUser.length !== 0) {
-        //     const username = filteredUser[0].value;
-        //     const userAttendance = userWiseResponse[username][index];
-
-        //     if (userAttendance) {
-        //         const allDates = [
-        //             ...(Array.isArray(userAttendance.dates_present) ? userAttendance.dates_present : []),
-        //             ...(Array.isArray(userAttendance.dates_absent) ? userAttendance.dates_absent : []),
-        //         ];
-        //         console.log(allDates);
-        //         const sortedDates = allDates.sort();
-
-        //         const updatedAttendanceDetails = sortedDates.map(date => {
-        //             return userAttendance.dates_present.includes(date);
-        //         });
-        //         updatedAttendanceDetails.push(false, false);
-        //         const numberOfDaysPresent = updatedAttendanceDetails.filter(value => value === true).length;
-
-        //         setPercentage(numberOfDaysPresent);
-        //         setAttendanceDetails([updatedAttendanceDetails]);
-        //     }
-        // }
     }
 
     const handleSelectProjectForMulti = (project) => {
@@ -615,7 +553,10 @@ const AttendanceReport = () => {
                                             selectedUser.map((candidate) => (
                                                 <button
                                                     key={candidate.value}
-                                                    onClick={() => renderingAttendance(candidate.label, candidate.value)}
+                                                    onClick={() => {
+                                                        renderingAttendance(candidate.label, candidate.value);
+                                                        // renderingEventAttendance(selectedEvent.id);
+                                                    }}
                                                 >
                                                     {candidate.label}
                                                 </button>
@@ -732,16 +673,6 @@ const AttendanceReport = () => {
                                                     }}
                                                 />
                                             </div>
-                                            {/* <p>Events:</p>
-    
-                                        {
-                                            eventNames.map((event, index) => (
-                                                <button key={event.value} onClick={() => renderingEventAttendance(index)}>
-                                                    {event.label}
-                                                </button>
-    
-                                            ))
-                                        } */}
                                         </div>
                                     }
                                     {
@@ -882,18 +813,6 @@ const AttendanceReport = () => {
                                                                                             </td>
                                                                                         </tr>
                                                                                 }
-                                                                                {/* {attendanceDetails.map((weekData, weekIndex) => (
-                                                                    <tr key={weekIndex}>
-                                                                        {weekData.map((isPresent, dayIndex) => (
-                                                                            <td key={dayIndex} Tooltip={formatTooltip(dayIndex)}
-                                                                                data-tooltip-id="my-tooltip"
-                                                                                data-tooltip-content={isWeekend(dayIndex) ? `Holiday` : `${new Date(datesForToolTip[dayIndex]).toDateString()}`}
-                                                                                data-tooltip-place="top">
-                                                                                {isWeekend(dayIndex) ? <><FaCircleCheck className="holiday table_data" />Holiday</> : isPresent ? <><FaCircleCheck className="present table_data" />Present</> : <><MdCancel className="absent table_data" />Absent</>}
-                                                                            </td>
-                                                                        ))}
-                                                                    </tr>
-                                                                ))} */}
                                                                             </> :
                                                                                 <></>
                                                                     }
