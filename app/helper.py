@@ -807,7 +807,7 @@ def update_user_Report_data(api_key,db_name, report_uuid, user_id, task_date, up
         "db_report_type": "report"
     }
     coll_name = report_uuid+user_id
-    get_report = json.loads(datacube_data_retrival_function(api_key,db_name,coll_name,query,10,0, False))
+    get_report = json.loads(datacube_data_retrival_function(api_key,db_name,coll_name,query,100000,0, False))
     if get_report['success'] == True:
         if len(get_report['data']) > 0:
             task_added = get_report['data'][0]['task_added']+ (1 if 'task_added' in update_data.keys() else 0)
@@ -934,7 +934,7 @@ def delete_user_Report_data(api_key,db_name, report_uuid, user_id, task_date, up
         "db_report_type": "report"
     }
     coll_name = report_uuid+user_id
-    get_report = json.loads(datacube_data_retrival_function(api_key,db_name,coll_name,query,10,0, False))
+    get_report = json.loads(datacube_data_retrival_function(api_key,db_name,coll_name,query,100000,0, False))
     if get_report['success'] == True:
         if len(get_report['data']) > 0:
             task_added = get_report['data'][0]['task_added']

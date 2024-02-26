@@ -505,7 +505,6 @@ class ReportSerializer(serializers.Serializer):
         ("Team", "Team"),
         ("Lead", "Lead"),
         ("Individual", "Individual"),
-        ("Individual Task", "Individual Task"),
         ("Project", "Project"),
         ("Public", "Public"),
         ("Level", "Level"),

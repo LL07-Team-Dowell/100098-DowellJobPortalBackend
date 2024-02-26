@@ -15,7 +15,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt,csrf_protect
 
 from dotenv import load_dotenv
-
+import speedtest
 from rest_framework import status, generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -5429,7 +5429,7 @@ class Thread_Apis(APIView):
                         "message": "Thread failed to be Created",
                         "info": json.loads(insert_response),
                     },
-                    status=status.HTTP_304_NOT_MODIFIED,
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
         else:
             return Response(
@@ -5782,7 +5782,7 @@ class Comment_Apis(APIView):
                         "message": "Comment failed to be Created",
                         "info": json.loads(insert_response),
                     },
-                    status=status.HTTP_304_NOT_MODIFIED,
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
         else:
             return Response(
@@ -6784,7 +6784,35 @@ class Generate_Report(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-    def itr_function(self,user_id,username, company_id, year):
+    def valid_teamlead(self, info):
+        profiles = SettingUserProfileInfo.objects.all()
+        serializer = SettingUserProfileInfoSerializer(profiles, many=True)
+        # print(serializer.data,"----")
+        
+        if len(info) > 0:
+            user_id = [users['user_id'] for users in info if "user_id" in users.keys()][0]
+            portfolio_name = [
+                names["portfolio_name"] for names in info if "portfolio_name" in names.keys()
+            ]
+            valid_profiles = []
+            for data in serializer.data:
+                for d in data["profile_info"]:
+                    if "profile_title" in d.keys():
+                        if d["profile_title"] in portfolio_name:
+                            if (
+                                d["Role"] == "Project_Lead"
+                                or d["Role"] == "Proj_Lead"
+                                or d["Role"] == "super_admin"
+                            ):
+                                valid_profiles.append(d["profile_title"])
+            if len(valid_profiles) > 0:
+                if valid_profiles[-1] in portfolio_name:
+                    return True,user_id
+                else:
+                    return False,user_id
+        return False,''
+
+    def itr_function(self,user_id,username, company_id, year,isteamlead):
         # Initialize the data dictionary
         data = {'tasks_details': {}}
 
@@ -6808,7 +6836,6 @@ class Generate_Report(APIView):
         
         field = {"user_id": user_id, "company_id": company_id}
         
-        
         today = datetime.today()
         st = today - timedelta(days=today.weekday())
         
@@ -6818,14 +6845,24 @@ class Generate_Report(APIView):
         projects={}
         week_details,total_tasks_last_one_day,total_tasks_last_one_week = [],[],[]
         
-        
         def call_dowellconnection(*args):
-            task_added=0
-            tasks_completed =0
-            tasks_uncompleted=0
-            tasks_you_approved=0
-            tasks_you_marked_as_complete=0
-            tasks_you_marked_as_incomplete=0
+            task_added={}
+            tasks_completed ={}
+            tasks_uncompleted={}
+            tasks_approved={}
+            tasks_you_approved={}
+            tasks_you_marked_as_complete={}
+            tasks_you_marked_as_incomplete={}
+            for month in list(calendar.month_name)[1:]:
+                # Initialize data for the month
+                task_added[month] = 0
+                tasks_completed[month] = 0
+                tasks_uncompleted[month] = 0
+                tasks_approved[month] = 0
+                tasks_you_approved[month] = 0
+                tasks_you_marked_as_complete[month] = 0
+                tasks_you_marked_as_incomplete[month] = 0
+
             d = dowellconnection(*args)
             if "team_management_report" in args:
                 get_team = json.loads(d)['data']
@@ -6843,36 +6880,51 @@ class Generate_Report(APIView):
                                     comments = json.loads(dowellconnection(*comment_report_module, "fetch", {"thread_id": issue["_id"],"created_date":issue["date_created"]}, update_field=None))['data']
                                     data['tasks_details'][month]["comments_added"]+=len(comments)
 
-            if "task_details" in args:
+            if "task_details" in args and {'task_approved_by': username, 'company_id': company_id} in args:
                 task_details = json.loads(d)["data"]
                 for task in task_details:
                     if "task_created_date" in task.keys():
                         task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
                         _year, month, mcnt = get_month_details(task["task_created_date"])
                         if _year == year:
-                            task_added+=1
+                            if ("task_approved_by" in task.keys() and task["task_approved_by"]==username):
+                                tasks_you_approved[month]+=1
+                                complete =["Completed","completed", 'Complete', 'complete', True, "true", "True"]
+                                if (("status" in task.keys() and task['status'] in complete ) or (("completed" in task.keys() and task["completed"] in complete ) or ("Completed" in task.keys() and task["Completed"] in complete ) or ("Complete" in task.keys() and task["Complete"] in complete ) or("complete" in task.keys() and task["complete"] in complete )) ):   
+                                    
+                                    tasks_you_marked_as_complete[month]+=1
+                                else:
+                                    tasks_you_marked_as_incomplete[month]+=1
+                                
+                            data["tasks_details"][month]["tasks_you_approved"] = tasks_you_approved[month]
+                            data["tasks_details"][month]["tasks_you_marked_as_complete"] = tasks_you_marked_as_complete[month]
+                            data["tasks_details"][month]["tasks_you_marked_as_incomplete"] = tasks_you_marked_as_incomplete[month]
+                                           
+            if "task_details" in args and {'user_id': user_id, 'company_id': company_id} in args:
+                task_details = json.loads(d)["data"]
+                for task in task_details:
+                    if "task_created_date" in task.keys():
+                        task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
+                        _year, month, mcnt = get_month_details(task["task_created_date"])
+                        if _year == year:
+                            task_added[month]+=1
+                            
                             complete =["Completed","completed", 'Complete', 'complete', True, "true", "True"]
                             if (("status" in task.keys() and task['status'] in complete ) or (("completed" in task.keys() and task["completed"] in complete ) or ("Completed" in task.keys() and task["Completed"] in complete ) or ("Complete" in task.keys() and task["Complete"] in complete ) or("complete" in task.keys() and task["complete"] in complete )) ):
-                                tasks_completed+=1
-                                if ("approved_by" in task.keys() and task["approved_by"]==username):
-                                    tasks_you_approved+=1
-                                    tasks_you_marked_as_complete+=1
+                                tasks_completed[month]+=1
                             else:
-                                tasks_uncompleted+=1
-                                if ("approved_by" in task.keys() and task["approved_by"]==username):
-                                    tasks_you_approved+=1
-                                    tasks_you_marked_as_incomplete+=1
+                                tasks_uncompleted[month]+=1
+                            if ("approved" in task.keys() and task['approved']==True):
+                                tasks_approved[month]+=1
+                                
                             #incomplete=["Incomplete", "incomplete", 'Incompleted', 'incompleted']
                                 
+                            data["tasks_details"][month]["task_added"] =task_added[month]
+                            data['tasks_details'][month]["tasks_completed"]= tasks_completed[month]
+                            data['tasks_details'][month]["tasks_uncompleted"]= tasks_uncompleted[month]
+                            data['tasks_details'][month]["tasks_approved"] = tasks_approved[month]
+                            data["tasks_details"][month]["percentage_tasks_completed"]=(tasks_completed[month]/task_added[month])*100
                             
-                            data["tasks_details"][month]["task_added"] =task_added
-                            data['tasks_details'][month]["tasks_completed"]= tasks_completed
-                            data['tasks_details'][month]["tasks_uncompleted"]= tasks_uncompleted
-                            data['tasks_details'][month]["tasks_approved"]+= 1 if ("approved" in task.keys() and task['approved']==True) else 0
-                            data["tasks_details"][month]["percentage_tasks_completed"]=(tasks_completed/task_added)*100
-                            data["tasks_details"][month]["tasks_you_approved"] = tasks_you_approved
-                            data["tasks_details"][month]["tasks_you_marked_as_complete"] = tasks_you_marked_as_complete
-                            data["tasks_details"][month]["tasks_you_marked_as_incomplete"] = tasks_you_marked_as_incomplete
                             if task_created_date >= start and task_created_date <= end:
                                 week_details.append(task["project"])
 
@@ -6915,7 +6967,9 @@ class Generate_Report(APIView):
                                 projects[task["project"]]['total_tasks'] += 1
                                 projects[task["project"]]['tasks'].append(task)
 
-        arguments = [(*team_management_modules,"fetch",{"company_id": company_id}, {}), (*task_details_module, "fetch", field, {})]
+        arguments = [(*team_management_modules, "fetch", field, {}),(*task_details_module, "fetch", field, {})]
+        if isteamlead ==True:
+            arguments.append( (*task_details_module, "fetch", {"task_approved_by": username, "company_id": company_id}, {}) )
         
         #---------------------start of threads--------------------------------------------------
         threads=[]
@@ -6954,6 +7008,9 @@ class Generate_Report(APIView):
             user_id = payload.get("user_id")
             if not user_id:
                 return Response({'success':False,"message": f"user_id is empty"},status=status.HTTP_400_BAD_REQUEST)
+            username = payload.get("username")
+            if not user_id:
+                return Response({'success':False,"message": f"username is empty"},status=status.HTTP_400_BAD_REQUEST)
             
             # check if the user has any data------------------------------------------------
             field = {
@@ -6968,13 +7025,10 @@ class Generate_Report(APIView):
                         "message": f"There is no candidate with such parameters --> "
                         + " ".join([va for va in field.values()])
                     },status=status.HTTP_204_NO_CONTENT)
+            isteamlead,_= self.valid_teamlead(info)
+        
+            response =self.itr_function(user_id, username, company_id, year,isteamlead)
 
-            
-
-
-            response = self.itr_function(
-                payload.get("user_id"), payload.get("username"), payload.get("company_id"), payload.get("year")
-            )
             data={"personal_info":info[0]}
             data.update(response)
             return Response(
@@ -9046,13 +9100,12 @@ class candidate_leave(APIView):
         email = request.data.get("email")
         data_type=request.data.get("data_type")
     
-        difference_in_days = ((datetime.strptime(leave_end_date, '%Y-%m-%d') - datetime.strptime(leave_start_date, '%Y-%m-%d')).days + 1 ) /7
-        
-        if not difference_in_days.is_integer():
+        if not (datetime.strptime(leave_end_date, '%Y-%m-%d')-datetime.strptime(leave_start_date, '%Y-%m-%d')).days % 6 == 0:
             return Response({
-                "success": False,
-                "error": "Leave periods are based on weeks."
-            }, status=status.HTTP_400_BAD_REQUEST)
+                "success":False,
+                "error":"You can only apply leave for week periods only"
+            },status=status.HTTP_400_BAD_REQUEST)
+
         field = {
             "user_id": user_id,
             "applicant": applicant,
@@ -10562,6 +10615,27 @@ class dowell_speed_test(APIView):
             "response": results
         })
 
+@method_decorator(csrf_exempt, name="dispatch")
+class speedtest_module(APIView):
+    def get(self, request, *args, **kwargs):
+        st = speedtest.Speedtest()
+        download_speed = st.download() / 1000000 
+        upload_speed = st.upload() / 1000000  # in Mbps
+
+        if download_speed >= 100 and upload_speed >= 100:
+            return Response({
+                "success": True,
+                "message": "Speed test was successfully performed",
+                "download_speed": download_speed,
+                "upload_speed": upload_speed
+            })
+        else:
+            return Response({
+                "success": False,
+                "message": "Speed test failed. Download or Upload speed is less than 100 Mbps.",
+                "download_speed": download_speed,
+                "upload_speed": upload_speed
+            })
 @method_decorator(csrf_exempt, name="dispatch")   
 class Company_Structure(APIView):
     def rearrange(self,word):
@@ -11134,7 +11208,7 @@ class Company_Structure(APIView):
         
         members = list(set(_m))
         if len(members)>=1:
-            update_data["members"] = members
+            update_data["members"] = res_projects['data']['members']+members
 
             for user in members:
                 info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':user}, update_field=None))
