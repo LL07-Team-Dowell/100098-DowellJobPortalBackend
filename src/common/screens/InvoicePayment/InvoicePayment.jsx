@@ -7,6 +7,7 @@ import GenerateInvoice from "./components/GenerateInvoice";
 import { getInvoice } from "../../../services/paymentService";
 import Select from "react-select";
 import LoadingSpinner from "../../../components/LoadingSpinner/LoadingSpinner";
+import { toast } from "react-toastify";
 
 const InvoicePayment = ({ isGroupLead }) => {
   const [showInvoicePopup, setShowInvoicePopup] = useState(false);
@@ -24,6 +25,10 @@ const InvoicePayment = ({ isGroupLead }) => {
   const requiredLogCount = isGroupLead ? 160 : 80;
 
   const getInvoiceDetails = async () => {
+    if (!selectedMonth) return toast.info("Select Month");
+
+    if (!selectedYear) return toast.info("Select Year");
+
     setInvoiceResults(false);
     setDataLoading(true);
 
@@ -126,16 +131,13 @@ const InvoicePayment = ({ isGroupLead }) => {
                     <table className={styles.weekly_agenda_list_table}>
                       <thead>
                         <tr>
-                          <th>Payment month</th>
-                          <th>Payment year</th>
                           <th>Currency</th>
-                          <th>Monthly pay</th>
                           <th>Required log count</th>
                           <th>Approved logs</th>
-                          <th>Payment approved</th>
-                          <th>Payment approved date</th>
                           <th>Payment from</th>
                           <th>Payment to</th>
+                          <th>Payment approved</th>
+                          <th>Payment approved date</th>
                           <th>Amount paid</th>
                           <th>Leave days</th>
                         </tr>
@@ -143,18 +145,17 @@ const InvoicePayment = ({ isGroupLead }) => {
                       <tbody>
                         {invoiceDetails.map((item, index) => (
                           <tr key={index}>
-                            <td>{item.payment_month}</td>
-                            <td>{item.payment_year}</td>
                             <td>{item.currency_paid}</td>
-                            <td>{item.actual_monthly_pay}</td>
                             <td>{item.requried_logs_count}</td>
                             <td>{item.approved_logs_count}</td>
-                            <td>{item.payment_approved}</td>
-                            <td>{item.payment_approved_on}</td>
                             <td>{item.payment_from}</td>
                             <td>{item.payment_to}</td>
-                            <td>{item.amount_paid}</td>
-                            <td>{item.leave_days}</td>
+                            <td>{item.payment_approved}</td>
+                            <td>{item.payment_approved_on}</td>
+                            <td style={{ color: "#005734" }}>
+                              {item.amount_paid}
+                            </td>
+                            <td style={{ color: "red" }}>{item.leave_days}</td>
                           </tr>
                         ))}
                       </tbody>

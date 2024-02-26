@@ -48,7 +48,7 @@ const GenerateInvoice = ({
     if (!paymentFrom || !paymentTo)
       return toast.info("Select a both start and end dates");
 
-    if (getDaysDifferenceBetweenDates(paymentFrom, paymentTo) >= 7) {
+    if (getDaysDifferenceBetweenDates(paymentFrom, paymentTo) !== 7) {
       return toast.info(
         "Difference between start and end date should be equal to 7 days!"
       );
@@ -57,8 +57,11 @@ const GenerateInvoice = ({
     const { monday, friday } = getMondayAndFridayOfWeek(paymentFrom);
     console.log(monday, friday);
 
-    // if (paymentFrom && paymentTo !== selectedMonth)
-    //   return toast.info("Invoice must be within selected month");
+    // if (
+    //   new Date(paymentFrom).getMonth() &&
+    //   new Date(paymentTo).getMonth() !== new Date(selectedMonth).getMonth()
+    // )
+    //   return toast.info("Invoice must be within selected payment month");
 
     const attendanceProjects = currentUserHiredApplications
       .map((item) => {
@@ -229,11 +232,12 @@ const GenerateInvoice = ({
                         value={formatDateForAPI(paymentTo)}
                         onChange={({ target }) => setPaymentTo(target.value)}
                         id="payment_to"
+                        className={styles.invoice_months}
                       />
                     </div>
                   </label>
                   <label htmlFor="new_event">
-                    <span>Select Date</span>
+                    <span>Select Payment Month and Year</span>
                     <div className={styles.invoice_details_select}>
                       <Select
                         options={[
