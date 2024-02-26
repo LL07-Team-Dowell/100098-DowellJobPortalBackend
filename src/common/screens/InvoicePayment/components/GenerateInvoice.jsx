@@ -27,7 +27,7 @@ const GenerateInvoice = ({
   handleCloseModal,
   requiredLogCount,
   currentUserHiredApplications,
-  currentUserHiredApplicationsLoaded,
+  // currentUserHiredApplicationsLoaded,
 }) => {
   const [dataProcessing, setDataProcessing] = useState(false);
   const [showInvoicePage, setShowInvoicePage] = useState(false);
@@ -48,7 +48,7 @@ const GenerateInvoice = ({
     if (!paymentFrom || !paymentTo)
       return toast.info("Select a both start and end dates");
 
-    if (getDaysDifferenceBetweenDates(paymentFrom, paymentTo) >= 7) {
+    if (getDaysDifferenceBetweenDates(paymentFrom, paymentTo) !== 7) {
       return toast.info(
         "Difference between start and end date should be equal to 7 days!"
       );
@@ -57,8 +57,11 @@ const GenerateInvoice = ({
     const { monday, friday } = getMondayAndFridayOfWeek(paymentFrom);
     console.log(monday, friday);
 
-    // if (paymentFrom && paymentTo !== selectedMonth)
-    //   return toast.info("Invoice must be within selected month");
+    // if (
+    //   new Date(paymentFrom).getMonth() &&
+    //   new Date(paymentTo).getMonth() !== new Date(selectedMonth).getMonth()
+    // )
+    //   return toast.info("Invoice must be within selected payment month");
 
     const attendanceProjects = currentUserHiredApplications
       .map((item) => {
@@ -104,7 +107,7 @@ const GenerateInvoice = ({
         const approvedLogs = taskDetails.filter((log) => log.approved === true);
 
         const getUserOnLeave = res[1].data.response.filter((leave) =>
-          leave.Leave_Approval === "True" ? true : false
+          leave.Leave_Approval === true ? true : false
         );
 
         const templateID = "64ece51ba57293efb539e5b7";
@@ -214,8 +217,27 @@ const GenerateInvoice = ({
               <>
                 <h2>New Invoice</h2>
                 <div>
+                  <label>
+                    <span>Select Payment From and To</span>
+                    <div className={styles.invoice_date_select}>
+                      <input
+                        type="date"
+                        value={formatDateForAPI(paymentFrom)}
+                        onChange={({ target }) => setPaymentFrom(target.value)}
+                        id="payment_from"
+                        className={styles.invoice_months}
+                      />
+                      <input
+                        type="date"
+                        value={formatDateForAPI(paymentTo)}
+                        onChange={({ target }) => setPaymentTo(target.value)}
+                        id="payment_to"
+                        className={styles.invoice_months}
+                      />
+                    </div>
+                  </label>
                   <label htmlFor="new_event">
-                    <span>Select Date</span>
+                    <span>Select Payment Month and Year</span>
                     <div className={styles.invoice_details_select}>
                       <Select
                         options={[
@@ -250,24 +272,6 @@ const GenerateInvoice = ({
                         placeholder="Select year"
                       />
                     </div>
-                  </label>
-                  <label>
-                    <span>Payment From</span>
-                    <input
-                      type="date"
-                      value={formatDateForAPI(paymentFrom)}
-                      onChange={({ target }) => setPaymentFrom(target.value)}
-                      id="payment_from"
-                    />
-                  </label>
-                  <label>
-                    <span>Payment To</span>
-                    <input
-                      type="date"
-                      value={formatDateForAPI(paymentTo)}
-                      onChange={({ target }) => setPaymentTo(target.value)}
-                      id="payment_to"
-                    />
                   </label>
                 </div>
                 <div className={styles.process_btn}>

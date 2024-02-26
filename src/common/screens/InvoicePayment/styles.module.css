@@ -45,3 +45,136 @@
 .nav_content button:hover {
   filter: brightness(0.85);
 }
+
+.get_invoice_section {
+  align-items: flex-start;
+  margin-left: 1.2rem;
+}
+
+.invoice_details_select {
+  display: flex;
+  gap: 1.3rem;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 0.8rem;
+}
+
+.invoice_popup_details {
+  width: 100%;
+}
+
+.generate_invoice {
+  font-family: "Poppins", sans-serif;
+  outline: none;
+  border: none;
+  border-radius: 6px;
+  background-color: #005734;
+  color: #fff;
+  padding: 0.6rem 1rem;
+  transition: 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.generate_invoice:not(.disabled):hover,
+.generate_invoice:not([disabled]):hover {
+  filter: brightness(0.8);
+}
+
+.progress_main_div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  background-color: #f5f5f5;
+  border-radius: 30px;
+}
+
+.agenda_report_wrap {
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.report_agenda {
+  background-color: #ffdd6a;
+  margin: 2px 2px 0.875rem;
+  border-radius: 20px;
+  padding: 2%;
+  height: 130px;
+  overflow: auto;
+}
+
+.report_agenda h2 {
+  color: #3e3e3e;
+  text-align: center;
+  font-family: "Poppins", sans-serif;
+}
+
+.report_agenda p {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.875rem;
+  white-space: pre-line;
+  margin-top: 0.7rem;
+}
+
+.report_agenda_list {
+  background-color: white;
+  border-radius: 20px;
+  padding: 1.3%;
+  margin: 2rem;
+}
+
+.report_agenda_list h3 {
+  margin-top: 2%;
+  margin-left: 1%;
+  color: #3e3e3e;
+  font-size: large;
+}
+
+.weekly_agenda_list_table_div {
+  max-height: 420px;
+  overflow: auto;
+}
+
+.weekly_agenda_list_table {
+  border-collapse: collapse;
+  width: 100%;
+  padding-right: 20px;
+}
+
+.weekly_agenda_list_table th {
+  text-align: left;
+  background-color: white;
+  border-bottom: 1px solid #ddd;
+  color: #000;
+  /* padding: 2%; */
+}
+
+.weekly_agenda_list_table td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  background-color: white;
+  padding: 1.5%;
+  width: 0%;
+  font-size: 0.8rem;
+}
+
+.weekly_agenda_list_table tr {
+  padding: 5px;
+}
+
+.weekly_agenda_list_table_div::-webkit-scrollbar {
+  width: 8px;
+}
+
+.weekly_agenda_list_table_div::-webkit-scrollbar-thumb {
+  background-color: #ffdd6a;
+  border-radius: 13px;
+}
+
+.weekly_agenda_list_table_div::-webkit-scrollbar-track {
+  background-color: #f5f5f5;
+}

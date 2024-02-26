@@ -152,9 +152,9 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
           <UserScreen candidateSelected={true} />
         </>
       ) : section === "invoice" ? (
-        <>
+        <JobLandingLayout user={currentUser} afterSelection={true}>
           <InvoicePayment />
-        </>
+        </JobLandingLayout>
       ) : (
         <ErrorPage />
       )}

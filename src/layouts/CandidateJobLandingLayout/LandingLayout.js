@@ -48,8 +48,7 @@ const JobLandingLayout = ({
       return setScreenTitle("");
     if (location.pathname.includes("work-log-request"))
       return setScreenTitle("Work log requests");
-    if (location.pathname.includes("invoice"))
-      return setScreenTitle("Invoice Payment");
+    if (location.pathname.includes("invoice")) return setScreenTitle("");
 
     setScreenTitle("Work logs");
   }, [location]);
