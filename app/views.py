@@ -11175,7 +11175,7 @@ class Company_Structure(APIView):
         company_id = request.data.get("company_id")
         team_lead = request.data.get("team_lead")
         teamlead_reports_to = []
-        res_projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{'company_id':company_id},DATACUBE_LIMIT,0,False))
+        res_projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{'project':project,'company_id':company_id},DATACUBE_LIMIT,0,False))
         if not (res_projects['success'] == True and len(res_projects['data']) >=1) :
             return Response({
                 "success":False,
@@ -11208,7 +11208,8 @@ class Company_Structure(APIView):
         
         members = list(set(_m))
         if len(members)>=1:
-            update_data["members"] = res_projects['data']['members']+members
+            print(res_projects['data'][0],"++++++++++++++++++")
+            update_data["members"] = members
 
             for user in members:
                 info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':user}, update_field=None))
