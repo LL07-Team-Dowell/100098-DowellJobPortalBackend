@@ -1,6 +1,8 @@
 from django.urls import path
-from .views import *
+# from . import views as v3views
 from ._views import *
+from .views import *
+from .views.hr import *
 
 urlpatterns = [
     # job portal-------------------------------------------
@@ -52,8 +54,8 @@ urlpatterns = [
     ),
     path("update_candidates_application/",update_candidates_application.as_view(),),
     # hr management--------------------------------------------------
-    path("hr_shortlisted_candidate/", hr_shortlisted_candidate.as_view()),
-    path("hr_selected_candidate/", hr_selected_candidate.as_view()),
+    path("hr_shortlisted_candidate/", shortlist_candidate.as_view()),
+    path("hr_selected_candidate/", hr_select_candidate.as_view()),
     path("hr_reject_candidate/", hr_reject_candidate.as_view()),
     # lead management------------------------------------------------
     path("lead_hire_candidate/", lead_hire_candidate.as_view()),
