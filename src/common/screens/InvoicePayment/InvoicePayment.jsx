@@ -122,6 +122,9 @@ const InvoicePayment = ({ isGroupLead }) => {
       </section>
       {invoiceResults && (
         <>
+          <h3 className={styles.swipe_text}>
+            Swipe horizontally to see more details
+          </h3>
           <section className={styles.get_invoice_section}>
             <div className={styles.progress_main_div}>
               <div className={styles.agenda_report_wrap}>
@@ -131,31 +134,31 @@ const InvoicePayment = ({ isGroupLead }) => {
                     <table className={styles.weekly_agenda_list_table}>
                       <thead>
                         <tr>
-                          <th>Currency</th>
-                          <th>Required log count</th>
-                          <th>Approved logs</th>
                           <th>Payment from</th>
                           <th>Payment to</th>
+                          <th>Amount paid</th>
+                          <th>Currency</th>
+                          <th>Approved logs</th>
+                          <th>Required log count</th>
+                          <th>Leave days</th>
                           <th>Payment approved</th>
                           <th>Payment approved date</th>
-                          <th>Amount paid</th>
-                          <th>Leave days</th>
                         </tr>
                       </thead>
                       <tbody>
                         {invoiceDetails.map((item, index) => (
                           <tr key={index}>
-                            <td>{item.currency_paid}</td>
-                            <td>{item.requried_logs_count}</td>
-                            <td>{item.approved_logs_count}</td>
                             <td>{item.payment_from}</td>
                             <td>{item.payment_to}</td>
-                            <td>{item.payment_approved}</td>
-                            <td>{item.payment_approved_on}</td>
                             <td style={{ color: "#005734" }}>
                               {item.amount_paid}
                             </td>
+                            <td>{item.currency_paid}</td>
+                            <td>{item.approved_logs_count}</td>
+                            <td>{item.requried_logs_count}</td>
                             <td style={{ color: "red" }}>{item.leave_days}</td>
+                            <td>{item.payment_approved}</td>
+                            <td>{item.payment_approved_on}</td>
                           </tr>
                         ))}
                       </tbody>
