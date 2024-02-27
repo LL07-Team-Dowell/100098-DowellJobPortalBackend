@@ -60,7 +60,9 @@ from .helper import (
     get_dates_between,
     update_user_Report_data,
     delete_user_Report_data,
-    datacube_delete_function
+    datacube_delete_function,
+    valid_teamlead,
+    check_position,
 )
 from .serializers import (
     AccountSerializer,
@@ -2445,42 +2447,6 @@ class approve_task(APIView):
 
         return str(_date)
 
-    def valid_teamlead(self, username):
-        profiles = SettingUserProfileInfo.objects.all()
-        serializer = SettingUserProfileInfoSerializer(profiles, many=True)
-        # print(serializer.data,"----")
-        info = dowellconnection(
-            *candidate_management_reports,
-            "fetch",
-            {
-                "username": username,
-            },
-            update_field=None,
-        )
-        # print(len(json.loads(info)["data"]),"==========")
-        if len(json.loads(info)["data"]) > 0:
-            user_id = [users['user_id'] for users in json.loads(info)["data"] if "user_id" in users.keys()][0]
-            portfolio_name = [
-                names["portfolio_name"] for names in json.loads(info)["data"] if "portfolio_name" in names.keys()
-            ]
-            valid_profiles = []
-            for data in serializer.data:
-                for d in data["profile_info"]:
-                    if "profile_title" in d.keys():
-                        if d["profile_title"] in portfolio_name:
-                            if (
-                                d["Role"] == "Project_Lead"
-                                or d["Role"] == "Proj_Lead"
-                                or d["Role"] == "super_admin"
-                            ):
-                                valid_profiles.append(d["profile_title"])
-            if len(valid_profiles) > 0:
-                if valid_profiles[-1] in portfolio_name:
-                    return True,user_id
-                else:
-                    return False,user_id
-        return False,''
-
     def approvable(self,field):
         update_field = {}
         response = json.loads(dowellconnection(*task_details_module, "fetch", field, update_field))
@@ -2540,7 +2506,7 @@ class approve_task(APIView):
             if serializer.is_valid():
                 check_approvable, task_created_date, user_id = self.approvable(field)
                 if check_approvable is True:
-                    validate_teamlead, lead_user_id = self.valid_teamlead(data.get("lead_username"))
+                    validate_teamlead, lead_user_id = valid_teamlead(data.get("lead_username"))
                     if validate_teamlead is False:
                         return Response(
                             {

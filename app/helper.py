@@ -12,6 +12,8 @@ from rest_framework import status
 from discord.ext import commands
 from discord import Intents
 from .constant import *
+from .models import SettingUserProfileInfo
+from .serializers import SettingUserProfileInfoSerializer
 
 
 def dowellconnection(
@@ -1002,3 +1004,64 @@ def delete_user_Report_data(api_key,db_name, report_uuid, user_id, task_date, up
             return update_report
     else:
         return get_report
+def valid_teamlead(username):
+        profiles = SettingUserProfileInfo.objects.all()
+        serializer = SettingUserProfileInfoSerializer(profiles, many=True)
+        # print(serializer.data,"----")
+        info = dowellconnection(
+            *candidate_management_reports,
+            "fetch",
+            {
+                "username": username,
+            },
+            update_field=None,
+        )
+        # print(len(json.loads(info)["data"]),"==========")
+        if len(json.loads(info)["data"]) > 0:
+            user_id = [users['user_id'] for users in json.loads(info)["data"] if "user_id" in users.keys()][0]
+            portfolio_name = [
+                names["portfolio_name"] for names in json.loads(info)["data"] if "portfolio_name" in names.keys()
+            ]
+            valid_profiles = []
+            for data in serializer.data:
+                for d in data["profile_info"]:
+                    if "profile_title" in d.keys():
+                        if d["profile_title"] in portfolio_name:
+                            if (
+                                d["Role"] == "Project_Lead"
+                                or d["Role"] == "Proj_Lead"
+                                or d["Role"] == "super_admin"
+                            ):
+                                valid_profiles.append(d["profile_title"])
+            if len(valid_profiles) > 0:
+                if valid_profiles[-1] in portfolio_name:
+                    return True,user_id
+                else:
+                    return False,user_id
+        return False,''
+
+def check_position(username,company_id):
+        profiles = SettingUserProfileInfo.objects.all()
+        serializer = SettingUserProfileInfoSerializer(profiles, many=True)
+        # print(serializer.data,"----")
+        info = json.loads(dowellconnection(
+                    *candidate_management_reports,
+                    "fetch",
+                    {
+                        "username": username,
+                        'company_id': company_id
+                    },
+                    update_field=None,
+                ))["data"]
+        
+        positions={"Proj_Lead":'Team Lead','Project_Lead':'Project Lead',"group_lead":'Group Lead',"Dept_Lead":'Account Lead',"Hr":"Hr","sub_admin":"Sub Admin","super_admin":"Super Admin","candidate":"Candidate","Viewer":"Viewer"}
+        if len(info) > 0:
+            for data in serializer.data:
+                for d in data["profile_info"]:
+                    if "profile_title" in d.keys():
+                        if d['profile_title'] == info[0]["portfolio_name"]:
+                            if "Role" in d.keys():
+                                return positions[d["Role"]]
+            
+                    
+        return 'None'
