@@ -12,6 +12,7 @@ import { Toast, toast } from 'react-toastify';
 import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
 import { IoChevronBack } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import { managementUpdateProject } from '../../../../services/accountServices';
 
 const Payment = () => {
   const navigate = useNavigate();
@@ -69,6 +70,7 @@ const Payment = () => {
           // name: users.applicant,
           freelancePlatform: users.freelancePlatform,
           payment: users.payment,
+          project: users.project,
         }));
       setUsersOtherInfo(filteredOtherInfo);
 
@@ -111,18 +113,6 @@ const Payment = () => {
       setLoading({ ...Loading, isLoading: false });
       console.error('Error occurred while fetching payment records:', error.response.data.message);
       toast.error('Unable to retrieve payment record(s)');
-      // const errorMessage = error?.response?.data?.response?.message;
-      // const collectionIdPattern = /'([^']+)'/;
-      // const match = collectionIdPattern.exec(errorMessage);
-      // // console.log(match[1]);
-      // if (match && match.length > 1) {
-      //   settingUserForUpdatingRecord(match[1]);
-      //   setNoDatafoundModal(true);
-      // } else {
-      //   console.error("Error message does not match expected pattern:", errorMessage);
-      // }
-      // settingUserForUpdatingRecord(match[1]);
-      // setNoDatafoundModal(true);
     }
   }
 
@@ -317,10 +307,9 @@ const Payment = () => {
   }
 
   const handleUpdateRecordButtonClick = async () => {
-    // console.log(userNotFound.value, userNotFound.label, weeklyPay, selectedCurrency.value);
     setLoading({ ...Loading, isUpdateRecordLoading: true });
 
-    const dataToPost = {
+    const dataToPostforUpdatingRecord = {
       "company_id": currentUser?.portfolio_info[0]?.org_id,
       "user_id": userNotFound.value,
       "weekly_payment_amount": weeklyPay,
@@ -328,20 +317,26 @@ const Payment = () => {
       "payment_method": paymentMethod.label,
     }
 
-    // console.log(dataToPost);
-    await updatePaymentRecord(dataToPost).then(() => {
-      toast.success('Record Updated Successfully!');
-      setShowUpdateModal(false);
+    const projectOfSelectedUser = usersOtherInfo.find(user => user.user_id === userNotFound.value);
+    const dataToPostForUpdatingProject = {
+      "document id": userNotFound.value,
+      "project": projectOfSelectedUser?.project,
+      "payment": `${weeklyPay} ${selectedCurrency.value}`
+    }
 
-      handleGetRecordButtonClick();
-      // setLoading({ ...Loading})
-      // setSelectedUsers([]);
-      // setPaymentRecord([]);
-    }).catch(() => {
-      toast.error('Unable to Update Record. Please try again!');
-    })
+    const updateRecord = updatePaymentRecord(dataToPostforUpdatingRecord);
+    const updateProject = managementUpdateProject(dataToPostForUpdatingProject);
+
+    await Promise.all([updateRecord, updateProject])
+      .then(() => {
+        toast.success('Record Updated Successfully!');
+        setShowUpdateModal(false);
+        handleGetRecordButtonClick();
+      })
+      .catch(() => {
+        toast.error('Unable to Update Record. Please try again!');
+      });
     setLoading({ ...Loading, isUpdateRecordLoading: false, displayingUpdateRecord: true });
-    // clearAllFields();
   }
 
   return (

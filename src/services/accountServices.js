@@ -8,13 +8,13 @@ export const managementOnboardingCanditate = async (data) => {
 };
 
 export const managementUpdateProject = async (data) => {
-  return await currentBackendAxiosInstance.post(
+  return await currentBackendAxiosInstance.patch(
     "accounts_update_project/",
     data
   );
 };
 
-export const managementRejectProject = async(data)=>{
+export const managementRejectProject = async (data) => {
   return await currentBackendAxiosInstance.post(
     "accounts_reject_candidate/",
     data
