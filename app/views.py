@@ -9066,7 +9066,7 @@ class candidate_leave(APIView):
         email = request.data.get("email")
         data_type=request.data.get("data_type")
     
-        if not (datetime.strptime(leave_end_date, '%Y-%m-%d')-datetime.strptime(leave_start_date, '%Y-%m-%d')).days % 6 == 0:
+        if not ((datetime.strptime(leave_end_date, '%Y-%m-%d')-datetime.strptime(leave_start_date, '%Y-%m-%d')).days + 1 ) % 7 == 0:
             return Response({
                 "success":False,
                 "error":"You can only apply leave for week periods only"
@@ -9163,7 +9163,8 @@ class candidate_leave(APIView):
         }
 
         update_datacube_field = {
-            "Leave_Approved": True
+            "Leave_Approved": True,
+            "Leave_Denied": False
         }
         try:
             candidate_report = dowellconnection(
@@ -9219,8 +9220,8 @@ class candidate_leave(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         update_field = {
-            "Leave_Denied": True
-        }
+            "Leave_Denied": True,
+            "Leave_Approved": False}
 
         try:
             update_datacube=json.loads(datacube_data_update(API_KEY,LEAVE_DB,leave_report_collection,{"_id":leave_id},update_field))
@@ -9230,7 +9231,7 @@ class candidate_leave(APIView):
                 "error":"Datacube is not responding"
             },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        print(update_datacube)
+        
         if update_datacube["success"]:
             return Response(
                 {
