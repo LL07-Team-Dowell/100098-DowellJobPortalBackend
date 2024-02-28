@@ -6899,8 +6899,8 @@ class Generate_Report(APIView):
 
                             if task_created_date >= today - timedelta(days=7):
                                 total_tasks_last_one_week.append(task["project"])
-                            start_time = datetime.strptime(task["start_time"], "%H:%M") if len(task["start_time"]) == 5 else datetime.strptime(task["start_time"], "%H:%M:%S")
-                            end_time = datetime.strptime(task["end_time"], "%H:%M") if len(task["end_time"]) == 5 else datetime.strptime(task["end_time"], "%H:%M:%S")
+                            start_time = datetime.strptime(task["start_time"], "%H:%M") if len(task["start_time"]) <= 5 else datetime.strptime(task["start_time"], "%H:%M:%S")
+                            end_time = datetime.strptime(task["end_time"], "%H:%M") if len(task["end_time"]) <= 5 else datetime.strptime(task["end_time"], "%H:%M:%S")
                             dur_secs = (end_time - start_time).total_seconds()
                             dur_mins = dur_secs / 60
                             dur_hrs = dur_mins / 60
