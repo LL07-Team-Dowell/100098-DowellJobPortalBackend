@@ -1,7 +1,7 @@
 from .imports import *
 # api for hr management starts here______________________
 @method_decorator(csrf_exempt, name="dispatch")
-class shortlist_candidate(APIView):
+class hr_shortlisted_candidate(APIView):
     def post(self, request):
         data = request.data
         error_message = "candidate shortlisting action failed"
@@ -122,7 +122,7 @@ class shortlist_candidate(APIView):
             
 
 @method_decorator(csrf_exempt, name="dispatch")
-class hr_select_candidate(APIView):
+class hr_selected_candidate(APIView):
     def post(self, request):
         data = request.data
         error_message = "candidate selection failed"
