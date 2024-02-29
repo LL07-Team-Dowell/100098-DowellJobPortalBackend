@@ -445,10 +445,6 @@ const JobApplicationScreen = () => {
 
   console.log(newApplicationData?.freelancePlatformUrl);
 
-  const [seleteCategoryOption, setSelectCategoryOption] = useState("");
-  const handleOptionChange = (e) => {
-    setSelectCategoryOption(e.target.value);
-  };
   const isUrlValid = validateUrl(newApplicationData?.freelancePlatformUrl);
 
   useEffect(() => {
@@ -1058,9 +1054,19 @@ const JobApplicationScreen = () => {
                           type={"text"}
                           placeholder={"Internet speed Test"}
                           value={newApplicationData.internet_speed}
-                          readOnly
+                          onChange={({ target }) => {
+                            
+                            dispatchToNewApplicationData({
+                              type: newJobApplicationDataReducerActions.UPDATE_INTERNET_SPEED,
+                              payload: {
+                                stateToChange: mutableNewApplicationStateNames.internet_speed,
+                                value: target.value,
+                              },
+                            });
+                          }}
+                          // readOnly
                         />
-                        <button
+                        { /* <button
                           onClick={(e) => netSpeed(e)}
                           style={{
                             padding: "0.3rem",
@@ -1077,7 +1083,7 @@ const JobApplicationScreen = () => {
                             : 
                             'Check'
                           }
-                        </button>
+                        </button> */}
                       </label>
                     </div>
                     {showInternetSpeedTestModal && (
@@ -1264,7 +1270,10 @@ const JobApplicationScreen = () => {
                     )}
 
                     <div className="job__Application__Item">
-                      <h2>Upload Certification (Image)</h2>
+                      <h2>
+                        Upload Certification (Image)
+                        <span className="required-indicator">*</span>
+                      </h2>
                       <label className="input__Text__Container">
                         <input
                           aria-label="Add Certification"
