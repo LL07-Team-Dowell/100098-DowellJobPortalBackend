@@ -11,6 +11,7 @@ import {
 } from "../../../../services/paymentService";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import {
+  calculateHoursOfLogs,
   formatDateForAPI,
   getDaysDifferenceBetweenDates,
   getMondayAndFridayOfWeek,
@@ -28,6 +29,8 @@ const GenerateInvoice = ({
   requiredLogCount,
   currentUserHiredApplications,
   // currentUserHiredApplicationsLoaded,
+  isGrouplead,
+  isTeamlead,
 }) => {
   const [dataProcessing, setDataProcessing] = useState(false);
   const [showInvoicePage, setShowInvoicePage] = useState(false);
@@ -78,7 +81,6 @@ const GenerateInvoice = ({
         user_id: currentUser.userinfo.userID,
         company_id: currentUser.portfolio_info[0].org_id,
       }),
-      getleaveDays(currentUser.userinfo.userID),
       // getInternetSpeedTest(currentUser.userinfo.email),
       attendanceProjects.map((project) => {
         return getUserWiseAttendance({
@@ -94,21 +96,40 @@ const GenerateInvoice = ({
     ])
       .then((res) => {
         console.log(res[0]?.data);
-        console.log(
-          res[1].data.response.filter((leave) =>
-            leave.Leave_Approval === "True" ? true : false
-          )
-        );
         // console.log(res[2]);
-        console.log(res[3]);
+        console.log(
+          res[1]?.data?.data?.find((item) => item.dates_present.length > 0)
+        );
 
         const taskDetails = res[0]?.data?.task_details;
 
         const approvedLogs = taskDetails.filter((log) => log.approved === true);
+        const hours = calculateHoursOfLogs(approvedLogs);
 
-        const getUserOnLeave = res[1].data.response.filter((leave) =>
-          leave.Leave_Approval === true ? true : false
+        if ((isGrouplead || isTeamlead) && hours < 40) {
+          setDataProcessing(false);
+          return toast.info(
+            "You can't create an Invoice total hours less than 40 hours"
+          );
+        }
+
+        if ((!isGrouplead || !isTeamlead) && hours < 20) {
+          setDataProcessing(false);
+          return toast.info(
+            "You can't create an Invoice total hours less than 20 hours"
+          );
+        }
+
+        const attendanceDetails = res[1]?.data?.data?.find(
+          (item) => item.dates_present.length > 0
         );
+
+        if (!attendanceDetails) {
+          setDataProcessing(false);
+          return toast.info(
+            "You can't create an Invoice you have, no attendance found"
+          );
+        }
 
         const templateID = "64ece51ba57293efb539e5b7";
 
@@ -118,7 +139,6 @@ const GenerateInvoice = ({
           payment_year: selectedYear.label,
           payment_from: paymentFrom,
           payment_to: paymentTo,
-          user_was_on_leave: getUserOnLeave,
           approved_logs_count: approvedLogs.length,
           total_logs_required: requiredLogCount,
         };

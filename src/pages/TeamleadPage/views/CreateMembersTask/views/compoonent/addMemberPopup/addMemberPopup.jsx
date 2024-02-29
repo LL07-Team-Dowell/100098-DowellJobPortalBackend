@@ -39,7 +39,6 @@ const AddMemberPopup = ({
       member,
     }))
   );
-  const [filtered, setfiltered] = useState([]);
   const [inputMembers, setInputMembers] = useState([]);
   const [query, setquery] = useState("");
   const {
@@ -53,13 +52,11 @@ const AddMemberPopup = ({
   } = useCurrentUserContext();
 
   const AddedMember = (id) => {
-    // setInputMembers([
-    //   ...inputMembers,
-    //   desplaidMembers?.find((f) => f.id === id),
-    // ]);
-    // setDesplaidMembers(desplaidMembers?.filter((f) => f.id !== id));
-    console.log(id);
-    console.log(desplaidMembers?.filter((f) => f.id !== id));
+    setInputMembers([
+      ...inputMembers,
+      desplaidMembers?.find((f) => f.id === id),
+    ]);
+    setDesplaidMembers(desplaidMembers?.filter((f) => f.id !== id));
   };
   const removeMember = (id) => {
     setInputMembers(inputMembers.filter((f) => f.id !== id));
@@ -211,14 +208,16 @@ const AddMemberPopup = ({
   }, []);
 
   useEffect(() => {
-    console.log(query, "query");
-    if (desplaidMembers) {
-      const filtereddd = desplaidMembers.filter((f) =>
-        f.member.member.toLocaleLowerCase().includes(query.toLocaleLowerCase())
-      );
-      setfiltered(filtereddd);
-    }
+    console.log(desplaidMembers, "desplaidMembers");
   }, [desplaidMembers]);
+
+  const filteredMembers = [
+    ...new Map(desplaidMembers?.map((member) => [member.member, member])),
+  ].filter((f) =>
+    f?.member?.member?.toLocaleLowerCase()?.includes(query.toLocaleLowerCase())
+  );
+
+  console.log(typeof filteredMembers, filteredMembers);
 
   return (
     <div className="overlay">
@@ -250,14 +249,14 @@ const AddMemberPopup = ({
           <LoadingSpinner width={"1.5rem"} height={"1.5rem"} />
         ) : (
           <div className="members">
-            {filtered.length > 0 ? (
-              filtered.map((element) => (
+            {filteredMembers.length > 0 ? (
+              filteredMembers.map((element) => (
                 <div
                   key={element.id}
                   className="single-member"
                   onClick={() => AddedMember(element.id)}
                 >
-                  <p>{element.member.member}</p>
+                  <p>{element.member}</p>
                   <BsPlus />
                 </div>
               ))

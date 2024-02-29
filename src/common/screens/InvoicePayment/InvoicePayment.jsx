@@ -9,7 +9,7 @@ import Select from "react-select";
 import LoadingSpinner from "../../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
 
-const InvoicePayment = ({ isGroupLead }) => {
+const InvoicePayment = ({ isGrouplead, isTeamlead }) => {
   const [showInvoicePopup, setShowInvoicePopup] = useState(false);
   const {
     currentUser,
@@ -22,7 +22,7 @@ const InvoicePayment = ({ isGroupLead }) => {
   const [invoiceDetails, setInvoiceDetails] = useState([]);
   const [invoiceResults, setInvoiceResults] = useState(false);
 
-  const requiredLogCount = isGroupLead ? 160 : 80;
+  const requiredLogCount = isGrouplead || isTeamlead ? 160 : 80;
 
   const getInvoiceDetails = async () => {
     if (!selectedMonth) return toast.info("Select Month");
@@ -178,6 +178,8 @@ const InvoicePayment = ({ isGroupLead }) => {
           currentUserHiredApplicationsLoaded={
             currentUserHiredApplicationsLoaded
           }
+          isGrouplead={isGrouplead}
+          isTeamlead={isTeamlead}
         />
       )}
     </div>
