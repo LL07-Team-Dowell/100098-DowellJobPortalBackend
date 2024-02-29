@@ -60,7 +60,9 @@ from .helper import (
     get_dates_between,
     update_user_Report_data,
     delete_user_Report_data,
-    datacube_delete_function
+    datacube_delete_function,
+    valid_teamlead,
+    check_position,
 )
 from .serializers import (
     AccountSerializer,
@@ -2446,42 +2448,6 @@ class approve_task(APIView):
 
         return str(_date)
 
-    def valid_teamlead(self, username):
-        profiles = SettingUserProfileInfo.objects.all()
-        serializer = SettingUserProfileInfoSerializer(profiles, many=True)
-        # print(serializer.data,"----")
-        info = dowellconnection(
-            *candidate_management_reports,
-            "fetch",
-            {
-                "username": username,
-            },
-            update_field=None,
-        )
-        # print(len(json.loads(info)["data"]),"==========")
-        if len(json.loads(info)["data"]) > 0:
-            user_id = [users['user_id'] for users in json.loads(info)["data"] if "user_id" in users.keys()][0]
-            portfolio_name = [
-                names["portfolio_name"] for names in json.loads(info)["data"] if "portfolio_name" in names.keys()
-            ]
-            valid_profiles = []
-            for data in serializer.data:
-                for d in data["profile_info"]:
-                    if "profile_title" in d.keys():
-                        if d["profile_title"] in portfolio_name:
-                            if (
-                                d["Role"] == "Project_Lead"
-                                or d["Role"] == "Proj_Lead"
-                                or d["Role"] == "super_admin"
-                            ):
-                                valid_profiles.append(d["profile_title"])
-            if len(valid_profiles) > 0:
-                if valid_profiles[-1] in portfolio_name:
-                    return True,user_id
-                else:
-                    return False,user_id
-        return False,''
-
     def approvable(self,field):
         update_field = {}
         response = json.loads(dowellconnection(*task_details_module, "fetch", field, update_field))
@@ -2540,8 +2506,8 @@ class approve_task(APIView):
             serializer = TaskApprovedBySerializer(data=update_field)
             if serializer.is_valid():
                 check_approvable, task_created_date, user_id = self.approvable(field)
-                if check_approvable is True:
-                    validate_teamlead, lead_user_id = self.valid_teamlead(data.get("lead_username"))
+                if check_approvable is True :
+                    validate_teamlead, lead_user_id = valid_teamlead(data.get("lead_username"))
                     if validate_teamlead is False:
                         return Response(
                             {
@@ -6934,8 +6900,8 @@ class Generate_Report(APIView):
 
                             if task_created_date >= today - timedelta(days=7):
                                 total_tasks_last_one_week.append(task["project"])
-                            start_time = datetime.strptime(task["start_time"], "%H:%M") if len(task["start_time"]) == 5 else datetime.strptime(task["start_time"], "%H:%M:%S")
-                            end_time = datetime.strptime(task["end_time"], "%H:%M") if len(task["end_time"]) == 5 else datetime.strptime(task["end_time"], "%H:%M:%S")
+                            start_time = datetime.strptime(task["start_time"], "%H:%M") if len(task["start_time"]) <= 5 else datetime.strptime(task["start_time"], "%H:%M:%S")
+                            end_time = datetime.strptime(task["end_time"], "%H:%M") if len(task["end_time"]) <= 5 else datetime.strptime(task["end_time"], "%H:%M:%S")
                             dur_secs = (end_time - start_time).total_seconds()
                             dur_mins = dur_secs / 60
                             dur_hrs = dur_mins / 60
@@ -11232,13 +11198,14 @@ class Company_Structure(APIView):
         team_lead = request.data.get("team_lead")
         teamlead_reports_to = []
         res_projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{'project':project,'company_id':company_id},DATACUBE_LIMIT,0,False))
+        #print(res_projects, "===============",len(res_projects['data']))
         if not (res_projects['success'] == True and len(res_projects['data']) >=1) :
             return Response({
                 "success":False,
                 "message":f"No date to update for this '{project}'"
             },status=status.HTTP_404_NOT_FOUND)
         res_proj = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{'company_id':company_id},DATACUBE_LIMIT,0,False))
-        #print(res_proj, "===============",len(res_proj['data']))
+        
         if res_proj['success'] == True and len(res_proj['data']) >=1 :
             for project_leads in res_proj['data']:
                 if "_coded_projects_managed" in project_leads.keys():
@@ -11250,31 +11217,28 @@ class Company_Structure(APIView):
         _m =[]
         update_data ={}
         if len(teamlead_reports_to)>=1:
+            _m += teamlead_reports_to
             update_data["teamlead_reports_to"]= teamlead_reports_to[-1]
         if members:
             _m += members
         if group_leads:
             _m+=group_leads
             update_data["group_leads"] = group_leads
-        _m += teamlead_reports_to
-        
+
         if team_lead:
             _m.append(team_lead)
             update_data["team_lead"] = team_lead
         
-        members = list(set(_m))
-        if len(members)>=1:
-            print(res_projects['data'][0],"++++++++++++++++++")
-            update_data["members"] = members
+        update_data["members"] = list(set(_m))
 
-            for user in members:
-                info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':user}, update_field=None))
-                #print(info,"===============")
-                if (info['isSuccess'] is False or len(info['data'])<=0):
-                    return Response({
-                            "success":False,
-                            "message":f"No such candidate '{user}' exists in Dowell."
-                        },status=status.HTTP_400_BAD_REQUEST)   
+        for user in update_data["members"]:
+            info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':user}, update_field=None))
+            #print(info,"===============")
+            if (info['isSuccess'] is False or len(info['data'])<=0):
+                return Response({
+                        "success":False,
+                        "message":f"No such candidate '{user}' exists in Dowell."
+                    },status=status.HTTP_400_BAD_REQUEST)   
 
         coll_name = type_request
 
