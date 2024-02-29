@@ -9,7 +9,7 @@ import Select from "react-select";
 import LoadingSpinner from "../../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
 
-const InvoicePayment = ({ isGrouplead, isTeamlead }) => {
+const InvoicePayment = ({ isGrouplead, isTeamlead, accountView }) => {
   const [showInvoicePopup, setShowInvoicePopup] = useState(false);
   const {
     currentUser,
@@ -56,7 +56,7 @@ const InvoicePayment = ({ isGrouplead, isTeamlead }) => {
   return (
     <div className={styles.wrapper_invoice}>
       <section className={styles.nav_content}>
-        <h2>Invoice</h2>
+        <h2>{accountView ? "" : "Invoice"}</h2>
         <button onClick={() => handleInvoicePopup()}>
           <AiOutlinePlus />
           <span>New</span>
