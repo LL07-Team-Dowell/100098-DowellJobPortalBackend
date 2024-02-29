@@ -7011,7 +7011,11 @@ class Generate_Report(APIView):
     def generate_project_report(self, request):
         payload = request.data
         serializer = ProjectWiseReportSerializer(data=payload)
-
+        
+        t_d=[]
+        t_r=[]
+        c_r=[]
+        
         def call_dowell_connection(*args):
             d=json.loads(dowellconnection(*args))
             if "task_details" in args:
@@ -7034,24 +7038,16 @@ class Generate_Report(APIView):
             update_field2 = {}
         
             field3 = {"company_id": company_id,"status":"hired"}
-            t_d=[]
-            t_r=[]
-            c_r=[]
+           
             threads=[]
             arguments=[( *task_details_module, "fetch", field1, update_field1),(*task_management_reports, "fetch", field2, update_field2),(*candidate_management_reports, "fetch", field3, update_field2)]
             for args in arguments:
-                print(args)
                 thread=threading.Thread(target=call_dowell_connection,args=args)
                 thread.start()
-                threads.append(thread)
-                
-            for thread in threads:
-                
+                threads.append(thread)               
+            for thread in threads:        
                 thread.join()
-            
-            
 
-            # print(t_r,t_d)
             if t_r is not None and t_d is not None:
 
                 task_details = t_d[0]["data"]
@@ -7094,25 +7090,19 @@ class Generate_Report(APIView):
                         total_tasks_added += 1
 
                 user_id_to_name = {}
-                user_id_to_applicant = {}
 
                 for task2 in task_reports:
                     
                     user_id2 = task2.get("user_id")
-                    applicant = task2.get("applicant")
-                    # print(applicant_id)
                     user_name2 = task2.get("task_added_by")
                     if user_id2 and user_name2 :
                         user_id_to_name[user_id2] = user_name2
-                        user_id_to_applicant[user_id2] = applicant
                 users_data = []
                 
-                # print(user_id_to_applicant_id)
                 subprojects = {}
                 for res in task_details:
                     subprojects[res["user_id"]] = []
                 for res in task_details:
-                    # print(res)
                     if "subproject" in res.keys():
                         if (
                             not res["subproject"] == None
@@ -7133,7 +7123,6 @@ class Generate_Report(APIView):
                 for user_id, task_count in users_task_count.items():
                     task_added_by = user_id_to_name.get(user_id, "Unknown")
                     total_hours = user_total_hours.get(user_id, 0)
-                    applicant=user_id_to_applicant.get(user_id,"Unknown")
                     """try:
                         user_subproject = UsersubProject.objects.get(link_id=user_id)
                         subprojects = user_subproject.sub_project_list
@@ -7156,7 +7145,7 @@ class Generate_Report(APIView):
                             "tasks_added": task_count,
                             "total_hours": total_hours,
                             "subprojects": sp,
-                            "applicant":applicant
+
                         }
                     )
 
@@ -7164,21 +7153,16 @@ class Generate_Report(APIView):
                     "total_tasks_added": total_tasks_added,
                     "users_that_added": users_data,
                 }
-                # task_report = {"user_data_filtered": [user for user in users_data if any(user["user_id"] == data["_id"] for data in c_r[0]["data"])]}
 
-                print(users_data)
-                print(c_r)
+                print(c_r[0]["data"])
 
-                user_data_filtered=[user for user in users_data if any (user["applicant"]== data["applicant"] for data in c_r[0]["data"]) ]
-                # print(c_r)
-
-                print(user_data_filtered)
+                user_data_filtered=[user for user in users_data if any (user["user"]== data["username"] for data in c_r[0]["data"]) ]
 
                 return Response(
                     {
                         "success": True,
                         "message": "Report Created",
-                        "data": response_data,
+                        "data": user_data_filtered,
                     },
                     status=status.HTTP_201_CREATED,
                 )
