@@ -14,9 +14,10 @@ urlpatterns = [
     path("accounts_reject_candidate/", accounts_reject_candidate.as_view()),
 
 
+
     # admin management-------------------------------------------
     path("admin_create_jobs/", admin_create_jobs.as_view()),
-    path("regional_associate_jobs/", associate_job.as_view()),
+    path("admin_create_regional_associate_jobs/", admin_create_associate_job.as_view()),
     path("admin_get_job/<str:document_id>/", admin_get_job.as_view()),
     path("admin_get_all_jobs/<str:company_id>/", admin_get_all_jobs.as_view()),
     path("admin_update_jobs/", admin_update_jobs.as_view()),
@@ -50,7 +51,7 @@ urlpatterns = [
         "delete_candidate_application/<str:document_id>/",
         delete_candidate_application.as_view(),
     ),
-    path("update_candidates_application/",update_candidates_application.as_view(),),
+    path("update_candidates_application/",update_candidates_application.as_view()),
     # hr management--------------------------------------------------
     path("hr_shortlisted_candidate/", hr_shortlisted_candidate.as_view()),
     path("hr_selected_candidate/", hr_selected_candidate.as_view()),
