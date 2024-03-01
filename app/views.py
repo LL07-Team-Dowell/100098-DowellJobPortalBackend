@@ -7031,13 +7031,17 @@ class Generate_Report(APIView):
         if serializer.is_valid():
             project_name = payload["project"]
             company_id = payload["company_id"]
+            active_users_only=payload["active_users_only"]
+            
             field1 = {"company_id": company_id, "project": project_name}
             update_field1 = {}
 
             field2 = {"company_id": company_id}
             update_field2 = {}
         
-            field3 = {"company_id": company_id,"status":"hired"}
+            field3 = {"company_id": company_id}
+            if active_users_only:
+                field3 = {"company_id": company_id, "status": "hired"}
            
             threads=[]
             arguments=[( *task_details_module, "fetch", field1, update_field1),(*task_management_reports, "fetch", field2, update_field2),(*candidate_management_reports, "fetch", field3, update_field2)]
@@ -7154,7 +7158,6 @@ class Generate_Report(APIView):
                     "users_that_added": users_data,
                 }
 
-                print(c_r[0]["data"])
 
                 user_data_filtered=[user for user in users_data if any (user["user"]== data["username"] for data in c_r[0]["data"]) ]
 
@@ -8036,17 +8039,7 @@ class ProjectTotalTime(APIView):
 class AllProjectTotalTime(APIView):
     def get(self, request, company_id):
         field = {"company_id": company_id, "data_type": "Real_Data"}
-        active_users_only=request.data.get("active_users_only")
-        if active_users_only:
-            field = {"company_id": company_id, "status": "hired"}
-            hired = json.loads(dowellconnection(
-                *candidate_management_reports, "fetch", field, update_field=None
-            ))
-
-
         
-
-            print(hired)
         response = json.loads(
             dowellconnection(*time_detail_module, "fetch", field, update_field=None)
         )
