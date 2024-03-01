@@ -144,3 +144,22 @@
 .generate_invoice:not([disabled]):hover {
   filter: brightness(0.8);
 }
+
+@media screen and (max-width: 768px) {
+  .edit_invoice {
+    width: 90%;
+  }
+
+  .invoice_months {
+    margin-bottom: 1rem;
+  }
+
+  .invoice_details_select {
+    flex-direction: column;
+  }
+
+  .invoice__select__date,
+  .invoice__select__year {
+    width: 80%;
+  }
+}

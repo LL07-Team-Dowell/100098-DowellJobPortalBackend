@@ -178,3 +178,47 @@
 .weekly_agenda_list_table_div::-webkit-scrollbar-track {
   background-color: #f5f5f5;
 }
+
+.swipe_text {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: #000;
+  display: flex;
+  margin-left: 1.2rem;
+}
+
+@media screen and (max-width: 767px) {
+  .wrapper_invoice {
+    padding: 1.4rem 0rem 14rem;
+  }
+
+  .swipe_text {
+    margin-left: 0;
+  }
+
+  .report_agenda_list {
+    margin: 0rem;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+    padding: 3%;
+  }
+
+  .nav_content h2,
+  .get_invoice_section {
+    margin-left: 0rem;
+  }
+
+  .invoice_details_select {
+    width: 170%;
+    flex-direction: column;
+  }
+
+  .weekly_agenda_list_table_div {
+    max-height: 520px;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .nav_content {
+    width: 100%;
+  }
+}
