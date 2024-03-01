@@ -11191,22 +11191,16 @@ class Company_Structure(APIView):
 
         group_leads = request.data.get("group_leads")
         members = request.data.get("members")
-        _m =[]
         update_data ={}
         if len(teamlead_reports_to)>=1:
-            _m += teamlead_reports_to
             update_data["teamlead_reports_to"]= teamlead_reports_to[-1]
         if members:
-            _m += members
+            update_data["members"]= members
         if group_leads:
-            _m+=group_leads
             update_data["group_leads"] = group_leads
 
         if team_lead:
-            _m.append(team_lead)
             update_data["team_lead"] = team_lead
-        
-        update_data["members"] = list(set(_m))
 
         for user in update_data["members"]:
             info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':user}, update_field=None))
@@ -11224,7 +11218,7 @@ class Company_Structure(APIView):
             '_coded_project':_coded_project,
             "company_id":company_id
         }
-        
+        print(update_data,"===============")
         update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,update_data))
         if update_collection['success']==True:
             update_collection['message'] = f"{type_request} data has been updated successfully."
