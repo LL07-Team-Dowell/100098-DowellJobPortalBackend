@@ -1241,6 +1241,7 @@ class get_all_hired_candidate(APIView):
         response = dowellconnection(
             *candidate_management_reports, "fetch", field, update_field=None
         )
+        
         if json.loads(response)["isSuccess"] == True:
             if len(json.loads(response)["data"]) == 0:
                 return Response(
@@ -1254,7 +1255,7 @@ class get_all_hired_candidate(APIView):
                 candidates=[{"_id":res["_id"],
                     "applicant":res["applicant"],
                     "username":res["username"],
-                    "applicant_email":res["applicant_email"]} for res in json.loads(response)["data"]]
+                    "applicant_email":res["applicant_email"],"status":res["status"]} for res in json.loads(response)["data"]],
                 
                 return Response(
                     {
@@ -2505,7 +2506,7 @@ class approve_task(APIView):
             serializer = TaskApprovedBySerializer(data=update_field)
             if serializer.is_valid():
                 check_approvable, task_created_date, user_id = self.approvable(field)
-                if check_approvable is True:
+                if check_approvable is True :
                     validate_teamlead, lead_user_id = valid_teamlead(data.get("lead_username"))
                     if validate_teamlead is False:
                         return Response(
@@ -6899,8 +6900,8 @@ class Generate_Report(APIView):
 
                             if task_created_date >= today - timedelta(days=7):
                                 total_tasks_last_one_week.append(task["project"])
-                            start_time = datetime.strptime(task["start_time"], "%H:%M") if len(task["start_time"]) == 5 else datetime.strptime(task["start_time"], "%H:%M:%S")
-                            end_time = datetime.strptime(task["end_time"], "%H:%M") if len(task["end_time"]) == 5 else datetime.strptime(task["end_time"], "%H:%M:%S")
+                            start_time = datetime.strptime(task["start_time"], "%H:%M") if len(task["start_time"]) <= 5 else datetime.strptime(task["start_time"], "%H:%M:%S")
+                            end_time = datetime.strptime(task["end_time"], "%H:%M") if len(task["end_time"]) <= 5 else datetime.strptime(task["end_time"], "%H:%M:%S")
                             dur_secs = (end_time - start_time).total_seconds()
                             dur_mins = dur_secs / 60
                             dur_hrs = dur_mins / 60
@@ -7010,25 +7011,47 @@ class Generate_Report(APIView):
     def generate_project_report(self, request):
         payload = request.data
         serializer = ProjectWiseReportSerializer(data=payload)
+        
+        t_d=[]
+        t_r=[]
+        c_r=[]
+        
+        def call_dowell_connection(*args):
+            d=json.loads(dowellconnection(*args))
+            if "task_details" in args:
+                t_d.append(d)
+                
+            if "task_reports" in args:
+                t_r.append(d)
+                
+            if "candidate_reports" in args:
+                c_r.append(d)
+                
+
         if serializer.is_valid():
             project_name = payload["project"]
             company_id = payload["company_id"]
             field1 = {"company_id": company_id, "project": project_name}
             update_field1 = {}
-            response1 = dowellconnection(
-                *task_details_module, "fetch", field1, update_field1
-            )
+
             field2 = {"company_id": company_id}
             update_field2 = {}
-            response2 = dowellconnection(
-                *task_management_reports, "fetch", field2, update_field2
-            )
+        
+            field3 = {"company_id": company_id,"status":"hired"}
+           
+            threads=[]
+            arguments=[( *task_details_module, "fetch", field1, update_field1),(*task_management_reports, "fetch", field2, update_field2),(*candidate_management_reports, "fetch", field3, update_field2)]
+            for args in arguments:
+                thread=threading.Thread(target=call_dowell_connection,args=args)
+                thread.start()
+                threads.append(thread)               
+            for thread in threads:        
+                thread.join()
 
-            if response1 is not None and response2 is not None:
-                team_projects1 = json.loads(response1)
-                team_projects2 = json.loads(response2)
-                task_data1 = team_projects1["data"]
-                task_data2 = team_projects2["data"]
+            if t_r is not None and t_d is not None:
+
+                task_details = t_d[0]["data"]
+                task_reports = t_r[0]["data"]
                 users_task_count = {}
                 total_tasks_added = 0
                 user_subprojects = {}
@@ -7037,7 +7060,7 @@ class Generate_Report(APIView):
 
                 user_total_hours = {}
 
-                for task1 in task_data1:
+                for task1 in task_details:
                     user_id1 = task1.get("user_id")
                     start_time_str = task1["start_time"]
                     end_time_str = task1["end_time"]
@@ -7068,18 +7091,18 @@ class Generate_Report(APIView):
 
                 user_id_to_name = {}
 
-                for task2 in task_data2:
+                for task2 in task_reports:
+                    
                     user_id2 = task2.get("user_id")
                     user_name2 = task2.get("task_added_by")
-                    if user_id2 and user_name2:
+                    if user_id2 and user_name2 :
                         user_id_to_name[user_id2] = user_name2
                 users_data = []
-
+                
                 subprojects = {}
-                for res in task_data1:
+                for res in task_details:
                     subprojects[res["user_id"]] = []
-                for res in task_data1:
-                    # print(res)
+                for res in task_details:
                     if "subproject" in res.keys():
                         if (
                             not res["subproject"] == None
@@ -7122,6 +7145,7 @@ class Generate_Report(APIView):
                             "tasks_added": task_count,
                             "total_hours": total_hours,
                             "subprojects": sp,
+
                         }
                     )
 
@@ -7130,11 +7154,15 @@ class Generate_Report(APIView):
                     "users_that_added": users_data,
                 }
 
+                print(c_r[0]["data"])
+
+                user_data_filtered=[user for user in users_data if any (user["user"]== data["username"] for data in c_r[0]["data"]) ]
+
                 return Response(
                     {
                         "success": True,
                         "message": "Report Created",
-                        "data": response_data,
+                        "data": user_data_filtered,
                     },
                     status=status.HTTP_201_CREATED,
                 )
@@ -7550,8 +7578,8 @@ class Generate_project_task_details_Report(APIView):
             if response1 is not None and response2 is not None:
                 team_projects1 = json.loads(response1)
                 team_projects2 = json.loads(response2)
-                task_data1 = team_projects1["data"]
-                task_data2 = team_projects2["data"]
+                task_details = team_projects1["data"]
+                task_reports = team_projects2["data"]
                 users_task_count = {}
                 total_tasks_added = 0
                 user_subprojects = {}
@@ -7560,7 +7588,7 @@ class Generate_project_task_details_Report(APIView):
 
                 user_total_hours = {}
 
-                for task1 in task_data1:
+                for task1 in task_details:
                     user_id1 = task1.get("user_id")
                     start_time_str = task1["start_time"]
                     end_time_str = task1["end_time"]
@@ -7591,14 +7619,14 @@ class Generate_project_task_details_Report(APIView):
 
                 user_id_to_name = {}
 
-                for task2 in task_data2:
+                for task2 in task_reports:
                     user_id2 = task2.get("user_id")
                     user_name2 = task2.get("task_added_by")
                     if user_id2 and user_name2:
                         user_id_to_name[user_id2] = user_name2
                 users_data = []
 
-                for task2 in task_data1:
+                for task2 in task_details:
                     user_id2 = task2.get("user_id")
                     subprojects = task2.get("subproject", "none")
 
@@ -8008,6 +8036,17 @@ class ProjectTotalTime(APIView):
 class AllProjectTotalTime(APIView):
     def get(self, request, company_id):
         field = {"company_id": company_id, "data_type": "Real_Data"}
+        active_users_only=request.data.get("active_users_only")
+        if active_users_only:
+            field = {"company_id": company_id, "status": "hired"}
+            hired = json.loads(dowellconnection(
+                *candidate_management_reports, "fetch", field, update_field=None
+            ))
+
+
+        
+
+            print(hired)
         response = json.loads(
             dowellconnection(*time_detail_module, "fetch", field, update_field=None)
         )
@@ -11143,13 +11182,14 @@ class Company_Structure(APIView):
         team_lead = request.data.get("team_lead")
         teamlead_reports_to = []
         res_projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{'project':project,'company_id':company_id},DATACUBE_LIMIT,0,False))
+        #print(res_projects, "===============",len(res_projects['data']))
         if not (res_projects['success'] == True and len(res_projects['data']) >=1) :
             return Response({
                 "success":False,
                 "message":f"No date to update for this '{project}'"
             },status=status.HTTP_404_NOT_FOUND)
         res_proj = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{'company_id':company_id},DATACUBE_LIMIT,0,False))
-        #print(res_proj, "===============",len(res_proj['data']))
+        
         if res_proj['success'] == True and len(res_proj['data']) >=1 :
             for project_leads in res_proj['data']:
                 if "_coded_projects_managed" in project_leads.keys():
@@ -11161,31 +11201,28 @@ class Company_Structure(APIView):
         _m =[]
         update_data ={}
         if len(teamlead_reports_to)>=1:
+            _m += teamlead_reports_to
             update_data["teamlead_reports_to"]= teamlead_reports_to[-1]
         if members:
             _m += members
         if group_leads:
             _m+=group_leads
             update_data["group_leads"] = group_leads
-        _m += teamlead_reports_to
-        
+
         if team_lead:
             _m.append(team_lead)
             update_data["team_lead"] = team_lead
         
-        members = list(set(_m))
-        if len(members)>=1:
-            print(res_projects['data'][0],"++++++++++++++++++")
-            update_data["members"] = members
+        update_data["members"] = list(set(_m))
 
-            for user in members:
-                info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':user}, update_field=None))
-                #print(info,"===============")
-                if (info['isSuccess'] is False or len(info['data'])<=0):
-                    return Response({
-                            "success":False,
-                            "message":f"No such candidate '{user}' exists in Dowell."
-                        },status=status.HTTP_400_BAD_REQUEST)   
+        for user in update_data["members"]:
+            info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':user}, update_field=None))
+            #print(info,"===============")
+            if (info['isSuccess'] is False or len(info['data'])<=0):
+                return Response({
+                        "success":False,
+                        "message":f"No such candidate '{user}' exists in Dowell."
+                    },status=status.HTTP_400_BAD_REQUEST)   
 
         coll_name = type_request
 
