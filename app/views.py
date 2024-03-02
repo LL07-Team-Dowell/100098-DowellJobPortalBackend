@@ -7048,13 +7048,17 @@ class Generate_Report(APIView):
         if serializer.is_valid():
             project_name = payload["project"]
             company_id = payload["company_id"]
+            active_users_only=payload["active_users_only"]
+            
             field1 = {"company_id": company_id, "project": project_name}
             update_field1 = {}
 
             field2 = {"company_id": company_id}
             update_field2 = {}
         
-            field3 = {"company_id": company_id,"status":"hired"}
+            field3 = {"company_id": company_id}
+            if active_users_only:
+                field3 = {"company_id": company_id, "status": "hired"}
            
             threads=[]
             arguments=[( *task_details_module, "fetch", field1, update_field1),(*task_management_reports, "fetch", field2, update_field2),(*candidate_management_reports, "fetch", field3, update_field2)]
@@ -7171,7 +7175,6 @@ class Generate_Report(APIView):
                     "users_that_added": users_data,
                 }
 
-                print(c_r[0]["data"])
 
                 user_data_filtered=[user for user in users_data if any (user["user"]== data["username"] for data in c_r[0]["data"]) ]
 
@@ -8053,17 +8056,7 @@ class ProjectTotalTime(APIView):
 class AllProjectTotalTime(APIView):
     def get(self, request, company_id):
         field = {"company_id": company_id, "data_type": "Real_Data"}
-        active_users_only=request.data.get("active_users_only")
-        if active_users_only:
-            field = {"company_id": company_id, "status": "hired"}
-            hired = json.loads(dowellconnection(
-                *candidate_management_reports, "fetch", field, update_field=None
-            ))
-
-
         
-
-            print(hired)
         response = json.loads(
             dowellconnection(*time_detail_module, "fetch", field, update_field=None)
         )
@@ -11085,14 +11078,13 @@ class Company_Structure(APIView):
                         "message":f"A project with {project} already exists",
                     },status=status.HTTP_400_BAD_REQUEST)
         team_lead = request.data.get("team_lead")
-        info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':team_lead}, update_field=None))
-        #print(info,"===============")
-        if (info['isSuccess'] is False or len(info['data'])<=0):
-            return Response({
-                    "success":False,
-                    "message":f"No such team_lead candidate '{team_lead}' exists in Dowell."
-                    
-                },status=status.HTTP_404_NOT_FOUND)
+        all_members = []
+        if team_lead:
+            all_members.append(team_lead)
+        group_leads = request.data.get("group_leads")
+        if group_leads and type(group_leads) == list:
+            all_members +=group_leads
+        
         #checking if team lead reports to is in dowell------------------------
         teamlead_reports_to = []
         res_proj = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{'company_id':company_id},DATACUBE_LIMIT,0,False))
@@ -11101,9 +11093,14 @@ class Company_Structure(APIView):
                 if "_coded_projects_managed" in project_leads.keys():
                     if _coded_project in project_leads["_coded_projects_managed"]:
                         teamlead_reports_to.append(project_leads['project_lead'])
+        if teamlead_reports_to and type(teamlead_reports_to) == list:
+            all_members +=teamlead_reports_to
 
-        group_leads = request.data.get("group_leads")
-        for user in group_leads:
+        members = request.data.get("members")
+        if members and type(members) == list:
+            all_members += members
+
+        for user in all_members:
             info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':user}, update_field=None))
             #print(info,"===============")
             if (info['isSuccess'] is False or len(info['data'])<=0):
@@ -11111,13 +11108,7 @@ class Company_Structure(APIView):
                         "success":False,
                         "message":f"No such group_lead candidate '{user}' exists in Dowell."
                     },status=status.HTTP_404_NOT_FOUND)
-        members=[]
-        if request.data.get("members"):
-            members = request.data.get("members")
-        
-        members = list(set(members+group_leads+teamlead_reports_to))
 
-        
         search_query ={  
             "company_id":company_id,
             "_coded_project":_coded_project,
@@ -11135,6 +11126,7 @@ class Company_Structure(APIView):
                     "company_id":company_id,
                     "group_leads":group_leads,
                     "team_lead":team_lead,
+                    "members":members,
                     "project":project,
                     "_coded_project":_coded_project,
                     "data_type":"Real_Data"
@@ -11157,6 +11149,7 @@ class Company_Structure(APIView):
                         "company_id":company_id,
                         "group_leads":group_leads,
                         "team_lead":team_lead,
+                        "members":members,
                         "project":project,
                         "_coded_project":_coded_project,
                         "data_type":"Real_Data"
@@ -11215,22 +11208,16 @@ class Company_Structure(APIView):
 
         group_leads = request.data.get("group_leads")
         members = request.data.get("members")
-        _m =[]
         update_data ={}
         if len(teamlead_reports_to)>=1:
-            _m += teamlead_reports_to
             update_data["teamlead_reports_to"]= teamlead_reports_to[-1]
         if members:
-            _m += members
+            update_data["members"]= members
         if group_leads:
-            _m+=group_leads
             update_data["group_leads"] = group_leads
 
         if team_lead:
-            _m.append(team_lead)
             update_data["team_lead"] = team_lead
-        
-        update_data["members"] = list(set(_m))
 
         for user in update_data["members"]:
             info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':user}, update_field=None))
@@ -11248,7 +11235,7 @@ class Company_Structure(APIView):
             '_coded_project':_coded_project,
             "company_id":company_id
         }
-        
+        print(update_data,"===============")
         update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,update_data))
         if update_collection['success']==True:
             update_collection['message'] = f"{type_request} data has been updated successfully."
