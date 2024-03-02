@@ -4622,6 +4622,23 @@ class settingUserSubProject(APIView):
             status=status.HTTP_200_OK,
         )
 
+@method_decorator(csrf_exempt, name="dispatch")
+class CheckUserPosition(APIView):
+    def post(self, request):
+        username = request.data.get("username")
+        company_id = request.data.get("company_id")
+        position = check_position(username, company_id)
+       
+        return Response(
+            {
+                "success": True,
+                "message": "User position retrive successfully",
+                "data": {
+                    "role": position
+                }
+            },
+            status=status.HTTP_200_OK,
+        )
 
 # api for setting ends here____________________________
 
