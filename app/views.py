@@ -11061,14 +11061,13 @@ class Company_Structure(APIView):
                         "message":f"A project with {project} already exists",
                     },status=status.HTTP_400_BAD_REQUEST)
         team_lead = request.data.get("team_lead")
-        info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':team_lead}, update_field=None))
-        #print(info,"===============")
-        if (info['isSuccess'] is False or len(info['data'])<=0):
-            return Response({
-                    "success":False,
-                    "message":f"No such team_lead candidate '{team_lead}' exists in Dowell."
-                    
-                },status=status.HTTP_404_NOT_FOUND)
+        all_members = []
+        if team_lead:
+            all_members.append(team_lead)
+        group_leads = request.data.get("group_leads")
+        if group_leads and type(group_leads) == list:
+            all_members +=group_leads
+        
         #checking if team lead reports to is in dowell------------------------
         teamlead_reports_to = []
         res_proj = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{'company_id':company_id},DATACUBE_LIMIT,0,False))
@@ -11077,9 +11076,14 @@ class Company_Structure(APIView):
                 if "_coded_projects_managed" in project_leads.keys():
                     if _coded_project in project_leads["_coded_projects_managed"]:
                         teamlead_reports_to.append(project_leads['project_lead'])
+        if teamlead_reports_to and type(teamlead_reports_to) == list:
+            all_members +=teamlead_reports_to
 
-        group_leads = request.data.get("group_leads")
-        for user in group_leads:
+        members = request.data.get("members")
+        if members and type(members) == list:
+            all_members += members
+
+        for user in all_members:
             info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':user}, update_field=None))
             #print(info,"===============")
             if (info['isSuccess'] is False or len(info['data'])<=0):
@@ -11087,13 +11091,7 @@ class Company_Structure(APIView):
                         "success":False,
                         "message":f"No such group_lead candidate '{user}' exists in Dowell."
                     },status=status.HTTP_404_NOT_FOUND)
-        members=[]
-        if request.data.get("members"):
-            members = request.data.get("members")
-        
-        members = list(set(members+group_leads+teamlead_reports_to))
 
-        
         search_query ={  
             "company_id":company_id,
             "_coded_project":_coded_project,
@@ -11111,6 +11109,7 @@ class Company_Structure(APIView):
                     "company_id":company_id,
                     "group_leads":group_leads,
                     "team_lead":team_lead,
+                    "members":members,
                     "project":project,
                     "_coded_project":_coded_project,
                     "data_type":"Real_Data"
@@ -11133,6 +11132,7 @@ class Company_Structure(APIView):
                         "company_id":company_id,
                         "group_leads":group_leads,
                         "team_lead":team_lead,
+                        "members":members,
                         "project":project,
                         "_coded_project":_coded_project,
                         "data_type":"Real_Data"
