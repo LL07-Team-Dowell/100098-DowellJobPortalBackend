@@ -102,7 +102,8 @@ class admin_get_job(APIView):
         error_message = "Job details do not exist"
         success_message = "Job details found"
 
-        response = json.loads(dowellconnection(*jobs, "fetch", {"_id": document_id}, update_field=None))
+        field={"_id":document_id,"data_type": "Real_Data"}
+        response = json.loads(dowellconnection(*jobs, "fetch", field, update_field=None))
         if response["isSuccess"] == True:
             res= response["data"]
             if len(res) > 0:
@@ -110,12 +111,24 @@ class admin_get_job(APIView):
         return Response(success=False, message=error_message, response=res,status=status.HTTP_204_NO_CONTENT)
 
 @method_decorator(csrf_exempt, name="dispatch")
-class admin_get_all_jobs(APIView):
+class admin_get_jobs(APIView):
     def get(self, request, company_id):
         error_message = "Job details do not exist"
         success_message = "Job details found"
+        field ={"company_id": company_id,"data_type": "Real_Data"}
+        response = json.loads(dowellconnection(*jobs, "fetch", field, update_field=None))
+        if response["isSuccess"] == True:
+            res= response["data"]
+            if len(res) > 0:
+                return Response(success=True, message=success_message, response=res,status=status.HTTP_200_OK)   
+        return Response(success=False, message=error_message, response=res,status=status.HTTP_204_NO_CONTENT)
 
-        response = json.loads(dowellconnection(*jobs, "fetch", {"company_id": company_id}, update_field=None))
+class admin_get_deleted_jobs(APIView):
+    def get(self, request, company_id):
+        error_message = "Job details do not exist"
+        success_message = "Job details found"
+        field ={"company_id": company_id,"data_type": "Archived_Data"}
+        response = json.loads(dowellconnection(*jobs, "fetch", field, update_field=None))
         if response["isSuccess"] == True:
             res= response["data"]
             if len(res) > 0:
@@ -126,13 +139,13 @@ class admin_get_all_jobs(APIView):
 class admin_update_jobs(APIView):
     def patch(self, request):
         data = request.data
-        error_message = "Job update has failed"
-        success_message = "Job update was successful"
+        error_message = "Job failed to be updated"
+        success_message = "Job successfully updated"
         if not data:
-            res = "request parameters are not valid, they are None"
+            error = "request parameters are not valid, they are None"
             if not data.get("document_id"):
-                res="document id is not valid"
-            return Response(success=False, message=error_message, response=res,status=status.HTTP_400_BAD_REQUEST)
+                error="document id is not valid"
+            return Response(success=False, message=error_message, response=error,status=status.HTTP_400_BAD_REQUEST)
             
         field = {"_id": data.get("document_id")}
         response = json.loads(dowellconnection(*jobs, "update", field, update_field=data))
@@ -143,7 +156,7 @@ class admin_update_jobs(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class admin_delete_job(APIView):
     def delete(self, request, document_id):
-        error_message = "Job not successfully deleted"
+        error_message = "Job failed to be deleted"
         success_message = "Job successfully deleted"
         field = {"_id": document_id}
         update_field = {"data_type": "Archived_Data"}

@@ -3,25 +3,32 @@ from .views import *
 from ._views import *
 
 urlpatterns = [
+
     # job portal-------------------------------------------
     path("", serverStatus.as_view()),
+
     # authentication-------------------------------------------
     path("auth/", auth.as_view()),
+
     # accounts management-------------------------------------------
     path("accounts_onboard_candidate/", accounts_onboard_candidate.as_view()),
     path("accounts_update_project/", accounts_update_project.as_view()),
     path("accounts_rehire_candidate/", accounts_rehire_candidate.as_view()),
     path("accounts_reject_candidate/", accounts_reject_candidate.as_view()),
 
-
-
     # admin management-------------------------------------------
     path("admin_create_jobs/", admin_create_jobs.as_view()),
     path("admin_create_regional_associate_jobs/", admin_create_associate_job.as_view()),
     path("admin_get_job/<str:document_id>/", admin_get_job.as_view()),
-    path("admin_get_all_jobs/<str:company_id>/", admin_get_all_jobs.as_view()),
+    path("admin_get_jobs/<str:company_id>/", admin_get_jobs.as_view()),
+    path("admin_get_deleted_jobs/<str:company_id>/", admin_get_deleted_jobs.as_view()),
     path("admin_update_jobs/", admin_update_jobs.as_view()),
     path("admin_delete_job/<str:document_id>/", admin_delete_job.as_view()),
+
+
+
+
+
     # candidate management-------------------------------------------
     path("candidate_apply_job/", candidate_apply_job.as_view()),
     path(
