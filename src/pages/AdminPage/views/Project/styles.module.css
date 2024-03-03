@@ -118,6 +118,18 @@
   gap: 0.5rem;
 }
 
+.project__card .project_time {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.project__card .project_time span {
+  color: #a3a1a1;
+  font-size: 0.8rem;
+  margin-left: 0.3rem;
+}
+
 .project__card__header h2 {
   font-size: 1.2rem;
   font-weight: 500;

@@ -18,18 +18,13 @@ const Project = ({ _id }) => {
   const navigate = useNavigate();
   const [showProjectsPop, setShowProjectsPop] = useState(false);
   const { state } = useLocation();
-  const {
-    projectsLoading,
-    projectsAdded,
-    subProjectsAdded,
-    setProjectsAdded,
-    projectsLoaded,
-  } = useJobContext();
+  const { projectsLoading, projectsAdded, subProjectsAdded } = useJobContext();
   console.log(projectsAdded);
   const [displayedProjects, setDisplayedProjects] = useState([]);
   const [inactiveProjects, setInactiveProjects] = useState([]);
   const { currentUser } = useCurrentUserContext();
   const [projectTime, setProjectTime] = useState([]);
+  console.log(projectTime);
   const [searchValue, setSearchValue] = useState("");
   const [projectTimeLoading, setProjectTimeLoading] = useState(false);
 
@@ -253,95 +248,121 @@ const Project = ({ _id }) => {
             ) : (
               React.Children.toArray(
                 projectsAdded[0]?.project_list
-                .sort((a, b) => a.localeCompare(b))
-                .map((project) => {
-                  return (
-                    <div className={styles.project__card}>
-                      <div className={styles.project__card__header}>
-                        <h2>{project}</h2>
-                        <>
-                          {projectTime.find(
-                            (item) => item.project === project
-                          ) ? (
-                            <div style={{ width: 60, height: 60 }}>
-                              <CircularProgressbar
-                                value={Number(
-                                  (projectTime.find(
-                                    (item) => item.project === project
-                                  ).spent_time /
-                                    projectTime.find(
+                  .sort((a, b) => a.localeCompare(b))
+                  .map((project) => {
+                    return (
+                      <div className={styles.project__card}>
+                        <div className={styles.project__card__header}>
+                          <h2>{project}</h2>
+                          <>
+                            {projectTime.find(
+                              (item) => item.project === project
+                            ) ? (
+                              <div style={{ width: 60, height: 60 }}>
+                                <CircularProgressbar
+                                  value={Number(
+                                    (projectTime.find(
                                       (item) => item.project === project
-                                    ).total_time) *
-                                    100
-                                ).toFixed(2)}
-                                text={`${Number(
-                                  (projectTime.find(
-                                    (item) => item.project === project
-                                  ).spent_time /
-                                    projectTime.find(
+                                    ).spent_time /
+                                      projectTime.find(
+                                        (item) => item.project === project
+                                      ).total_time) *
+                                      100
+                                  ).toFixed(2)}
+                                  text={`${Number(
+                                    (projectTime.find(
                                       (item) => item.project === project
-                                    ).total_time) *
-                                    100
-                                ).toFixed(2)}%`}
-                                styles={buildStyles({
-                                  pathColor: `#005734`,
-                                  textColor: "#005734",
-                                  trailColor: "#efefef",
-                                  backgroundColor: "#005734",
-                                })}
-                              />
-                            </div>
-                          ) : (
-                            <div style={{ width: 60, height: 60 }}>
-                              <CircularProgressbar
-                                value={0}
-                                text={"0%"}
-                                styles={buildStyles({
-                                  pathColor: `#005734`,
-                                  textColor: "#005734",
-                                  trailColor: "#efefef",
-                                  backgroundColor: "#005734",
-                                })}
-                              />
-                            </div>
-                          )}
-                        </>
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          marginTop: "1.5rem",
-                          alignItems: "flex-end",
-                          minHeight: "4rem",
-                        }}
-                      >
-                        <UserIconsInfo
-                          items={
-                            subProjectsAdded.find(
-                              (item) => item.parent_project === project
-                            )?.sub_project_list
-                          }
-                          numberOfIcons={3}
-                          isNotEmployeeItem={true}
-                        />
-                        <button
-                          className={styles.view__project__btn__container}
-                          onClick={() => editProjects(project)}
+                                    ).spent_time /
+                                      projectTime.find(
+                                        (item) => item.project === project
+                                      ).total_time) *
+                                      100
+                                  ).toFixed(2)}%`}
+                                  styles={buildStyles({
+                                    pathColor: `#005734`,
+                                    textColor: "#005734",
+                                    trailColor: "#efefef",
+                                    backgroundColor: "#005734",
+                                  })}
+                                />
+                              </div>
+                            ) : (
+                              <div style={{ width: 60, height: 60 }}>
+                                <CircularProgressbar
+                                  value={0}
+                                  text={"0%"}
+                                  styles={buildStyles({
+                                    pathColor: `#005734`,
+                                    textColor: "#005734",
+                                    trailColor: "#efefef",
+                                    backgroundColor: "#005734",
+                                  })}
+                                />
+                              </div>
+                            )}
+                          </>
+                        </div>
+                        {projectTime ? (
+                          <>
+                            <p className={styles.project_time}>
+                              Spent time:{" "}
+                              {Number(
+                                projectTime.find(
+                                  (item) => item.project === project
+                                )?.spent_time
+                              ).toLocaleString("en-US", {
+                                maximumFractionDigits: 2,
+                              })}
+                              <span>Hours</span>
+                            </p>
+                            <p className={styles.project_time}>
+                              Total time:{" "}
+                              {Number(
+                                projectTime.find(
+                                  (item) => item.project === project
+                                )?.total_time
+                              ).toLocaleString("en-US", {
+                                maximumFractionDigits: 2,
+                              })}
+                              <span>Hours</span>
+                            </p>
+                          </>
+                        ) : null}
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            marginTop: "1.5rem",
+                            alignItems: "flex-end",
+                            minHeight: "4rem",
+                          }}
                         >
-                          <div className={styles.view__project__btn}>
-                            <span>View</span>{" "}
-                            <img
-                              src={arrowright}
-                              alt=""
-                              className={styles.arrow__link}
-                            />
-                          </div>
-                        </button>
+                          <UserIconsInfo
+                            items={
+                              subProjectsAdded.find(
+                                (item) => item.parent_project === project
+                              )?.sub_project_list
+                            }
+                            numberOfIcons={3}
+                            isNotEmployeeItem={true}
+                          />
+                          <button
+                            className={styles.view__project__btn__container}
+                            onClick={() => editProjects(project)}
+                          >
+                            <div className={styles.view__project__btn}>
+                              <span>View</span>{" "}
+                              <img
+                                src={arrowright}
+                                alt=""
+                                className={styles.arrow__link}
+                              />
+                            </div>
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })
+                    );
+                  })
               )
             )}
           </div>

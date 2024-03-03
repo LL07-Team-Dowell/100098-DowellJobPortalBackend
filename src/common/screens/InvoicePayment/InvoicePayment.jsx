@@ -9,7 +9,7 @@ import Select from "react-select";
 import LoadingSpinner from "../../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
 
-const InvoicePayment = ({ isGrouplead, isTeamlead, accountView }) => {
+const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
   const [showInvoicePopup, setShowInvoicePopup] = useState(false);
   const {
     currentUser,
@@ -22,7 +22,7 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, accountView }) => {
   const [invoiceDetails, setInvoiceDetails] = useState([]);
   const [invoiceResults, setInvoiceResults] = useState(false);
 
-  const requiredLogCount = isGrouplead || isTeamlead ? 160 : 80;
+  const requiredLogCount = isGrouplead ? 160 : 80;
 
   const getInvoiceDetails = async () => {
     if (!selectedMonth) return toast.info("Select Month");
@@ -53,10 +53,24 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, accountView }) => {
     setShowInvoicePopup(false);
   };
 
+  const generateOption = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let i = 0; i < 5; i++) {
+      years.push({
+        label: currentYear - i,
+        value: (currentYear - i).toString(),
+      });
+    }
+    return years;
+  };
+
+  const options = generateOption();
+
   return (
     <div className={styles.wrapper_invoice}>
       <section className={styles.nav_content}>
-        <h2>{accountView ? "" : "Invoice"}</h2>
+        <h2>{header ? "" : "Invoice"}</h2>
         <button onClick={() => handleInvoicePopup()}>
           <AiOutlinePlus />
           <span>New</span>
@@ -88,10 +102,7 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, accountView }) => {
               placeholder="Select month"
             />
             <Select
-              options={[
-                { label: "2024", value: "2024" },
-                { label: "2023", value: "2023" },
-              ]}
+              options={options}
               onChange={(selectedOption) => {
                 setSelectedYear(selectedOption);
               }}
@@ -180,6 +191,7 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, accountView }) => {
           }
           isGrouplead={isGrouplead}
           isTeamlead={isTeamlead}
+          options={options}
         />
       )}
     </div>
