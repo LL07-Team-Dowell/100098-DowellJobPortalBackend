@@ -31,6 +31,7 @@ const GenerateInvoice = ({
   // currentUserHiredApplicationsLoaded,
   isGrouplead,
   isTeamlead,
+  options,
 }) => {
   const [dataProcessing, setDataProcessing] = useState(false);
   const [showInvoicePage, setShowInvoicePage] = useState(false);
@@ -59,12 +60,6 @@ const GenerateInvoice = ({
 
     const { monday, friday } = getMondayAndFridayOfWeek(paymentFrom);
     console.log(monday, friday);
-
-    // if (
-    //   new Date(paymentFrom).getMonth() &&
-    //   new Date(paymentTo).getMonth() !== new Date(selectedMonth).getMonth()
-    // )
-    //   return toast.info("Invoice must be within selected payment month");
 
     const attendanceProjects = currentUserHiredApplications
       .map((item) => {
@@ -97,9 +92,7 @@ const GenerateInvoice = ({
       .then((res) => {
         console.log(res[0]?.data);
         // console.log(res[2]);
-        console.log(
-          res[1]?.data?.data?.find((item) => item.dates_present.length > 0)
-        );
+        console.log(res[1]);
 
         const taskDetails = res[0]?.data?.task_details;
 
@@ -108,27 +101,35 @@ const GenerateInvoice = ({
 
         if ((isGrouplead || isTeamlead) && hours < 40) {
           setDataProcessing(false);
-          return toast.info(
-            "You can't create an Invoice total hours less than 40 hours"
-          );
+          return toast.info("Invoice failed as total hours less than 40 hours");
         }
 
         if ((!isGrouplead || !isTeamlead) && hours < 20) {
           setDataProcessing(false);
-          return toast.info(
-            "You can't create an Invoice total hours less than 20 hours"
+          return toast.info("Invoice failed as total hours less than 20 hours");
+        }
+
+        let allAttendanceData = [];
+
+        for (
+          let i = res[1];
+          i <= res[1 + (attendanceProjects.length - 1)];
+          i++
+        ) {
+          return allAttendanceData.push(
+            res[i]?.data?.data[`${currentUser.userinfo.username}`]
           );
         }
 
-        const attendanceDetails = res[1]?.data?.data?.find(
-          (item) => item.dates_present.length > 0
-        );
+        console.log(allAttendanceData);
 
-        if (!attendanceDetails) {
+        if (
+          !allAttendanceData
+            .flat()
+            .find((item) => item.dates_present.length > 0)
+        ) {
           setDataProcessing(false);
-          return toast.info(
-            "You can't create an Invoice you have, no attendance found"
-          );
+          return toast.info("No attendance data found");
         }
 
         const templateID = "64ece51ba57293efb539e5b7";
@@ -142,15 +143,6 @@ const GenerateInvoice = ({
           approved_logs_count: approvedLogs.length,
           total_logs_required: requiredLogCount,
         };
-
-        if (
-          dataForInvoice.payment_from &&
-          dataForInvoice.payment_to === dataForInvoice.payment_month
-        ) {
-          setDataProcessing(false);
-
-          return toast.info("Invoice already created for this week");
-        }
 
         const dataForWorkflow = {
           company_id: currentUser.portfolio_info[0].org_id,
@@ -281,10 +273,7 @@ const GenerateInvoice = ({
                         placeholder="Select month"
                       />
                       <Select
-                        options={[
-                          { label: "2024", value: "2024" },
-                          { label: "2023", value: "2023" },
-                        ]}
+                        options={options}
                         onChange={(selectedOption) => {
                           setSelectedYear(selectedOption);
                         }}

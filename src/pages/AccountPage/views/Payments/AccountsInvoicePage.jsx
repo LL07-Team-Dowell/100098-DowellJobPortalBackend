@@ -15,7 +15,7 @@ const AccountsInvoicePage = () => {
         </div>
         <h3>Invoice</h3>
       </div>
-      <InvoicePayment accountView={true} />
+      <InvoicePayment header={true} />
     </StaffJobLandingLayout>
   );
 };
