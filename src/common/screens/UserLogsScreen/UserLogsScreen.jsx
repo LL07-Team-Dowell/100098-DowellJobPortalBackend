@@ -563,7 +563,7 @@ const UsersLogsScreen = ({
                                             
                                             !checkIfDateIsToday(selectedDate) && 
 
-                                            logsToDisplay.length < 1
+                                            logsData.length < 1
                                         ) ? <>
                                             <Button
                                                 text={"Request to update"}

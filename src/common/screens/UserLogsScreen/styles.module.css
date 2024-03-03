@@ -177,6 +177,7 @@
 .request__Log__Btn {
     white-space: nowrap;
     width: max-content;
+    max-width: unset;
 }
 
 .logs__Wrap {
