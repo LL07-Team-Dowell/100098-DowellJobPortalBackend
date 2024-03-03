@@ -164,9 +164,9 @@ class hr_reject_candidate(APIView):
 
         def call_dowellconnection(*args):
             d = dowellconnection(*args)
-            if "candidate_report" in args:
+            if "candidate_reports" in args:
                 c_r.append(d)
-            if "hr_report" in args:
+            if "hr_reports" in args:
                 h_r.append(d)
 
         arguments = [
@@ -177,13 +177,13 @@ class hr_reject_candidate(APIView):
         threads = []
 
         for arg in arguments:
-            thread = threading.Thread(target=call_dowellconnection, args=(arg,))
+            thread = threading.Thread(target=call_dowellconnection, args=(arg))
             thread.start()
             threads.append(thread)
         
         for thread in threads:
             thread.join()
-
+        
         error = 'Thread Execution failed'
         if all(not thread.is_alive() for thread in threads):
             error = json.loads(c_r[0])
