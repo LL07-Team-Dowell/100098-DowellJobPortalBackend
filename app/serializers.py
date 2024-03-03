@@ -14,6 +14,7 @@ JOB_CATEGORY_CHOICE = (
     ("Freelancer", "Freelancer"),
     ("Internship", "Internship"),
     ("Employee", "Employee"),
+    ("regional_associate", "regional_associate")
 )
 
 STATUS_CATEGORY_CHOICE = (
@@ -32,6 +33,30 @@ STATUS_CATEGORY_CHOICE = (
     ("teamlead_rehire", "teamlead_rehire"),
     ("Leave","Leave")   
 )
+
+PAYMENT_INTERVAL_CHOICE = (
+    ("hour", "hour"),
+    ("day", "day"),
+    ("week", "week"),
+    ("month", "month"),
+    ("year", "year"),
+)
+
+MODULE_CHOICE = (
+        ("Frontend", "Frontend"),
+        ("Backend", "Backend"),
+        ("UI/UX", "UI/UX"),
+        ("Virtual Assistant", "Virtual Assistant"),
+        ("Web", "Web"),
+        ("Mobile", "Mobile"),
+    )
+
+TYPE_OF_JOB_CHOICE = (
+        ("Full time", "Full time"),
+        ("Part time", "Part time"),
+        ("Time based", "Time based"),
+        ("Task based", "Task based"),
+    )
 
 class IDField(serializers.CharField):
     def to_internal_value(self,value):
@@ -81,7 +106,7 @@ class DateField(serializers.CharField):
         
         return value
     
-# account serializers__________________________________________________________________________
+#<account serializers__________________________________________________________________________
 class AccountSerializer(serializers.Serializer):
     document_id = IDField(allow_null=False, allow_blank=False)
     applicant = serializers.CharField(allow_null=False, allow_blank=False)
@@ -110,47 +135,10 @@ class RejectSerializer(serializers.Serializer):
     )
     rejected_on = DateField(allow_null=False, allow_blank=False)
     username = serializers.CharField(allow_null=False, allow_blank=False)
+#/account serializers>_________________________________________________________________________
 
-#account serializers_________________________________________________________________________
-
-# admin serializers__________________________________________________________________________
+#<admin serializers__________________________________________________________________________
 class AdminSerializer(serializers.Serializer):
-    JOB_CATEGORY_CHOICE = (
-        ("Freelancer", "Freelancer"),
-        ("Internship", "Internship"),
-        ("Employee", "Employee"),
-    )
-
-    TYPE_OF_JOB_CHOICE = (
-        ("Full time", "Full time"),
-        ("Part time", "Part time"),
-        ("Time based", "Time based"),
-        ("Task based", "Task based"),
-    )
-
-    DATA_TYPE_CHOICE = (
-        ("Real_Data", "Real_Data"),
-        ("Learning_Data", "Learning_Data"),
-        ("Testing_Data", "Testing_Data"),
-        ("Archived_Data", "Archived_Data"),
-    )
-
-    MODULE_CHOICE = (
-        ("Frontend", "Frontend"),
-        ("Backend", "Backend"),
-        ("UI/UX", "UI/UX"),
-        ("Virtual Assistant", "Virtual Assistant"),
-        ("Web", "Web"),
-        ("Mobile", "Mobile"),
-    )
-    paymentInterval_choice = (
-        ("hour", "hour"),
-        ("day", "day"),
-        ("week", "week"),
-        ("month", "month"),
-        ("year", "year"),
-    )
-
     job_number = serializers.CharField(allow_null=False, allow_blank=False)
     job_title = serializers.CharField(allow_null=False, allow_blank=False)
     description = serializers.CharField(allow_null=False, allow_blank=False)
@@ -166,7 +154,7 @@ class AdminSerializer(serializers.Serializer):
     payment = serializers.CharField(allow_null=False, allow_blank=False)
     is_active = serializers.BooleanField(required=True)
     general_terms = serializers.ListField(required=True, allow_empty=False)
-    company_id = serializers.CharField(allow_null=False, allow_blank=False)
+    company_id = IDField(allow_null=False, allow_blank=False)
     module = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=MODULE_CHOICE
     )
@@ -174,14 +162,34 @@ class AdminSerializer(serializers.Serializer):
         allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE
     )
     created_by = serializers.CharField(allow_null=False, allow_blank=False)
-    created_on = serializers.CharField(allow_null=False, allow_blank=False)
+    created_on = DateField(allow_null=False, allow_blank=False)
     paymentInterval = serializers.ChoiceField(
-        allow_null=False, allow_blank=False, choices=paymentInterval_choice
+        allow_null=False, allow_blank=False, choices=PAYMENT_INTERVAL_CHOICE
     )
     country = serializers.CharField(allow_null=True, allow_blank=True)
     city = serializers.CharField(allow_null=True, allow_blank=True)
     continent = serializers.CharField(allow_null=True, allow_blank=True)
-
+    
+class regionalassociateSerializer(serializers.Serializer):
+    job_title = serializers.CharField()
+    country = serializers.CharField()
+    city = serializers.CharField()
+    is_active = serializers.BooleanField()
+    job_category = serializers.CharField()
+    job_number = serializers.CharField(allow_null=False, allow_blank=False)
+    skills = serializers.ListField(child=serializers.CharField())
+    description = serializers.CharField()
+    qualification = serializers.CharField()
+    payment = serializers.DecimalField(max_digits=10, decimal_places=2)
+    company_id = IDField(allow_null=False, allow_blank=False)
+    data_type = serializers.ChoiceField(
+        allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE
+    )
+    paymentInterval = serializers.ChoiceField(
+        allow_null=False, allow_blank=False, choices=PAYMENT_INTERVAL_CHOICE
+    )
+    continent = serializers.CharField()
+#/admin serializers>________________________________________________________________________
 
 # candidate serializers__________________________________________________________________
 class CandidateSerializer(serializers.Serializer):
@@ -606,44 +614,6 @@ class ProjectDeadlineSerializer(serializers.Serializer):
     lead_name = serializers.CharField(allow_null=True, allow_blank=True)
     total_time = serializers.IntegerField()
 
-
-class regionalassociateSerializer(serializers.Serializer):
-    JOB_CATEGORY_CHOICE = (
-        ("Freelancer", "Freelancer"),
-        ("Internship", "Internship"),
-        ("Employee", "Employee"),
-        ("regional_associate", "regional_associate"),
-    )
-    DATA_TYPE_CHOICE = (
-        ("Real_Data", "Real_Data"),
-        ("Learning_Data", "Learning_Data"),
-        ("Testing_Data", "Testing_Data"),
-        ("Archived_Data", "Archived_Data"),
-    )
-    paymentInterval_choice = (
-        ("hour", "hour"),
-        ("day", "day"),
-        ("week", "week"),
-        ("month", "month"),
-        ("year", "year"),
-    )
-    job_title = serializers.CharField()
-    country = serializers.CharField()
-    city = serializers.CharField()
-    is_active = serializers.BooleanField()
-    job_category = serializers.CharField()
-    job_number = serializers.CharField(allow_null=False, allow_blank=False)
-    skills = serializers.ListField(child=serializers.CharField())
-    description = serializers.CharField()
-    qualification = serializers.CharField()
-    payment = serializers.DecimalField(max_digits=10, decimal_places=2)
-    company_id = serializers.CharField(allow_null=True, allow_blank=True)
-    data_type = serializers.ChoiceField(
-        allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE
-    )
-    paymentInterval = serializers.ChoiceField(
-        allow_null=False, allow_blank=False, choices=paymentInterval_choice
-    )
 
 
 class TeamTaskSerializer(serializers.Serializer):
