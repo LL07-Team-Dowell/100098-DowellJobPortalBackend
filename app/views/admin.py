@@ -5,7 +5,16 @@ from .imports import *
 class admin_create_jobs(APIView):
     def post(self, request):
         data = request.data
-        # continue create job api-----
+        error_message = "Job Creation failed"
+        success_message = "Job Creation Successful"
+        if not data:
+            return Response(success=False, message=error_message, response="'request' parameters are not valid, they are None",status=status.HTTP_400_BAD_REQUEST)
+        
+        serializer = AdminSerializer(data=data)
+        if not serializer.is_valid():
+            error = {field_name: field_errors[0] if isinstance(field_errors, list) else [field_errors] for field_name, field_errors in serializer.errors.items()}
+            return Response(success=False, message=error_message, response=error,status=status.HTTP_400_BAD_REQUEST)
+
         field = {
             "eventId": get_event_id()["event_id"],
             "job_number": data.get("job_number"),
@@ -34,58 +43,40 @@ class admin_create_jobs(APIView):
             "city": request.data.get("city"),
             "continent": request.data.get("continent"),
         }
-        type_request = request.GET.get("type")
-        if type_request == "is_internal":
-            if (
-                data.get("type_of_opening") == "Group_Lead"
-                or data.get("type_of_opening") == "Team_Lead"
-                or data.get("type_of_opening") == None
-            ):
+            
+        type_of_opening=["Group_Lead","Team_Lead"]
+        if request.GET.get("type") == "is_internal":
+
+            if (data.get("type_of_opening") in type_of_opening):
                 field["is_internal"] = True
                 field["type_of_opening"] = data.get("type_of_opening")
             else:
-                return Response(
-                    {
-                        "message": "Job creation was unsuccessful.",
-                        "response": " Pass 'type_of_opening' as either 'Group_Lead' or 'Team_Lead'",
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-        update_field = {"status": "nothing to update"}
-        serializer = AdminSerializer(data=field)
-        if serializer.is_valid():
-            response = dowellconnection(*jobs, "insert", field, update_field)
-            if json.loads(response)["isSuccess"] == True:
-                return Response(
-                    {
-                        "message": "Job creation was successful.",
-                        "response": json.loads(response),
-                    },
-                    status=status.HTTP_201_CREATED,
-                )
-            else:
-                return Response(
-                    {
-                        "message": "Job creation has failed",
-                        "response": json.loads(response),
-                    },
-                    status=status.HTTP_204_NO_CONTENT,
-                )
-        else:
-            default_errors = serializer.errors
-            new_error = {}
-            for field_name, field_errors in default_errors.items():
-                new_error[field_name] = field_errors[0]
-            return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
-
+                error={'error': 'Pass type_of_opening as either Group_Lead or Team_Lead'}
+                return Response(success=False, message=error_message, response=error,status=status.HTTP_400_BAD_REQUEST)
+            
+        response = json.loads(dowellconnection(*jobs, "insert", field, update_field=None))
+        print(response,'=============')
+        if response["isSuccess"] == True:
+            return  Response(success=True, message=success_message, response=response,status=status.HTTP_201_CREATED)   
+        return Response(success=False, message=error_message, response=response,status=status.HTTP_400_BAD_REQUEST)
+                         
 @method_decorator(csrf_exempt, name="dispatch")
-class associate_job(APIView):
+class admin_create_associate_job(APIView):
     def post(self, request):
         data = request.data
-        # continue create job api-----
+        error_message = "Associate Job Creation failed"
+        success_message = "Associate Job Creation Successful"
+        if not data:
+            return Response(success=False, message=error_message, response="'request' parameters are not valid, they are None",status=status.HTTP_400_BAD_REQUEST)
+        
+        serializer = regionalassociateSerializer(data=data)
+        if not serializer.is_valid():
+            error = {field_name: field_errors[0] if isinstance(field_errors, list) else [field_errors] for field_name, field_errors in serializer.errors.items()}
+            return Response(success=False, message=error_message, response=error,status=status.HTTP_400_BAD_REQUEST)
+
         field = {
             "job_title": data.get("job_title"),
+            "continent":data.get("continent"),
             "country": data.get("country"),
             "city": data.get("city"),
             "is_active": data.get("is_active"),
@@ -99,145 +90,79 @@ class associate_job(APIView):
             "data_type": data.get("data_type"),
             "paymentInterval": data.get("paymentInterval"),
         }
-        update_field = {"status": "nothing to update"}
-
-        serializer = regionalassociateSerializer(data=field)
-        if serializer.is_valid():
-            response = dowellconnection(*jobs, "insert", field, update_field)
-            if json.loads(response)["isSuccess"] == True:
-                return Response(
-                    {
-                        "message": "Job creation was successful.",
-                        "response": json.loads(response),
-                    },
-                    status=status.HTTP_201_CREATED,
-                )
-            else:
-                return Response(
-                    {
-                        "message": "Job creation has failed",
-                        "response": json.loads(response),
-                    },
-                    status=status.HTTP_204_NO_CONTENT,
-                )
-        else:
-            default_errors = serializer.errors
-            new_error = {}
-            for field_name, field_errors in default_errors.items():
-                new_error[field_name] = field_errors[0]
-            return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
-
+        
+        response = json.loads(dowellconnection(*jobs, "insert", field, update_field=None))
+        if response["isSuccess"] == True:
+            return  Response(success=True, message=success_message, response=response,status=status.HTTP_201_CREATED) 
+        return Response(success=False, message=error_message, response=response,status=status.HTTP_400_BAD_REQUEST)
+     
 @method_decorator(csrf_exempt, name="dispatch")
 class admin_get_job(APIView):
     def get(self, request, document_id):
-        field = {"_id": document_id}
-        update_field = {"status": "nothing to update"}
-        response = dowellconnection(*jobs, "fetch", field, update_field)
-        if json.loads(response)["isSuccess"] == True:
-            if len(json.loads(response)["data"]) == 0:
-                return Response(
-                    {
-                        "message": "Job details do not exist",
-                        "response": json.loads(response),
-                    },
-                    status=status.HTTP_204_NO_CONTENT,
-                )
-            else:
-                return Response(
-                    {"message": "List of jobs.", "response": json.loads(response)},
-                    status=status.HTTP_200_OK,
-                )
-        else:
-            return Response(
-                {
-                    "message": "There are no jobs with this id",
-                    "response": json.loads(response),
-                },
-                status=status.HTTP_204_NO_CONTENT,
-            )
+        error_message = "Job details do not exist"
+        success_message = "Job details found"
+
+        field={"_id":document_id,"data_type": "Real_Data"}
+        response = json.loads(dowellconnection(*jobs, "fetch", field, update_field=None))
+        if response["isSuccess"] == True:
+            res= response["data"]
+            if len(res) > 0:
+                return Response(success=True, message=success_message, response=res,status=status.HTTP_200_OK)   
+        return Response(success=False, message=error_message, response=res,status=status.HTTP_204_NO_CONTENT)
 
 @method_decorator(csrf_exempt, name="dispatch")
-class admin_get_all_jobs(APIView):
+class admin_get_jobs(APIView):
     def get(self, request, company_id):
-        field = {
-            "company_id": company_id,
-        }
-        update_field = {"status": "nothing to update"}
-        response = dowellconnection(*jobs, "fetch", field, update_field)
-        if json.loads(response)["isSuccess"] == True:
-            if len(json.loads(response)["data"]) == 0:
-                return Response(
-                    {
-                        "message": "There is no job with the company id",
-                        "response": json.loads(response),
-                    },
-                    status=status.HTTP_204_NO_CONTENT,
-                )
-            else:
-                return Response(
-                    {"message": "List of jobs.", "response": json.loads(response)},
-                    status=status.HTTP_200_OK,
-                )
-        else:
-            return Response(
-                {"message": "There is no jobs", "response": json.loads(response)},
-                status=status.HTTP_204_NO_CONTENT,
-            )
+        error_message = "Job details do not exist"
+        success_message = "Job details found"
+        field ={"company_id": company_id,"data_type": "Real_Data"}
+        response = json.loads(dowellconnection(*jobs, "fetch", field, update_field=None))
+        if response["isSuccess"] == True:
+            res= response["data"]
+            if len(res) > 0:
+                return Response(success=True, message=success_message, response=res,status=status.HTTP_200_OK)   
+        return Response(success=False, message=error_message, response=res,status=status.HTTP_204_NO_CONTENT)
 
+class admin_get_deleted_jobs(APIView):
+    def get(self, request, company_id):
+        error_message = "Job details do not exist"
+        success_message = "Job details found"
+        field ={"company_id": company_id,"data_type": "Archived_Data"}
+        response = json.loads(dowellconnection(*jobs, "fetch", field, update_field=None))
+        if response["isSuccess"] == True:
+            res= response["data"]
+            if len(res) > 0:
+                return Response(success=True, message=success_message, response=res,status=status.HTTP_200_OK)   
+        return Response(success=False, message=error_message, response=res,status=status.HTTP_204_NO_CONTENT)
 
-# update the jobs
 @method_decorator(csrf_exempt, name="dispatch")
 class admin_update_jobs(APIView):
     def patch(self, request):
         data = request.data
-        if data:
-            field = {"_id": data.get("document_id")}
-            update_field = data
-            response = dowellconnection(*jobs, "update", field, update_field)
-            # print(response)
-            if json.loads(response)["isSuccess"] == True:
-                return Response(
-                    {
-                        "message": "Job update was successful",
-                        "response": json.loads(response),
-                    },
-                    status=status.HTTP_200_OK,
-                )
-            else:
-                return Response(
-                    {
-                        "message": "Job update has failed",
-                        "response": json.loads(response),
-                    },
-                    status=status.HTTP_204_NO_CONTENT,
-                )
-        else:
-            return Response(
-                {"message": "Parameters are not valid"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-
-# delete the jobs
-
+        error_message = "Job failed to be updated"
+        success_message = "Job successfully updated"
+        if not data:
+            error = "request parameters are not valid, they are None"
+            if not data.get("document_id"):
+                error="document id is not valid"
+            return Response(success=False, message=error_message, response=error,status=status.HTTP_400_BAD_REQUEST)
+            
+        field = {"_id": data.get("document_id")}
+        response = json.loads(dowellconnection(*jobs, "update", field, update_field=data))
+        if response["isSuccess"] == True:
+            return  Response(success=True, message=success_message, response=response,status=status.HTTP_200_OK) 
+        return Response(success=False, message=error_message, response=response,status=status.HTTP_400_BAD_REQUEST)
 
 @method_decorator(csrf_exempt, name="dispatch")
 class admin_delete_job(APIView):
     def delete(self, request, document_id):
+        error_message = "Job failed to be deleted"
+        success_message = "Job successfully deleted"
         field = {"_id": document_id}
-        update_field = {"data_type": "archive_data"}
-        response = dowellconnection(*jobs, "update", field, update_field)
-        # print(response)
-        if json.loads(response)["isSuccess"] == True:
-            return Response(
-                {"message": "Job successfully deleted"}, status=status.HTTP_200_OK
-            )
-        else:
-            return Response(
-                {
-                    "message": "Job not successfully deleted",
-                    "response": json.loads(response),
-                },
-                status=status.HTTP_204_NO_CONTENT,
-            )
+        update_field = {"data_type": "Archived_Data"}
+        response = json.loads(dowellconnection(*jobs, "update", field, update_field))
+        if response["isSuccess"] == True:
+            return  Response(success=True, message=success_message, response=response,status=status.HTTP_200_OK) 
+        return Response(success=False, message=error_message, response=response,status=status.HTTP_400_BAD_REQUEST)
+     
 # api for admin management ends here______________________

@@ -1,7 +1,6 @@
 from .imports import *
 
 
-
 # api for candidate management starts here______________________
 @method_decorator(csrf_exempt, name="dispatch")
 class candidate_apply_job(APIView):
@@ -37,10 +36,7 @@ class candidate_apply_job(APIView):
                 if rejected_on:
                     three_months_after = rejected_on + relativedelta(months=3)
                     current_date = datetime.today()
-                    if (
-                        current_date >= three_months_after
-                        or current_date == datetime.today()
-                    ):
+                    if (current_date >= three_months_after or current_date == datetime.today()):
                         return True
                 return True
             else:
