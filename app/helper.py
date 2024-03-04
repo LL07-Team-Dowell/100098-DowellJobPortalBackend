@@ -88,6 +88,7 @@ def get_event_id():
         # print("r---->", r.text,json.loads(r.text))
         return json.loads(r.text)["error"]
 
+
 ### for settings api----------------------------
 def update_number(string):
     updated_string = ""
@@ -382,17 +383,18 @@ def set_date_format(date):
                                     except Exception:
                                         return ""
 
+
 def dowell_time(timezone):
     url = "https://100009.pythonanywhere.com/dowellclock/"
-    payload = json.dumps({
-        "timezone":timezone, #eg "Asia/Calcutta"
-        })
-    headers = {
-        'Content-Type': 'application/json'
+    payload = json.dumps(
+        {
+            "timezone": timezone,  # eg "Asia/Calcutta"
         }
+    )
+    headers = {"Content-Type": "application/json"}
 
     response = requests.request("POST", url, headers=headers, data=payload)
-    res= json.loads(response.text)
+    res = json.loads(response.text)
 
     return res
 
@@ -801,267 +803,400 @@ def get_dates_between(start_date, end_date):
     return [date.strftime("%Y-%m-%d") for date in date_list]
 
 
-def update_user_Report_data(api_key,db_name, report_uuid, user_id, task_date, update_data):
-    year,_monthname,_monthcnt=get_month_details(task_date)
-    query={
+def update_user_Report_data(
+    api_key, db_name, report_uuid, user_id, task_date, update_data
+):
+    year, _monthname, _monthcnt = get_month_details(task_date)
+    query = {
         "report_record_month": _monthname,
         "report_record_year": year,
-        "db_report_type": "report"
+        "db_report_type": "report",
     }
-    coll_name = report_uuid+user_id
-    get_report = json.loads(datacube_data_retrival_function(api_key,db_name,coll_name,query,100000,0, False))
-    if get_report['success'] == True:
-        if len(get_report['data']) > 0:
-            task_added = get_report['data'][0]['task_added']+ (1 if 'task_added' in update_data.keys() else 0)
-            task_completed = get_report['data'][0]['tasks_completed']
-            task_uncompleted = get_report['data'][0]['tasks_uncompleted']
-            if 'tasks_uncompleted' in update_data.keys():
-                task_uncompleted+=1
-            if 'tasks_completed' in update_data.keys():
-                task_completed+=1
-                task_uncompleted-=1
-            percentage_tasks_completed =0.0
+    coll_name = report_uuid + user_id
+    get_report = json.loads(
+        datacube_data_retrival_function(
+            api_key, db_name, coll_name, query, 100000, 0, False
+        )
+    )
+    if get_report["success"] == True:
+        if len(get_report["data"]) > 0:
+            task_added = get_report["data"][0]["task_added"] + (
+                1 if "task_added" in update_data.keys() else 0
+            )
+            task_completed = get_report["data"][0]["tasks_completed"]
+            task_uncompleted = get_report["data"][0]["tasks_uncompleted"]
+            if "tasks_uncompleted" in update_data.keys():
+                task_uncompleted += 1
+            if "tasks_completed" in update_data.keys():
+                task_completed += 1
+                task_uncompleted -= 1
+            percentage_tasks_completed = 0.0
             if task_added > 0:
-                percentage_tasks_completed = (task_completed/task_added)*100
-            task_approved = get_report['data'][0]['tasks_approved']
-            task_you_marked_as_complete = get_report['data'][0]['tasks_you_marked_as_complete']
-            tasks_you_marked_as_incomplete = get_report['data'][0]['tasks_you_marked_as_incomplete']
-            if 'tasks_approved' in update_data.keys() and task_approved < task_added:
-                task_approved+=1
-            if 'tasks_you_marked_as_incomplete' in update_data.keys() and task_approved< task_added:
-                tasks_you_marked_as_incomplete+=1
-            if 'tasks_you_marked_as_complete' in update_data.keys()  and task_approved < task_added:
-                task_you_marked_as_complete+=1
-                tasks_you_marked_as_incomplete -=1
-            
+                percentage_tasks_completed = (task_completed / task_added) * 100
+            task_approved = get_report["data"][0]["tasks_approved"]
+            task_you_marked_as_complete = get_report["data"][0][
+                "tasks_you_marked_as_complete"
+            ]
+            tasks_you_marked_as_incomplete = get_report["data"][0][
+                "tasks_you_marked_as_incomplete"
+            ]
+            if "tasks_approved" in update_data.keys() and task_approved < task_added:
+                task_approved += 1
+            if (
+                "tasks_you_marked_as_incomplete" in update_data.keys()
+                and task_approved < task_added
+            ):
+                tasks_you_marked_as_incomplete += 1
+            if (
+                "tasks_you_marked_as_complete" in update_data.keys()
+                and task_approved < task_added
+            ):
+                task_you_marked_as_complete += 1
+                tasks_you_marked_as_incomplete -= 1
 
-            
-            team_tasks = get_report['data'][0]['team_tasks']+ (1 if 'team_tasks' in update_data.keys() else 0)
-            team_tasks_completed = get_report['data'][0]['team_tasks_completed']
-            team_tasks_uncompleted = get_report['data'][0]['team_tasks_uncompleted']
-            if 'team_tasks_uncompleted' in update_data.keys():
-                team_tasks_uncompleted+=1
-            if 'team_tasks_completed' in update_data.keys():
-                team_tasks_completed+=1
-                team_tasks_uncompleted-=1
-            percentage_team_tasks_completed =0.0
+            team_tasks = get_report["data"][0]["team_tasks"] + (
+                1 if "team_tasks" in update_data.keys() else 0
+            )
+            team_tasks_completed = get_report["data"][0]["team_tasks_completed"]
+            team_tasks_uncompleted = get_report["data"][0]["team_tasks_uncompleted"]
+            if "team_tasks_uncompleted" in update_data.keys():
+                team_tasks_uncompleted += 1
+            if "team_tasks_completed" in update_data.keys():
+                team_tasks_completed += 1
+                team_tasks_uncompleted -= 1
+            percentage_team_tasks_completed = 0.0
             if team_tasks > 0:
-                percentage_team_tasks_completed = (team_tasks_completed/team_tasks)*100
-            
-            
+                percentage_team_tasks_completed = (
+                    team_tasks_completed / team_tasks
+                ) * 100
+
             update_ = {
                 "task_added": task_added,
                 "tasks_completed": task_completed,
                 "tasks_uncompleted": task_uncompleted,
-                "tasks_approved": get_report['data'][0]['tasks_approved'] + (1 if 'tasks_approved' in update_data.keys() else 0),
+                "tasks_approved": get_report["data"][0]["tasks_approved"]
+                + (1 if "tasks_approved" in update_data.keys() else 0),
                 "percentage_tasks_completed": percentage_tasks_completed,
                 "tasks_you_approved": task_approved,
                 "tasks_you_marked_as_complete": task_you_marked_as_complete,
                 "tasks_you_marked_as_incomplete": tasks_you_marked_as_incomplete,
-                "teams": get_report['data'][0]['teams'] + (1 if 'teams' in update_data.keys() else 0),
+                "teams": get_report["data"][0]["teams"]
+                + (1 if "teams" in update_data.keys() else 0),
                 "team_tasks": team_tasks,
                 "team_tasks_completed": team_tasks_completed,
                 "team_tasks_uncompleted": team_tasks_uncompleted,
                 "percentage_team_tasks_completed": percentage_team_tasks_completed,
-                "team_tasks_approved": get_report['data'][0]['team_tasks_approved'] + (1 if 'team_tasks_approved' in update_data.keys() else 0),
-                "team_tasks_issues_raised": get_report['data'][0]['team_tasks_issues_raised'] + (1 if 'team_tasks_issues_raised' in update_data.keys() else 0),
-                "team_tasks_issues_resolved": get_report['data'][0]['team_tasks_issues_resolved'] + (1 if 'team_tasks_issues_resolved' in update_data.keys() else 0),
-                "team_tasks_comments_added": get_report['data'][0]['team_tasks_comments_added'] + (1 if 'team_tasks_comments_added' in update_data.keys() else 0),
-                "report_record_month": _monthname, 
-                "report_record_year": year, 
-                "db_report_type": "report"
+                "team_tasks_approved": get_report["data"][0]["team_tasks_approved"]
+                + (1 if "team_tasks_approved" in update_data.keys() else 0),
+                "team_tasks_issues_raised": get_report["data"][0][
+                    "team_tasks_issues_raised"
+                ]
+                + (1 if "team_tasks_issues_raised" in update_data.keys() else 0),
+                "team_tasks_issues_resolved": get_report["data"][0][
+                    "team_tasks_issues_resolved"
+                ]
+                + (1 if "team_tasks_issues_resolved" in update_data.keys() else 0),
+                "team_tasks_comments_added": get_report["data"][0][
+                    "team_tasks_comments_added"
+                ]
+                + (1 if "team_tasks_comments_added" in update_data.keys() else 0),
+                "report_record_month": _monthname,
+                "report_record_year": year,
+                "db_report_type": "report",
             }
-            update_report = json.loads(datacube_data_update(api_key,db_name,coll_name,query,update_))
+            update_report = json.loads(
+                datacube_data_update(api_key, db_name, coll_name, query, update_)
+            )
             return update_report
         else:
             data = {
-                "task_added": 1 if 'task_added' in update_data.keys() else 0,
-                "tasks_completed": 1 if 'tasks_completed' in update_data.keys() else 0,
-                "tasks_uncompleted": 1 if 'tasks_uncompleted' in update_data.keys() else 0,
-                "tasks_approved": 1 if 'tasks_approved' in update_data.keys() else 0,
-                "percentage_tasks_completed": ((1 if 'tasks_completed' in update_data.keys() else 0)/1)*100,
-                "tasks_you_approved": 1 if 'tasks_you_approved' in update_data.keys() else 0,
-                "tasks_you_marked_as_complete": 1 if 'tasks_you_marked_as_complete' in update_data.keys() else 0,
-                "tasks_you_marked_as_incomplete": 1 if 'tasks_you_marked_as_incomplete' in update_data.keys() else 0,
-                "teams": 1 if 'teams' in update_data.keys() else 0,
-                "team_tasks": 1 if 'team_tasks' in update_data.keys() else 0,
-                "team_tasks_completed": 1 if 'team_tasks_completed' in update_data.keys() else 0,
-                "team_tasks_uncompleted": 1 if 'team_tasks_uncompleted' in update_data.keys() else 0,
-                "percentage_team_tasks_completed": ((1 if 'team_tasks_completed' in update_data.keys() else 0)/1)*100,
-                "team_tasks_approved": 1 if 'team_tasks_approved' in update_data.keys() else 0,
-                "team_tasks_issues_raised": 1 if 'team_tasks_issues_raised' in update_data.keys() else 0,
-                "team_tasks_issues_resolved": 1 if 'team_tasks_issues_resolved' in update_data.keys() else 0,
-                "team_tasks_comments_added": 1 if 'team_tasks_comments_added' in update_data.keys() else 0,
-                "report_record_month": _monthname, 
-                "report_record_year": year, 
-                "db_report_type": "report"
-            }
-            insert_report = json.loads(datacube_data_insertion(api_key,db_name,coll_name,data))
-            return insert_report
-    else:
-        create_collection = json.loads(datacube_add_collection(api_key,db_name,coll_name,1))
-        if create_collection['success']==True:
-            data={
                 "task_added": 1 if "task_added" in update_data.keys() else 0,
                 "tasks_completed": 1 if "tasks_completed" in update_data.keys() else 0,
-                "tasks_uncompleted": 1 if "tasks_uncompleted" in update_data.keys() else 0,
+                "tasks_uncompleted": (
+                    1 if "tasks_uncompleted" in update_data.keys() else 0
+                ),
                 "tasks_approved": 1 if "tasks_approved" in update_data.keys() else 0,
-                "percentage_tasks_completed": 0.0,
-                "tasks_you_approved": 1 if "tasks_you_approved" in update_data.keys() else 0,
-                "tasks_you_marked_as_complete": 1 if "tasks_you_marked_as_complete" in update_data.keys() else 0,
-                "tasks_you_marked_as_incomplete": 1 if "tasks_you_marked_as_incomplete" in update_data.keys() else 0,
+                "percentage_tasks_completed": (
+                    (1 if "tasks_completed" in update_data.keys() else 0) / 1
+                )
+                * 100,
+                "tasks_you_approved": (
+                    1 if "tasks_you_approved" in update_data.keys() else 0
+                ),
+                "tasks_you_marked_as_complete": (
+                    1 if "tasks_you_marked_as_complete" in update_data.keys() else 0
+                ),
+                "tasks_you_marked_as_incomplete": (
+                    1 if "tasks_you_marked_as_incomplete" in update_data.keys() else 0
+                ),
                 "teams": 1 if "teams" in update_data.keys() else 0,
                 "team_tasks": 1 if "team_tasks" in update_data.keys() else 0,
-                "team_tasks_completed": 1 if "team_tasks_completed" in update_data.keys() else 0,
-                "team_tasks_uncompleted": 1 if "team_tasks_uncompleted" in update_data.keys() else 0,
-                "percentage_team_tasks_completed": 0.0,
-                "team_tasks_approved": 1 if "team_tasks_approved" in update_data.keys() else 0,
-                "team_tasks_issues_raised": 1 if "team_tasks_issues_raised" in update_data.keys() else 0,
-                "team_tasks_issues_resolved": 1 if "team_tasks_issues_resolved" in update_data.keys() else 0,   
-                "team_tasks_comments_added": 1 if "team_tasks_comments_added" in update_data.keys() else 0,
+                "team_tasks_completed": (
+                    1 if "team_tasks_completed" in update_data.keys() else 0
+                ),
+                "team_tasks_uncompleted": (
+                    1 if "team_tasks_uncompleted" in update_data.keys() else 0
+                ),
+                "percentage_team_tasks_completed": (
+                    (1 if "team_tasks_completed" in update_data.keys() else 0) / 1
+                )
+                * 100,
+                "team_tasks_approved": (
+                    1 if "team_tasks_approved" in update_data.keys() else 0
+                ),
+                "team_tasks_issues_raised": (
+                    1 if "team_tasks_issues_raised" in update_data.keys() else 0
+                ),
+                "team_tasks_issues_resolved": (
+                    1 if "team_tasks_issues_resolved" in update_data.keys() else 0
+                ),
+                "team_tasks_comments_added": (
+                    1 if "team_tasks_comments_added" in update_data.keys() else 0
+                ),
                 "report_record_month": _monthname,
                 "report_record_year": year,
-                "db_report_type": "report"
+                "db_report_type": "report",
             }
-            insert_collection = json.loads(datacube_data_insertion(api_key,db_name,coll_name,data))
-            return insert_collection 
+            insert_report = json.loads(
+                datacube_data_insertion(api_key, db_name, coll_name, data)
+            )
+            return insert_report
+    else:
+        create_collection = json.loads(
+            datacube_add_collection(api_key, db_name, coll_name, 1)
+        )
+        if create_collection["success"] == True:
+            data = {
+                "task_added": 1 if "task_added" in update_data.keys() else 0,
+                "tasks_completed": 1 if "tasks_completed" in update_data.keys() else 0,
+                "tasks_uncompleted": (
+                    1 if "tasks_uncompleted" in update_data.keys() else 0
+                ),
+                "tasks_approved": 1 if "tasks_approved" in update_data.keys() else 0,
+                "percentage_tasks_completed": 0.0,
+                "tasks_you_approved": (
+                    1 if "tasks_you_approved" in update_data.keys() else 0
+                ),
+                "tasks_you_marked_as_complete": (
+                    1 if "tasks_you_marked_as_complete" in update_data.keys() else 0
+                ),
+                "tasks_you_marked_as_incomplete": (
+                    1 if "tasks_you_marked_as_incomplete" in update_data.keys() else 0
+                ),
+                "teams": 1 if "teams" in update_data.keys() else 0,
+                "team_tasks": 1 if "team_tasks" in update_data.keys() else 0,
+                "team_tasks_completed": (
+                    1 if "team_tasks_completed" in update_data.keys() else 0
+                ),
+                "team_tasks_uncompleted": (
+                    1 if "team_tasks_uncompleted" in update_data.keys() else 0
+                ),
+                "percentage_team_tasks_completed": 0.0,
+                "team_tasks_approved": (
+                    1 if "team_tasks_approved" in update_data.keys() else 0
+                ),
+                "team_tasks_issues_raised": (
+                    1 if "team_tasks_issues_raised" in update_data.keys() else 0
+                ),
+                "team_tasks_issues_resolved": (
+                    1 if "team_tasks_issues_resolved" in update_data.keys() else 0
+                ),
+                "team_tasks_comments_added": (
+                    1 if "team_tasks_comments_added" in update_data.keys() else 0
+                ),
+                "report_record_month": _monthname,
+                "report_record_year": year,
+                "db_report_type": "report",
+            }
+            insert_collection = json.loads(
+                datacube_data_insertion(api_key, db_name, coll_name, data)
+            )
+            return insert_collection
         else:
             return create_collection
 
-def delete_user_Report_data(api_key,db_name, report_uuid, user_id, task_date, update_data):
-    year,_monthname,_monthcnt=get_month_details(task_date)
-    query={
+
+def delete_user_Report_data(
+    api_key, db_name, report_uuid, user_id, task_date, update_data
+):
+    year, _monthname, _monthcnt = get_month_details(task_date)
+    query = {
         "report_record_month": _monthname,
         "report_record_year": year,
-        "db_report_type": "report"
+        "db_report_type": "report",
     }
-    coll_name = report_uuid+user_id
-    get_report = json.loads(datacube_data_retrival_function(api_key,db_name,coll_name,query,100000,0, False))
-    if get_report['success'] == True:
-        if len(get_report['data']) > 0:
-            task_added = get_report['data'][0]['task_added']
-            task_completed = get_report['data'][0]['tasks_completed']
-            task_uncompleted = get_report['data'][0]['tasks_uncompleted']
-            if 'task_added' in update_data.keys():
-                task_added-=1
-                if 'tasks_uncompleted' in update_data.keys():
-                    task_uncompleted-=1
-                if 'tasks_completed' in update_data.keys():
-                    task_completed-=1
+    coll_name = report_uuid + user_id
+    get_report = json.loads(
+        datacube_data_retrival_function(
+            api_key, db_name, coll_name, query, 100000, 0, False
+        )
+    )
+    if get_report["success"] == True:
+        if len(get_report["data"]) > 0:
+            task_added = get_report["data"][0]["task_added"]
+            task_completed = get_report["data"][0]["tasks_completed"]
+            task_uncompleted = get_report["data"][0]["tasks_uncompleted"]
+            if "task_added" in update_data.keys():
+                task_added -= 1
+                if "tasks_uncompleted" in update_data.keys():
+                    task_uncompleted -= 1
+                if "tasks_completed" in update_data.keys():
+                    task_completed -= 1
             else:
-                if 'tasks_uncompleted' in update_data.keys():
-                    task_uncompleted-=1
-                if 'tasks_completed' in update_data.keys():
-                    task_completed-=1
-            
-            percentage_tasks_completed =0.0
+                if "tasks_uncompleted" in update_data.keys():
+                    task_uncompleted -= 1
+                if "tasks_completed" in update_data.keys():
+                    task_completed -= 1
+
+            percentage_tasks_completed = 0.0
             if task_added > 0:
-                percentage_tasks_completed = (task_completed/task_added)*100
-            
-            team_tasks = get_report['data'][0]['team_tasks']
-            team_tasks_completed = get_report['data'][0]['team_tasks_completed']
-            team_tasks_uncompleted = get_report['data'][0]['team_tasks_uncompleted']
-            
-            if 'team_tasks' in update_data.keys():
-                team_tasks-=1
-                if 'team_tasks_uncompleted' in update_data.keys():
-                    team_tasks_uncompleted-=1
-                if 'team_tasks_completed' in update_data.keys():
-                    team_tasks_completed-=1
+                percentage_tasks_completed = (task_completed / task_added) * 100
+
+            team_tasks = get_report["data"][0]["team_tasks"]
+            team_tasks_completed = get_report["data"][0]["team_tasks_completed"]
+            team_tasks_uncompleted = get_report["data"][0]["team_tasks_uncompleted"]
+
+            if "team_tasks" in update_data.keys():
+                team_tasks -= 1
+                if "team_tasks_uncompleted" in update_data.keys():
+                    team_tasks_uncompleted -= 1
+                if "team_tasks_completed" in update_data.keys():
+                    team_tasks_completed -= 1
             else:
-                if 'team_tasks_uncompleted' in update_data.keys():
-                    team_tasks_uncompleted-=1
-                if 'team_tasks_completed' in update_data.keys():
-                    team_tasks_completed-=1
-            
-            percentage_team_tasks_completed =0.0
+                if "team_tasks_uncompleted" in update_data.keys():
+                    team_tasks_uncompleted -= 1
+                if "team_tasks_completed" in update_data.keys():
+                    team_tasks_completed -= 1
+
+            percentage_team_tasks_completed = 0.0
             if team_tasks > 0:
-                percentage_team_tasks_completed = (team_tasks_completed/team_tasks)*100
-            
+                percentage_team_tasks_completed = (
+                    team_tasks_completed / team_tasks
+                ) * 100
+
             update_ = {
                 "task_added": task_added,
                 "tasks_completed": task_completed,
                 "tasks_uncompleted": task_uncompleted,
-                "tasks_approved": get_report['data'][0]['tasks_approved'] - (1 if 'tasks_approved' in update_data.keys() else 0),
+                "tasks_approved": get_report["data"][0]["tasks_approved"]
+                - (1 if "tasks_approved" in update_data.keys() else 0),
                 "percentage_tasks_completed": percentage_tasks_completed,
-                "tasks_you_approved": get_report['data'][0]['tasks_you_approved'] - (1 if 'tasks_you_approved' in update_data.keys() else 0),
-                "tasks_you_marked_as_complete": get_report['data'][0]['tasks_you_marked_as_complete'] - (1 if 'tasks_you_marked_as_complete' in update_data.keys() else 0),
-                "tasks_you_marked_as_incomplete": get_report['data'][0]['tasks_you_marked_as_incomplete'] - (1 if 'tasks_you_marked_as_incomplete' in update_data.keys() else 0),
-                "teams": get_report['data'][0]['teams'] - (1 if 'teams' in update_data.keys() else 0),
+                "tasks_you_approved": get_report["data"][0]["tasks_you_approved"]
+                - (1 if "tasks_you_approved" in update_data.keys() else 0),
+                "tasks_you_marked_as_complete": get_report["data"][0][
+                    "tasks_you_marked_as_complete"
+                ]
+                - (1 if "tasks_you_marked_as_complete" in update_data.keys() else 0),
+                "tasks_you_marked_as_incomplete": get_report["data"][0][
+                    "tasks_you_marked_as_incomplete"
+                ]
+                - (1 if "tasks_you_marked_as_incomplete" in update_data.keys() else 0),
+                "teams": get_report["data"][0]["teams"]
+                - (1 if "teams" in update_data.keys() else 0),
                 "team_tasks": team_tasks,
                 "team_tasks_completed": team_tasks_completed,
                 "team_tasks_uncompleted": team_tasks_uncompleted,
                 "percentage_team_tasks_completed": percentage_team_tasks_completed,
-                "team_tasks_approved": get_report['data'][0]['team_tasks_approved'] - (1 if 'team_tasks_approved' in update_data.keys() else 0),
-                "team_tasks_issues_raised": get_report['data'][0]['team_tasks_issues_raised'] - (1 if 'team_tasks_issues_raised' in update_data.keys() else 0),
-                "team_tasks_issues_resolved": get_report['data'][0]['team_tasks_issues_resolved'] - (1 if 'team_tasks_issues_resolved' in update_data.keys() else 0),
-                "team_tasks_comments_added": get_report['data'][0]['team_tasks_comments_added'] - (1 if 'team_tasks_comments_added' in update_data.keys() else 0),
-                "report_record_month": _monthname, 
-                "report_record_year": year, 
-                "db_report_type": "report"
+                "team_tasks_approved": get_report["data"][0]["team_tasks_approved"]
+                - (1 if "team_tasks_approved" in update_data.keys() else 0),
+                "team_tasks_issues_raised": get_report["data"][0][
+                    "team_tasks_issues_raised"
+                ]
+                - (1 if "team_tasks_issues_raised" in update_data.keys() else 0),
+                "team_tasks_issues_resolved": get_report["data"][0][
+                    "team_tasks_issues_resolved"
+                ]
+                - (1 if "team_tasks_issues_resolved" in update_data.keys() else 0),
+                "team_tasks_comments_added": get_report["data"][0][
+                    "team_tasks_comments_added"
+                ]
+                - (1 if "team_tasks_comments_added" in update_data.keys() else 0),
+                "report_record_month": _monthname,
+                "report_record_year": year,
+                "db_report_type": "report",
             }
-            update_report = json.loads(datacube_data_update(api_key,db_name,coll_name,query,update_))
+            update_report = json.loads(
+                datacube_data_update(api_key, db_name, coll_name, query, update_)
+            )
             return update_report
     else:
         return get_report
+
+
 def valid_teamlead(username):
-        profiles = SettingUserProfileInfo.objects.all()
-        serializer = SettingUserProfileInfoSerializer(profiles, many=True)
-        # print(serializer.data,"----")
-        info = dowellconnection(
+    profiles = SettingUserProfileInfo.objects.all()
+    serializer = SettingUserProfileInfoSerializer(profiles, many=True)
+    # print(serializer.data,"----")
+    info = dowellconnection(
+        *candidate_management_reports,
+        "fetch",
+        {
+            "username": username,
+        },
+        update_field=None,
+    )
+    # print(len(json.loads(info)["data"]),"==========")
+    if len(json.loads(info)["data"]) > 0:
+        user_id = [
+            users["user_id"]
+            for users in json.loads(info)["data"]
+            if "user_id" in users.keys()
+        ][0]
+        portfolio_name = [
+            names["portfolio_name"]
+            for names in json.loads(info)["data"]
+            if "portfolio_name" in names.keys()
+        ]
+        valid_profiles = []
+        for data in serializer.data:
+            for d in data["profile_info"]:
+                if "profile_title" in d.keys():
+                    if d["profile_title"] in portfolio_name:
+                        if (
+                            d["Role"] == "Project_Lead"
+                            or d["Role"] == "Proj_Lead"
+                            or d["Role"] == "super_admin"
+                        ):
+                            valid_profiles.append(d["profile_title"])
+        if len(valid_profiles) > 0:
+            if valid_profiles[-1] in portfolio_name:
+                return True, user_id
+            else:
+                return False, user_id
+    return False, ""
+
+
+def check_position(username, company_id):
+    profiles = SettingUserProfileInfo.objects.all()
+    serializer = SettingUserProfileInfoSerializer(profiles, many=True)
+    # print(serializer.data,"----")
+    info = json.loads(
+        dowellconnection(
             *candidate_management_reports,
             "fetch",
-            {
-                "username": username,
-            },
+            {"username": username, "company_id": company_id},
             update_field=None,
         )
-        # print(len(json.loads(info)["data"]),"==========")
-        if len(json.loads(info)["data"]) > 0:
-            user_id = [users['user_id'] for users in json.loads(info)["data"] if "user_id" in users.keys()][0]
-            portfolio_name = [
-                names["portfolio_name"] for names in json.loads(info)["data"] if "portfolio_name" in names.keys()
-            ]
-            valid_profiles = []
-            for data in serializer.data:
-                for d in data["profile_info"]:
-                    if "profile_title" in d.keys():
-                        if d["profile_title"] in portfolio_name:
-                            if (
-                                d["Role"] == "Project_Lead"
-                                or d["Role"] == "Proj_Lead"
-                                or d["Role"] == "super_admin"
-                            ):
-                                valid_profiles.append(d["profile_title"])
-            if len(valid_profiles) > 0:
-                if valid_profiles[-1] in portfolio_name:
-                    return True,user_id
-                else:
-                    return False,user_id
-        return False,''
+    )["data"]
 
-def check_position(username,company_id):
-        profiles = SettingUserProfileInfo.objects.all()
-        serializer = SettingUserProfileInfoSerializer(profiles, many=True)
-        # print(serializer.data,"----")
-        info = json.loads(dowellconnection(
-                    *candidate_management_reports,
-                    "fetch",
-                    {
-                        "username": username,
-                        'company_id': company_id
-                    },
-                    update_field=None,
-                ))["data"]
-        
-        positions={"Proj_Lead":'Team Lead','Project_Lead':'Project Lead',"group_lead":'Group Lead',"Dept_Lead":'Account Lead',"Hr":"Hr","sub_admin":"Sub Admin","super_admin":"Super Admin","candidate":"Candidate","Viewer":"Viewer"}
-        if len(info) > 0:
-            for data in serializer.data:
-                for d in data["profile_info"]:
-                    if "profile_title" in d.keys():
-                        if d['profile_title'] == info[0]["portfolio_name"]:
-                            if "Role" in d.keys():
-                                return positions[d["Role"]]
-            
-                    
-        return 'None'
+    positions = {
+        "Proj_Lead": "Team Lead",
+        "Project_Lead": "Project Lead",
+        "group_lead": "Group Lead",
+        "Dept_Lead": "Account Lead",
+        "Hr": "Hr",
+        "sub_admin": "Sub Admin",
+        "super_admin": "Super Admin",
+        "candidate": "Candidate",
+        "Viewer": "Viewer",
+    }
+    if len(info) > 0:
+        for data in serializer.data:
+            for d in data["profile_info"]:
+                if "profile_title" in d.keys():
+                    if d["profile_title"] == info[0]["portfolio_name"]:
+                        if "Role" in d.keys():
+                            return positions[d["Role"]]
+
+    return "None"
+
