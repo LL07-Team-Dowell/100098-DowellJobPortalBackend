@@ -7881,8 +7881,6 @@ class SecureEndPoint(APIView):
 
 
 # ------------------ Project Time API -----------------------------  #
-
-
 @method_decorator(csrf_exempt, name="dispatch")
 class ProjectTotalTime(APIView):
     def get_current_datetime(self, date):
@@ -7902,6 +7900,7 @@ class ProjectTotalTime(APIView):
                     {
                         "project": data.get("project"),
                         "company_id": data.get("company_id"),
+                        "data_type": "Real_Data"
                     },
                     update_field=None,
                 )
@@ -8055,7 +8054,7 @@ class ProjectTotalTime(APIView):
 
 class AllProjectTotalTime(APIView):
     def get(self, request, company_id):
-        field = {"company_id": company_id, "data_type": "Real_Data"}
+        field = {"company_id": company_id,"data_type": "Real_Data"}
         
         response = json.loads(
             dowellconnection(*time_detail_module, "fetch", field, update_field=None)

@@ -1165,7 +1165,6 @@ def valid_teamlead(username):
                 return False, user_id
     return False, ""
 
-
 def check_position(username, company_id):
     profiles = SettingUserProfileInfo.objects.all()
     serializer = SettingUserProfileInfoSerializer(profiles, many=True)
@@ -1199,4 +1198,3 @@ def check_position(username, company_id):
                             return positions[d["Role"]]
 
     return "None"
-
