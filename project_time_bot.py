@@ -165,9 +165,9 @@ def update_spent_time(project,company_id, spent_time):
     )
     if get_response["isSuccess"] is True:
         if len(get_response["data"]) > 0:
-            total_time = get_response["data"][0]["total_time"]
+            total_time = float(get_response["data"][0]["total_time"])
             # print(total_time,"==========",get_response["data"])
-            spent_time = get_response["data"][0]["spent_time"] + spent_time
+            spent_time = float(get_response["data"][0]["spent_time"]) + float(spent_time)
 
             update_field = {
                 "spent_time": spent_time,
