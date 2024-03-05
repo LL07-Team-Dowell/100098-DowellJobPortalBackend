@@ -536,7 +536,7 @@ class ProjectDeadlineSerializer(serializers.Serializer):
     total_time = serializers.IntegerField()
 
 
-class regionalassociateSerializer(serializers.Serializer):
+class RegionalAssociateSerializer(serializers.Serializer):
     JOB_CATEGORY_CHOICE = (
         ("Freelancer", "Freelancer"),
         ("Internship", "Internship"),
@@ -549,30 +549,37 @@ class regionalassociateSerializer(serializers.Serializer):
         ("Testing_Data", "Testing_Data"),
         ("Archived_Data", "Archived_Data"),
     )
-    paymentInterval_choice = (
+    PAYMENT_INTERVAL_CHOICE = (
         ("hour", "hour"),
         ("day", "day"),
         ("week", "week"),
         ("month", "month"),
         ("year", "year"),
     )
+    CONTINENT_CHOICE = (
+        ("Africa", "Africa"),
+        ("Antarctica", "Antarctica"),
+        ("Asia", "Asia"),
+        ("Europe", "Europe"),
+        ("North America", "North America"),
+        ("Oceania", "Oceania"),
+        ("South America", "South America"),
+    )
+
     job_title = serializers.CharField()
     country = serializers.CharField()
     city = serializers.CharField()
     is_active = serializers.BooleanField()
-    job_category = serializers.CharField()
+    job_category = serializers.ChoiceField(choices=JOB_CATEGORY_CHOICE)
     job_number = serializers.CharField(allow_null=False, allow_blank=False)
     skills = serializers.ListField(child=serializers.CharField())
     description = serializers.CharField()
     qualification = serializers.CharField()
     payment = serializers.DecimalField(max_digits=10, decimal_places=2)
     company_id = serializers.CharField(allow_null=True, allow_blank=True)
-    data_type = serializers.ChoiceField(
-        allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE
-    )
-    paymentInterval = serializers.ChoiceField(
-        allow_null=False, allow_blank=False, choices=paymentInterval_choice
-    )
+    data_type = serializers.ChoiceField(choices=DATA_TYPE_CHOICE)
+    payment_interval = serializers.ChoiceField(choices=PAYMENT_INTERVAL_CHOICE)
+    continent = serializers.ChoiceField(allow_null=False, allow_blank=False,choices=CONTINENT_CHOICE)
 
 
 class TeamTaskSerializer(serializers.Serializer):
