@@ -85,7 +85,7 @@ from .serializers import (
     ProjectWiseReportSerializer,
     githubinfoserializer,
     ProjectDeadlineSerializer,
-    regionalassociateSerializer,
+    RegionalAssociateSerializer,
     TeamTaskSerializer,
     DashBoardStatusSerializer,
     DashBoardJobCategorySerializer,

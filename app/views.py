@@ -98,7 +98,7 @@ from .serializers import (
     ProjectWiseReportSerializer,
     githubinfoserializer,
     ProjectDeadlineSerializer,
-    regionalassociateSerializer,
+    RegionalAssociateSerializer,
     TeamTaskSerializer,
     DashBoardStatusSerializer,
     DashBoardJobCategorySerializer,
@@ -767,9 +767,21 @@ class admin_create_jobs(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class associate_job(APIView):
+    continent_abbreviation  = {
+    "Africa": "AF",
+    "Antarctica": "AN",
+    "Asia": "AS",
+    "Europe": "EU",
+    "North America": "NA",
+    "Oceania": "OC",
+    "South America": "SA"}
+
+
     def post(self, request):
         data = request.data
-        # continue create job api-----
+        continent=data.get("continent")
+            
+
         field = {
             "job_title": data.get("job_title"),
             "country": data.get("country"),
@@ -783,11 +795,13 @@ class associate_job(APIView):
             "payment": data.get("payment"),
             "company_id": data.get("company_id"),
             "data_type": data.get("data_type"),
-            "paymentInterval": data.get("paymentInterval"),
+            "payment_interval": data.get("paymentInterval"),
+            "continent":data.get("continent"),
+            "continent_abbreviation":self.continent_abbreviation[continent]
         }
         update_field = {"status": "nothing to update"}
 
-        serializer = regionalassociateSerializer(data=field)
+        serializer = RegionalAssociateSerializer(data=field)
         if serializer.is_valid():
             response = dowellconnection(*jobs, "insert", field, update_field)
             if json.loads(response)["isSuccess"] == True:
@@ -812,7 +826,35 @@ class associate_job(APIView):
             for field_name, field_errors in default_errors.items():
                 new_error[field_name] = field_errors[0]
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
-
+    
+    def get(self, request):
+        field = {"job_category": "regional_associate","company_id": request.GET.get("company_id")}
+        update_field = {}
+        response = dowellconnection(*jobs, "fetch", field, update_field)
+        if json.loads(response)["isSuccess"] == True:
+            if len(json.loads(response)["data"]) == 0:
+                return Response(
+                    {
+                        "message": "Job details does not exist",
+                        "response": json.loads(response),
+                    },
+                    status=status.HTTP_204_NO_CONTENT,
+                )
+            else:
+                return Response(
+                    {"success":True,
+                    "message": "regional associate jobs fetched successfuly",
+                    "data": json.loads(response)["data"]},
+                    status=status.HTTP_200_OK,
+                )
+        else:
+            return Response(
+                {
+                    "message": "There are no regional asociate jobs",
+                    "response": json.loads(response),
+                },
+                status=status.HTTP_204_NO_CONTENT,
+            )
 
 @method_decorator(csrf_exempt, name="dispatch")
 class admin_get_job(APIView):
