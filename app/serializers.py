@@ -258,28 +258,44 @@ class CandidateSerializer(serializers.Serializer):
 
 # hr serializers__________________________________________________________________
 class HRSerializer(serializers.Serializer):
-    DATA_TYPE_CHOICE = (
-        ("Real_Data", "Real_Data"),
-        ("Learning_Data", "Learning_Data"),
-        ("Testing_Data", "Testing_Data"),
-        ("Archived_Data", "Archived_Data"),
-    )
-    JOB_CATEGORY_CHOICE = (
-        ("Freelancer", "Freelancer"),
-        ("Internship", "Internship"),
-        ("Employee", "Employee"),
-    )
-
-    document_id = serializers.CharField(allow_null=False, allow_blank=False)
+   
+    document_id = IDField(allow_null=False, allow_blank=False)
     hr_remarks = serializers.CharField(allow_null=False, allow_blank=False)
-    status = serializers.CharField(allow_null=False, allow_blank=False)
+    status = serializers.ChoiceField(allow_null=False, allow_blank=False,choices=STATUS_CATEGORY_CHOICE)
     applicant = serializers.CharField(allow_null=False, allow_blank=False)
-    company_id = serializers.CharField(allow_null=False, allow_blank=False)
+    company_id = IDField(allow_null=False, allow_blank=False)
     data_type = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE
     )
-    shortlisted_on = serializers.CharField(allow_null=False, allow_blank=False)
+    shortlisted_on = DateField(allow_null=False, allow_blank=False)
 
+class HRShortlistSerializer(serializers.Serializer):
+   
+    document_id = IDField(allow_null=False, allow_blank=False)
+    hr_remarks = serializers.CharField(allow_null=False, allow_blank=False)
+    project = serializers.CharField(allow_null=False, allow_blank=False)
+    product_discord_link = serializers.URLField(allow_null=False, allow_blank=False)
+    status = serializers.ChoiceField(allow_null=False, allow_blank=False,choices=STATUS_CATEGORY_CHOICE)
+    applicant = serializers.CharField(allow_null=False, allow_blank=False)
+    company_id = IDField(allow_null=False, allow_blank=False)
+    data_type = serializers.ChoiceField(
+        allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE
+    )
+    selected_on = DateField(allow_null=False, allow_blank=False)
+
+
+class HRRejectSerializer(serializers.Serializer):
+   
+    document_id = IDField(allow_null=False, allow_blank=False)
+    reject_remarks = serializers.CharField(allow_null=False, allow_blank=False)
+    status = serializers.ChoiceField(allow_null=False, allow_blank=False,choices=STATUS_CATEGORY_CHOICE)
+    applicant = serializers.CharField(allow_null=False, allow_blank=False)
+    username = serializers.CharField(allow_null=False, allow_blank=False)
+    company_id = IDField(allow_null=False, allow_blank=False)
+    data_type = serializers.ChoiceField(
+        allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE
+    )
+    shortlisted_on = DateField(allow_null=False, allow_blank=False)
 
 # lead serializers_______________________________________________________________
 class LeadSerializer(serializers.Serializer):
