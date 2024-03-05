@@ -8,7 +8,7 @@
 }
 
 .switch_screen p {
-    font-size: 1.5rem;
+    font-size: 1rem;
     font-family: "Poppins", sans-serif;
     margin: 0% 2%;
     padding-bottom: 4px;
@@ -17,9 +17,15 @@
 }
 
 .switch_option.active {
-    color: #005734;
-    border-bottom: 5px solid #005734;
-    font-weight: 500;
+    color: #fff;
+    /* color: red; */
+    /* border-bottom: 5px solid #005734; */
+    font-weight: 300;
+    font-size: 1rem;
+    padding: 8px;
+    background-color: #005734;
+    box-shadow: 0 4px 8px rgba(1, 1, 1, 2);
+    border-radius: 10px;
 }
 
 .leave_card {
@@ -38,7 +44,8 @@
     display: flex;
     justify-content: space-evenly;
     flex-wrap: wrap;
-    width: 100%;
+    width: 85%;
+    margin: 1rem auto;
 }
 
 .leave_card_mainWrap .leave_card .info_leave p {
@@ -52,29 +59,31 @@
 }
 
 .leave_card_mainWrap .leave_card .info_leave {
-    width: 85%;
+    width: 95%;
     background-color: #f2f2f2;
     padding: 1%;
     margin: 0.5rem;
     border-radius: 5px;
+    margin-top: 1rem;
 }
 
 .leave_main_wrap {
     width: 100%;
-    margin-bottom: 20%;
+    margin-bottom: 40%;
 }
 
 .button_container {
-    width: 70%;
+    width: 80%;
     display: flex;
     justify-content: space-between;
-    padding: 2%;
+    /* padding: 2%; */
+    margin: 0.5rem;
 }
 
 .button_container button {
     padding: 10px 20px;
-    font-size: 16px;
-    background-color: #005734;
+    font-size: 14px;
+    background-color: #0a6657;
     color: white;
     border: none;
     border-radius: 5px;
@@ -82,5 +91,26 @@
 }
 
 .button_container .deny_leave {
-    background-color: #807f7f;
+    background-color: #bebdbc;
+}
+
+.avatar_wrap {
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+@media screen and (max-width: 767px) {
+    .leave_card {
+        width: 39%;
+    }
+
+    .leave_card_mainWrap {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    .leave_card {
+        width: 60%;
+    }
 }
