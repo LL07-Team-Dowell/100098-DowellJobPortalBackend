@@ -125,7 +125,9 @@ from ..serializers import (
     UpdateEventSerializer,
     GetEventSerializer,
     UpdateAttendanceSerializer,
-    GetEventAttendanceSerializer
+    GetEventAttendanceSerializer,
+    HRRejectSerializer,
+    HRShortlistSerializer
 )
 from ..authorization import (
     verify_user_token,

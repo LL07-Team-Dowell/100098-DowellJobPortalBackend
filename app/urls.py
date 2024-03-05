@@ -1,8 +1,6 @@
 from django.urls import path
-# from . import views as v3views
 from ._views import *
 from .views import *
-from .views.hr import hr_selected_candidate,hr_shortlisted_candidate,hr_reject_candidate
 
 urlpatterns = [
 

@@ -74,7 +74,13 @@ class hr_selected_candidate(APIView):
         success_message = "candidate has been selected successfully"
         if not data:
             return Response(success=False, message=error_message, response="'request' parameters are not valid, they are None",status=status.HTTP_400_BAD_REQUEST)
-        field = {
+        
+        serializer = HRShortlistSerializer(data=data)
+        if not serializer.is_valid():
+            error = {field_name: field_errors[0] if isinstance(field_errors, list) else [field_errors] for field_name, field_errors in serializer.errors.items()}
+            return Response(success=False, message=error_message, response=error,status=status.HTTP_400_BAD_REQUEST)
+
+        field = { 
             "_id": data.get("document_id"),
         }
         update_field = {
@@ -95,7 +101,7 @@ class hr_selected_candidate(APIView):
             "data_type": data.get("data_type"),
             "selected_on": data.get("selected_on"),
         }
-
+        
         c_r = []
         h_r = []
 
@@ -140,6 +146,10 @@ class hr_reject_candidate(APIView):
         if not data:
             return Response(success=False, message=error_message, response="'request' parameters are not valid, they are None",status=status.HTTP_400_BAD_REQUEST)
         
+        serializer=HRRejectSerializer(data=request.data)
+        if not serializer.is_valid():
+            error = {field_name: field_errors[0] if isinstance(field_errors, list) else [field_errors] for field_name, field_errors in serializer.errors.items()}
+            return Response(success=False, message=error_message, response=error,status=status.HTTP_400_BAD_REQUEST)
         field = {
             "_id": data.get("document_id"),
         }
