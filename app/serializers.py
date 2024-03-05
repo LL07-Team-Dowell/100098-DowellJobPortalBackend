@@ -576,9 +576,9 @@ class RegionalAssociateSerializer(serializers.Serializer):
     description = serializers.CharField()
     qualification = serializers.CharField()
     payment = serializers.DecimalField(max_digits=10, decimal_places=2)
-    company_id = serializers.CharField(allow_null=True, allow_blank=True)
-    data_type = serializers.ChoiceField(choices=DATA_TYPE_CHOICE)
-    payment_interval = serializers.ChoiceField(choices=PAYMENT_INTERVAL_CHOICE)
+    company_id = serializers.CharField(allow_null=False, allow_blank=False)
+    data_type = serializers.ChoiceField(allow_null=False, allow_blank=False,choices=DATA_TYPE_CHOICE)
+    payment_interval = serializers.ChoiceField(allow_null=False, allow_blank=False,choices=PAYMENT_INTERVAL_CHOICE)
     continent = serializers.ChoiceField(allow_null=False, allow_blank=False,choices=CONTINENT_CHOICE)
 
 
