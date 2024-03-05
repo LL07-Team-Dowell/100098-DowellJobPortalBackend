@@ -95,6 +95,7 @@ import GroupleadLogApprovalScreen from "./pages/GroupLeadPage/views/LogApprovalS
 import HRCompanyStructure from "./pages/HrPage/views/CompanyStructure/HrCompanyStructure";
 import PaymentLandingPage from "./pages/AccountPage/views/PaymentLandingPage/PaymentLandingPage";
 import AccountsInvoicePage from "./pages/AccountPage/views/Payments/AccountsInvoicePage";
+import ResearchAssociatePage2 from "./pages/CandidatePage/views/ResearchAssocatiePage2/ResearchAssociatePage2";
 
 function App() {
   // console.log = () => { };
@@ -157,7 +158,7 @@ function App() {
     currentUserHiredApplicationsLoaded,
     setCurrentUserHiredApplications,
     applicationsWithoutUserIdUpdated,
-    setApplicationsWithoutUserIdUpdated,
+    setApplicationsWithoutUserIdUpdated
   );
 
   if (loading) return <LoadingPage />;
@@ -168,7 +169,7 @@ function App() {
     return (
       <Routes>
         <Route
-          path='/apply/job/:id'
+          path="/apply/job/:id"
           element={
             <JobContextProvider>
               <NewApplicationContextProvider>
@@ -178,7 +179,7 @@ function App() {
           }
         >
           <Route
-            path=':section'
+            path=":section"
             element={
               <JobContextProvider>
                 <NewApplicationContextProvider>
@@ -189,7 +190,7 @@ function App() {
           />
         </Route>
 
-        <Route path='*' element={<>Page Not found</>} />
+        <Route path="*" element={<>Page Not found</>} />
       </Routes>
     );
   }
@@ -227,7 +228,7 @@ function App() {
             }
           />
           <Route
-            path='/apply/job/:id'
+            path="/apply/job/:id"
             element={
               <JobContextProvider>
                 <NewApplicationContextProvider>
@@ -237,7 +238,7 @@ function App() {
             }
           >
             <Route
-              path=':section'
+              path=":section"
               element={
                 <JobContextProvider>
                   <NewApplicationContextProvider>
@@ -247,7 +248,7 @@ function App() {
               }
             />
           </Route>
-          <Route path='*' element={<>Page Not found</>} />
+          <Route path="*" element={<>Page Not found</>} />
         </Routes>
       );
     }
@@ -255,7 +256,7 @@ function App() {
     return (
       <Routes>
         <Route
-          path='/'
+          path="/"
           element={
             <JobContextProvider>
               <NewApplicationContextProvider>
@@ -271,7 +272,7 @@ function App() {
           }
         >
           <Route
-            path=':section'
+            path=":section"
             element={
               <JobContextProvider>
                 <NewApplicationContextProvider>
@@ -282,7 +283,7 @@ function App() {
           />
         </Route>
 
-        <Route path='/jobs'>
+        <Route path="/jobs">
           <Route
             index
             element={
@@ -294,7 +295,7 @@ function App() {
             }
           />
           <Route
-            path=':jobTitle'
+            path=":jobTitle"
             element={
               <JobContextProvider>
                 <NewApplicationContextProvider>
@@ -305,12 +306,12 @@ function App() {
           />
           <Route
             exact
-            path='c/research-associate'
+            path="c/research-associate"
             element={<ResearchAssociatePage />}
           />
           <Route
             exact
-            path='c/employee'
+            path="c/employee"
             element={
               <JobContextProvider>
                 <NewApplicationContextProvider>
@@ -321,7 +322,7 @@ function App() {
           />
           <Route
             exact
-            path='c/intern'
+            path="c/intern"
             element={
               <JobContextProvider>
                 <NewApplicationContextProvider>
@@ -332,7 +333,7 @@ function App() {
           />
           <Route
             exact
-            path='c/freelancer'
+            path="c/freelancer"
             element={
               <JobContextProvider>
                 <NewApplicationContextProvider>
@@ -344,7 +345,7 @@ function App() {
         </Route>
 
         <Route
-          path='/apply/job/:id'
+          path="/apply/job/:id"
           element={
             <JobContextProvider>
               <NewApplicationContextProvider>
@@ -354,7 +355,7 @@ function App() {
           }
         >
           <Route
-            path=':section'
+            path=":section"
             element={
               <JobContextProvider>
                 <NewApplicationContextProvider>
@@ -365,7 +366,7 @@ function App() {
           />
         </Route>
 
-        <Route path='*' element={<ErrorPage />} />
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
     );
   }
@@ -379,7 +380,7 @@ function App() {
       return (
         <Routes>
           <Route
-            path='*'
+            path="*"
             element={
               <JobContextProvider>
                 <AdminReports isPublicReportUser={true} />
@@ -397,7 +398,7 @@ function App() {
       return (
         <Routes>
           <Route
-            path='*'
+            path="*"
             element={<DetailedIndividual isPublicReportUser={true} />}
           />
         </Routes>
@@ -411,7 +412,7 @@ function App() {
       return (
         <Routes>
           <Route
-            path='*'
+            path="*"
             element={
               <JobContextProvider>
                 <TaskReports isPublicReportUser={true} />
@@ -429,7 +430,7 @@ function App() {
       return (
         <Routes>
           <Route
-            path='*'
+            path="*"
             element={
               <JobContextProvider>
                 <TeamReport isPublicReportUser={true} />
@@ -447,7 +448,7 @@ function App() {
       return (
         <Routes>
           <Route
-            path='*'
+            path="*"
             element={
               <JobContextProvider>
                 <LeaderboardReport isPublicReportUser={true} />
@@ -460,7 +461,7 @@ function App() {
 
     return (
       <Routes>
-        <Route path='*' element={<>Page not found</>} />
+        <Route path="*" element={<>Page not found</>} />
       </Routes>
     );
   }
@@ -469,7 +470,7 @@ function App() {
   if (!currentUser || userDetailsNotFound) {
     return (
       <Routes>
-        <Route path='*' element={<UserDetailNotFound />} />
+        <Route path="*" element={<UserDetailNotFound />} />
       </Routes>
     );
   }
@@ -484,7 +485,7 @@ function App() {
   ) {
     return (
       <Routes>
-        <Route path='*' element={<RedirectPage />} />
+        <Route path="*" element={<RedirectPage />} />
       </Routes>
     );
   }
@@ -513,13 +514,13 @@ function App() {
           }))
         } */}
 
-        <Route path='/logout' element={<Logout />} />
-        <Route path='/payments' element={<PaymentLandingPage />} />
-        <Route path='/payments/payment-records' element={<Payment />} />
-        <Route path='/payments/invoice' element={<AccountsInvoicePage />} />
+        <Route path="/logout" element={<Logout />} />
+        <Route path="/payments" element={<PaymentLandingPage />} />
+        <Route path="/payments/payment-records" element={<Payment />} />
+        <Route path="/payments/invoice" element={<AccountsInvoicePage />} />
 
         <Route
-          path='/'
+          path="/"
           element={
             <NavigationContextProvider>
               <CandidateContextProvider>
@@ -528,10 +529,10 @@ function App() {
             </NavigationContextProvider>
           }
         >
-          <Route path=':section' element={<AccountPage />} />
+          <Route path=":section" element={<AccountPage />} />
         </Route>
 
-        <Route path='*' element={<ErrorPage />} />
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
     );
   }
@@ -548,22 +549,24 @@ function App() {
   ) {
     return (
       <Routes>
-        {
-          React.Children.toArray(subAdminRoutesInfo.map(info => {
-            return <Route
-              path={info?.path}
-              element={
-                <JobContextProvider>
-                  <CandidateTaskContextProvider>
-                    <ValuesProvider>
-                      <info.component />
-                    </ValuesProvider>
-                  </CandidateTaskContextProvider>
-                </JobContextProvider>
-              }
-            />
-          }))
-        }
+        {React.Children.toArray(
+          subAdminRoutesInfo.map((info) => {
+            return (
+              <Route
+                path={info?.path}
+                element={
+                  <JobContextProvider>
+                    <CandidateTaskContextProvider>
+                      <ValuesProvider>
+                        <info.component />
+                      </ValuesProvider>
+                    </CandidateTaskContextProvider>
+                  </JobContextProvider>
+                }
+              />
+            );
+          })
+        )}
       </Routes>
     );
   }
@@ -586,26 +589,28 @@ function App() {
   ) {
     return (
       <Routes>
-        {
-          React.Children.toArray(mainAdminRoutesInfo.map(info => {
-            return <Route
-              path={info?.path}
-              element={
-                <JobContextProvider>
-                  <CandidateTaskContextProvider>
-                    <ValuesProvider>
-                      <TeamProvider>
-                        <CompanyStructureContextProvider>
-                          <info.component />
-                        </CompanyStructureContextProvider>
-                      </TeamProvider>
-                    </ValuesProvider>
-                  </CandidateTaskContextProvider>
-                </JobContextProvider>
-              }
-            />
-          }))
-        }
+        {React.Children.toArray(
+          mainAdminRoutesInfo.map((info) => {
+            return (
+              <Route
+                path={info?.path}
+                element={
+                  <JobContextProvider>
+                    <CandidateTaskContextProvider>
+                      <ValuesProvider>
+                        <TeamProvider>
+                          <CompanyStructureContextProvider>
+                            <info.component />
+                          </CompanyStructureContextProvider>
+                        </TeamProvider>
+                      </ValuesProvider>
+                    </CandidateTaskContextProvider>
+                  </JobContextProvider>
+                }
+              />
+            );
+          })
+        )}
       </Routes>
     );
   }
@@ -619,9 +624,9 @@ function App() {
   ) {
     return (
       <Routes>
-        <Route path='/logout' element={<Logout />} />
+        <Route path="/logout" element={<Logout />} />
         <Route
-          path='/attendance-'
+          path="/attendance-"
           element={
             <HrJobScreenAllTasksContextProvider>
               <ValuesProvider>
@@ -631,7 +636,7 @@ function App() {
           }
         />
         <Route
-          path='/attendance-/attendance-report'
+          path="/attendance-/attendance-report"
           element={
             <HrJobScreenAllTasksContextProvider>
               <ValuesProvider>
@@ -641,7 +646,7 @@ function App() {
           }
         />
         <Route
-          path='/attendance-/attendance-update'
+          path="/attendance-/attendance-update"
           element={
             <HrJobScreenAllTasksContextProvider>
               <ValuesProvider>
@@ -651,7 +656,7 @@ function App() {
           }
         />
         <Route
-          path='/agenda'
+          path="/agenda"
           element={
             <HrJobScreenAllTasksContextProvider>
               <ValuesProvider>
@@ -661,7 +666,7 @@ function App() {
           }
         />
         <Route
-          path='/agenda/track-agenda'
+          path="/agenda/track-agenda"
           element={
             <HrJobScreenAllTasksContextProvider>
               <ValuesProvider>
@@ -671,7 +676,7 @@ function App() {
           }
         />
         <Route
-          path='/agenda/agenda-report'
+          path="/agenda/agenda-report"
           element={
             <HrJobScreenAllTasksContextProvider>
               <ValuesProvider>
@@ -681,7 +686,7 @@ function App() {
           }
         />
         <Route
-          path='/all-users'
+          path="/all-users"
           element={
             <HrJobScreenAllTasksContextProvider>
               <ValuesProvider>
@@ -703,7 +708,7 @@ function App() {
         />
 
         <Route
-          path='/'
+          path="/"
           element={
             <HrJobScreenAllTasksContextProvider>
               <NavigationContextProvider>
@@ -717,7 +722,7 @@ function App() {
           }
         >
           <Route
-            path=':section'
+            path=":section"
             element={
               <HrJobScreenAllTasksContextProvider>
                 <NavigationContextProvider>
@@ -727,7 +732,7 @@ function App() {
             }
           >
             <Route
-              path=':sub_section'
+              path=":sub_section"
               element={
                 <HrJobScreenAllTasksContextProvider>
                   <NavigationContextProvider>
@@ -737,7 +742,7 @@ function App() {
               }
             >
               <Route
-                path=':path'
+                path=":path"
                 element={
                   <HrJobScreenAllTasksContextProvider>
                     <NavigationContextProvider>
@@ -750,8 +755,7 @@ function App() {
           </Route>
         </Route>
 
-
-        <Route path='*' element={<ErrorPage />} />
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
     );
   }
@@ -765,10 +769,10 @@ function App() {
   ) {
     return (
       <Routes>
-        <Route path='/logout' element={<Logout />} />
+        <Route path="/logout" element={<Logout />} />
 
         <Route
-          path='/'
+          path="/"
           element={
             <NavigationContextProvider>
               <CandidateContextProvider>
@@ -782,7 +786,7 @@ function App() {
           }
         >
           <Route
-            path=':section'
+            path=":section"
             element={
               <CandidateTaskContextProvider>
                 <ValuesProvider>
@@ -794,7 +798,7 @@ function App() {
         </Route>
 
         <Route
-          path='/logs-approval-screen'
+          path="/logs-approval-screen"
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
@@ -804,7 +808,7 @@ function App() {
           }
         />
         <Route
-          path='/agenda'
+          path="/agenda"
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
@@ -814,7 +818,7 @@ function App() {
           }
         />
         <Route
-          path='/request'
+          path="/request"
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
@@ -824,7 +828,7 @@ function App() {
           }
         />
         <Route
-          path='/log-requests'
+          path="/log-requests"
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
@@ -834,7 +838,7 @@ function App() {
           }
         />
         <Route
-          path='/lead-log-requests'
+          path="/lead-log-requests"
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
@@ -844,7 +848,7 @@ function App() {
           }
         />
         <Route
-          path='/create-task'
+          path="/create-task"
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
@@ -855,7 +859,7 @@ function App() {
         />
 
         <Route
-          path='/create-task/create-new-team/'
+          path="/create-task/create-new-team/"
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
@@ -868,7 +872,7 @@ function App() {
         />
 
         <Route
-          path='/team-screen-member/:id/team-members'
+          path="/team-screen-member/:id/team-members"
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
@@ -883,7 +887,7 @@ function App() {
         />
 
         <Route
-          path='/team-screen-member/:id/team-info'
+          path="/team-screen-member/:id/team-info"
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
@@ -898,7 +902,7 @@ function App() {
         />
 
         <Route
-          path='/team-screen-member/:id/team-tasks'
+          path="/team-screen-member/:id/team-tasks"
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
@@ -912,7 +916,7 @@ function App() {
           }
         />
         <Route
-          path='/team-screen-member/:id/team-issues'
+          path="/team-screen-member/:id/team-issues"
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
@@ -927,7 +931,7 @@ function App() {
           }
         />
         <Route
-          path='/team-screen-member/:id/issue-inprogress'
+          path="/team-screen-member/:id/issue-inprogress"
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
@@ -942,7 +946,7 @@ function App() {
           }
         />
         <Route
-          path='/team-screen-member/:id/issue-completed'
+          path="/team-screen-member/:id/issue-completed"
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
@@ -957,7 +961,7 @@ function App() {
           }
         />
         <Route
-          path='/team-screen-member/:id/issue-resolved'
+          path="/team-screen-member/:id/issue-resolved"
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
@@ -971,7 +975,7 @@ function App() {
             </CandidateTaskContextProvider>
           }
         />
-        <Route path='*' element={<ErrorPage />} />
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
     );
   }
@@ -985,10 +989,10 @@ function App() {
   ) {
     return (
       <Routes>
-        <Route path='/logout' element={<Logout />} />
+        <Route path="/logout" element={<Logout />} />
 
         <Route
-          path='/'
+          path="/"
           element={
             <NavigationContextProvider>
               <CandidateContextProvider>
@@ -1002,7 +1006,7 @@ function App() {
           }
         >
           <Route
-            path=':section'
+            path=":section"
             element={
               <CandidateTaskContextProvider>
                 <ValuesProvider>
@@ -1014,7 +1018,7 @@ function App() {
         </Route>
 
         <Route
-          path='/logs-approval-screen'
+          path="/logs-approval-screen"
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
@@ -1025,7 +1029,7 @@ function App() {
         />
 
         <Route
-          path='/grouplead-tasks'
+          path="/grouplead-tasks"
           element={
             <NavigationContextProvider>
               <CandidateContextProvider>
@@ -1040,7 +1044,7 @@ function App() {
         />
 
         <Route
-          path='/create-task'
+          path="/create-task"
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
@@ -1051,7 +1055,7 @@ function App() {
         />
 
         <Route
-          path='/log-requests'
+          path="/log-requests"
           element={
             <CandidateContextProvider>
               <ValuesProvider>
@@ -1062,7 +1066,7 @@ function App() {
         />
 
         <Route
-          path='/agenda'
+          path="/agenda"
           element={
             <CandidateContextProvider>
               <ValuesProvider>
@@ -1073,7 +1077,7 @@ function App() {
         />
 
         <Route
-          path='/new-agenda'
+          path="/new-agenda"
           element={
             <CandidateContextProvider>
               <ValuesProvider>
@@ -1084,7 +1088,7 @@ function App() {
         />
 
         <Route
-          path='/track-agenda'
+          path="/track-agenda"
           element={
             <CandidateContextProvider>
               <ValuesProvider>
@@ -1095,7 +1099,7 @@ function App() {
         />
 
         <Route
-          path='/create-task/create-new-team/'
+          path="/create-task/create-new-team/"
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout
@@ -1112,7 +1116,7 @@ function App() {
         />
 
         <Route
-          path='/team-screen-member/:id/team-members'
+          path="/team-screen-member/:id/team-members"
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout
@@ -1131,7 +1135,7 @@ function App() {
         />
 
         <Route
-          path='/team-screen-member/:id/team-tasks'
+          path="/team-screen-member/:id/team-tasks"
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout
@@ -1149,7 +1153,7 @@ function App() {
           }
         />
         <Route
-          path='/team-screen-member/:id/team-issues'
+          path="/team-screen-member/:id/team-issues"
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout
@@ -1168,7 +1172,7 @@ function App() {
           }
         />
         <Route
-          path='/team-screen-member/:id/issue-inprogress'
+          path="/team-screen-member/:id/issue-inprogress"
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout
@@ -1187,7 +1191,7 @@ function App() {
           }
         />
         <Route
-          path='/team-screen-member/:id/issue-completed'
+          path="/team-screen-member/:id/issue-completed"
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout
@@ -1206,7 +1210,7 @@ function App() {
           }
         />
         <Route
-          path='/team-screen-member/:id/issue-resolved'
+          path="/team-screen-member/:id/issue-resolved"
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout
@@ -1226,19 +1230,19 @@ function App() {
         />
 
         <Route
-          path='/user-tasks'
+          path="/user-tasks"
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout teamleadView={true} isGrouplead={true}>
                 <UsersLogsScreen
-                  className={'group__Lead__User__Logs'}
+                  className={"group__Lead__User__Logs"}
                   isLeadUser={true}
                 />
               </StaffJobLandingLayout>
             </CandidateTaskContextProvider>
           }
         />
-        <Route path='*' element={<ErrorPage />} />
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
     );
   }
@@ -1252,22 +1256,24 @@ function App() {
   ) {
     return (
       <Routes>
-        {
-          React.Children.toArray(projectLeadRoutesInfo.map(item => {
-            return <Route
-              path={item?.path}
-              element={
-                <CandidateTaskContextProvider>
-                  <ValuesProvider>
-                    <TeamProvider>
-                      <item.component />
-                    </TeamProvider>
-                  </ValuesProvider>
-                </CandidateTaskContextProvider>
-              }
-            />
-          }))
-        }
+        {React.Children.toArray(
+          projectLeadRoutesInfo.map((item) => {
+            return (
+              <Route
+                path={item?.path}
+                element={
+                  <CandidateTaskContextProvider>
+                    <ValuesProvider>
+                      <TeamProvider>
+                        <item.component />
+                      </TeamProvider>
+                    </ValuesProvider>
+                  </CandidateTaskContextProvider>
+                }
+              />
+            );
+          })
+        )}
       </Routes>
     );
   }
@@ -1282,7 +1288,7 @@ function App() {
     return (
       <Routes>
         <Route
-          path='/'
+          path="/"
           element={
             <NavigationContextProvider>
               <CandidateJobsContextProvider>
@@ -1302,7 +1308,7 @@ function App() {
           }
         >
           <Route
-            path=':section'
+            path=":section"
             element={
               <NavigationContextProvider>
                 <JobContextProvider>
@@ -1317,7 +1323,7 @@ function App() {
           />
         </Route>
 
-        <Route path='/jobs'>
+        <Route path="/jobs">
           <Route
             index
             element={
@@ -1331,7 +1337,7 @@ function App() {
             }
           />
           <Route
-            path=':jobTitle'
+            path=":jobTitle"
             element={
               <JobContextProvider>
                 <CandidateJobsContextProvider>
@@ -1344,7 +1350,7 @@ function App() {
           />
           <Route
             exact
-            path='c/research-associate'
+            path="c/research-associate"
             element={
               <ProvertionPeriod>
                 <ResearchAssociatePage />
@@ -1353,7 +1359,7 @@ function App() {
           />
           <Route
             exact
-            path='c/employee'
+            path="c/employee"
             element={
               <JobContextProvider>
                 <CandidateJobsContextProvider>
@@ -1366,7 +1372,7 @@ function App() {
           />
           <Route
             exact
-            path='c/intern'
+            path="c/intern"
             element={
               <JobContextProvider>
                 <CandidateJobsContextProvider>
@@ -1379,7 +1385,7 @@ function App() {
           />
           <Route
             exact
-            path='c/freelancer'
+            path="c/freelancer"
             element={
               <JobContextProvider>
                 <CandidateJobsContextProvider>
@@ -1393,7 +1399,7 @@ function App() {
         </Route>
 
         <Route
-          path='/logout'
+          path="/logout"
           element={
             <JobContextProvider>
               <CandidateJobsContextProvider>
@@ -1405,7 +1411,7 @@ function App() {
           }
         />
         <Route
-          path='/alerts'
+          path="/alerts"
           element={
             <JobContextProvider>
               <CandidateJobsContextProvider>
@@ -1417,7 +1423,7 @@ function App() {
           }
         />
         <Route
-          path='/user'
+          path="/user"
           element={
             <JobContextProvider>
               <CandidateJobsContextProvider>
@@ -1430,7 +1436,7 @@ function App() {
         />
 
         <Route
-          path='/applied'
+          path="/applied"
           element={
             <NavigationContextProvider>
               <JobContextProvider>
@@ -1444,7 +1450,7 @@ function App() {
           }
         >
           <Route
-            path=':section'
+            path=":section"
             element={
               <NavigationContextProvider>
                 <JobContextProvider>
@@ -1460,7 +1466,7 @@ function App() {
         </Route>
 
         <Route
-          path='/apply/job/:id'
+          path="/apply/job/:id"
           element={
             <NewApplicationContextProvider>
               <JobContextProvider>
@@ -1474,7 +1480,7 @@ function App() {
           }
         >
           <Route
-            path=':section'
+            path=":section"
             element={
               <NewApplicationContextProvider>
                 <JobContextProvider>
@@ -1490,7 +1496,7 @@ function App() {
         </Route>
 
         <Route
-          path='*'
+          path="*"
           element={
             <ProvertionPeriod>
               <ErrorPage />
@@ -1504,16 +1510,16 @@ function App() {
   // CANDIDATE PAGE
   return candidateRemoved ? (
     <Routes>
-      <Route path='*' element={<CandidateRemovedScreen />} />
+      <Route path="*" element={<CandidateRemovedScreen />} />
     </Routes>
   ) : candidateRenewContract ? (
     <Routes>
-      <Route path='*' element={<CandidateRenewContract />} />
+      <Route path="*" element={<CandidateRenewContract />} />
     </Routes>
   ) : candidateHired || currentUser.candidateIsHired ? (
     <Routes>
       <Route
-        path='/team-screen-member/:id/team-tasks'
+        path="/team-screen-member/:id/team-tasks"
         element={
           <NavigationContextProvider>
             <CandidateTaskContextProvider>
@@ -1529,7 +1535,7 @@ function App() {
         }
       />
       <Route
-        path='/work-log-request'
+        path="/work-log-request"
         element={
           <ResponsesContextProvider>
             <candidateValuesProvider>
@@ -1539,7 +1545,7 @@ function App() {
         }
       />
       <Route
-        path='/team-screen-member/:id/team-members'
+        path="/team-screen-member/:id/team-members"
         element={
           <NavigationContextProvider>
             <CandidateTaskContextProvider>
@@ -1555,7 +1561,7 @@ function App() {
         }
       />
       <Route
-        path='/team-screen-member/:id/team-info'
+        path="/team-screen-member/:id/team-info"
         element={
           <NavigationContextProvider>
             <CandidateTaskContextProvider>
@@ -1572,7 +1578,7 @@ function App() {
       />
 
       <Route
-        path='/team-screen-member/:id/team-issues'
+        path="/team-screen-member/:id/team-issues"
         element={
           <NavigationContextProvider>
             <CandidateTaskContextProvider>
@@ -1588,7 +1594,7 @@ function App() {
         }
       />
       <Route
-        path='/'
+        path="/"
         element={
           <NavigationContextProvider>
             <CandidateTaskContextProvider>
@@ -1605,20 +1611,20 @@ function App() {
         }
       >
         <Route
-          path=':section'
+          path=":section"
           element={
             // <PageUnderConstruction showProductView={true} />
             <AfterSelectionScreen assignedProjects={assignedProjects} />
           }
         />
       </Route>
-      <Route path='/logout' element={<Logout />} />
-      <Route path='*' element={<ErrorPage />} />
+      <Route path="/logout" element={<Logout />} />
+      <Route path="*" element={<ErrorPage />} />
     </Routes>
   ) : candidateShortListed ? (
     <Routes>
       <Route
-        path='/'
+        path="/"
         element={
           <ResponsesContextProvider>
             <CandidateValuesProvider>
@@ -1628,7 +1634,7 @@ function App() {
         }
       ></Route>
       <Route
-        path='/traning'
+        path="/traning"
         element={
           <ResponsesContextProvider>
             <candidateValuesProvider>
@@ -1639,7 +1645,7 @@ function App() {
       />
 
       <Route
-        path='/logout'
+        path="/logout"
         element={
           <ResponsesContextProvider>
             <Logout />{" "}
@@ -1648,7 +1654,7 @@ function App() {
       />
 
       <Route
-        path='*'
+        path="*"
         element={
           <ResponsesContextProvider>
             <ErrorPage />
@@ -1659,7 +1665,7 @@ function App() {
   ) : (
     <Routes>
       <Route
-        path='/'
+        path="/"
         element={
           <NavigationContextProvider>
             <CandidateJobsContextProvider>
@@ -1678,7 +1684,7 @@ function App() {
         }
       >
         <Route
-          path=':section'
+          path=":section"
           element={
             <NavigationContextProvider>
               <JobContextProvider>
@@ -1691,7 +1697,7 @@ function App() {
         />
       </Route>
 
-      <Route path='/jobs'>
+      <Route path="/jobs">
         <Route
           index
           element={
@@ -1703,7 +1709,7 @@ function App() {
           }
         />
         <Route
-          path=':jobTitle'
+          path=":jobTitle"
           element={
             <JobContextProvider>
               <CandidateJobsContextProvider>
@@ -1712,14 +1718,19 @@ function App() {
             </JobContextProvider>
           }
         />
+        {/*<Route
+          exact
+          path="c/research-associate"
+          element={<ResearchAssociatePage />}
+        />*/}
         <Route
           exact
-          path='c/research-associate'
-          element={<ResearchAssociatePage />}
+          path="c/research-associate-2"
+          element={<ResearchAssociatePage2 />}
         />
         <Route
           exact
-          path='c/employee'
+          path="c/employee"
           element={
             <JobContextProvider>
               <CandidateJobsContextProvider>
@@ -1730,7 +1741,7 @@ function App() {
         />
         <Route
           exact
-          path='c/intern'
+          path="c/intern"
           element={
             <JobContextProvider>
               <CandidateJobsContextProvider>
@@ -1741,7 +1752,7 @@ function App() {
         />
         <Route
           exact
-          path='c/freelancer'
+          path="c/freelancer"
           element={
             <JobContextProvider>
               <CandidateJobsContextProvider>
@@ -1753,7 +1764,7 @@ function App() {
       </Route>
 
       <Route
-        path='/logout'
+        path="/logout"
         element={
           <JobContextProvider>
             <CandidateJobsContextProvider>
@@ -1763,7 +1774,7 @@ function App() {
         }
       />
       <Route
-        path='/alerts'
+        path="/alerts"
         element={
           <JobContextProvider>
             <CandidateJobsContextProvider>
@@ -1773,7 +1784,7 @@ function App() {
         }
       />
       <Route
-        path='/user'
+        path="/user"
         element={
           <JobContextProvider>
             <CandidateJobsContextProvider>
@@ -1784,7 +1795,7 @@ function App() {
       />
 
       <Route
-        path='/applied'
+        path="/applied"
         element={
           <NavigationContextProvider>
             <JobContextProvider>
@@ -1796,7 +1807,7 @@ function App() {
         }
       >
         <Route
-          path=':section'
+          path=":section"
           element={
             <NavigationContextProvider>
               <JobContextProvider>
@@ -1810,7 +1821,7 @@ function App() {
       </Route>
 
       <Route
-        path='/apply/job/:id'
+        path="/apply/job/:id"
         element={
           <NewApplicationContextProvider>
             <JobContextProvider>
@@ -1822,7 +1833,7 @@ function App() {
         }
       >
         <Route
-          path=':section'
+          path=":section"
           element={
             <NewApplicationContextProvider>
               <JobContextProvider>
@@ -1835,7 +1846,7 @@ function App() {
         />
       </Route>
 
-      <Route path='*' element={<ErrorPage />} />
+      <Route path="*" element={<ErrorPage />} />
     </Routes>
   );
 }

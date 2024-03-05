@@ -7,52 +7,53 @@ import businessDevelopmentImage from "../../../assets/images/business-developmen
 import legalComplianceImage from "../../../assets/images/legal-compliance.png";
 
 export const availableJobCategories = [
-    "Employee",
-    "Intern",
-    "Research Associate",
-    "Freelancer",
-]
+  "Employee",
+  "Intern",
+  //   "Research Associate",
+  "Research Associate 2",
+  "Freelancer",
+];
 
 export const JOB_APPLICATION_CATEGORIES = [
-    'Freelancer',
-    'Employee',
-    'Internship',
-]
+  "Freelancer",
+  "Employee",
+  "Internship",
+];
 
 export const availableInternJobStreams = [
-    {
-        title: "Stream 1",
-        image: projectManagementImage,
-        subtitle: "Project Management",
-    },
-    {
-        title: "Stream 2",
-        image: informationTechnologyImage,
-        subtitle: "Information Technology",
-    },
-    {
-        title: "Stream 3",
-        image: dataAnalysisImage,
-        subtitle: "Data Analysis",
-    },
-    {
-        title: "Stream 4",
-        image: humanResourceImage,
-        subtitle: "Human Resource",
-    },
-    {
-        title: "Stream 5",
-        image: digitalMarketingImage,
-        subtitle: "Digital Marketing",
-    },
-    {
-        title: "Stream 6",
-        image: businessDevelopmentImage,
-        subtitle: "Business Development",
-    },
-    {
-        title: "Stream 7",
-        image: legalComplianceImage,
-        subtitle: "Legal Compliance",
-    },
-]
+  {
+    title: "Stream 1",
+    image: projectManagementImage,
+    subtitle: "Project Management",
+  },
+  {
+    title: "Stream 2",
+    image: informationTechnologyImage,
+    subtitle: "Information Technology",
+  },
+  {
+    title: "Stream 3",
+    image: dataAnalysisImage,
+    subtitle: "Data Analysis",
+  },
+  {
+    title: "Stream 4",
+    image: humanResourceImage,
+    subtitle: "Human Resource",
+  },
+  {
+    title: "Stream 5",
+    image: digitalMarketingImage,
+    subtitle: "Digital Marketing",
+  },
+  {
+    title: "Stream 6",
+    image: businessDevelopmentImage,
+    subtitle: "Business Development",
+  },
+  {
+    title: "Stream 7",
+    image: legalComplianceImage,
+    subtitle: "Legal Compliance",
+  },
+];
