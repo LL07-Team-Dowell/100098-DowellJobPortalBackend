@@ -4,28 +4,19 @@ import { useValues } from "../context/Values";
 import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContext";
 import {
   createTeam,
-  getAllTeams,
 } from "../../../../../services/createMembersTasks";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../component/Navbar";
-import { teamManagementProductName } from "../../../../../utils/utils";
 import { toast } from "react-toastify";
 import { BsPlus } from "react-icons/bs";
 import { FaTimes } from "react-icons/fa";
-import LittleLoading from "../../../../CandidatePage/views/ResearchAssociatePage/littleLoading";
 import LoadingSpinner from "../../../../../components/LoadingSpinner/LoadingSpinner";
-import { getUserInfoFromLoginAPI } from "../../../../../services/authServices";
-import { testingRoles } from "../../../../../utils/testingRoles";
+import { candidateStatuses } from "../../../../CandidatePage/utils/candidateStatuses";
 
 const CreateTeam = ({ isAdmin }) => {
   // USER
   const {
     currentUser,
-    setCurrentUser,
-    portfolioLoaded,
-    setPortfolioLoaded,
-    isNotOwnerUser,
-    setIsNotOwnerUser,
     allCompanyApplications,
   } = useCurrentUserContext();
   // DATA
@@ -55,7 +46,6 @@ const CreateTeam = ({ isAdmin }) => {
       .map((v, i) => ({ member: v, id: i }));
   // States
   const [showCard, setshowCard] = useState(false);
-  const [toggleCheckboxes, settoggleCheckboxes] = useState(false);
   const [displaidMembers, setDesplaidMembers] = useState([]);
   const [inputMembers, setInputMembers] = useState([]);
   const [query, setquery] = useState("");
@@ -87,90 +77,16 @@ const CreateTeam = ({ isAdmin }) => {
   };
 
   useEffect(() => {
-    if (portfolioLoaded) {
-      setDesplaidMembers(
-        isNotOwnerUser
-          ? currentUser?.selected_product?.userportfolio
-            .map((v) =>
-              v.username.length !== 0 && v.username[0] !== "owner"
-                ? Array.isArray(v.username)
-                  ? v.username[0]
-                  : v.username
-                : null
-            )
-            .filter((v) => v !== null)
-            .map((v, i) => ({ member: v, id: i }))
-          : currentUser?.userportfolio
-            ?.filter((user) => user.member_type !== "owner")
-            .map((v) =>
-              v.username.length !== 0
-                ? Array.isArray(v.username)
-                  ? v.username[0]
-                  : v.username
-                : null
-            )
-            .filter((v) => v !== null)
-            .map((v, i) => ({ member: v, id: i }))
-      );
-      return;
-    }
-
-    const currentSessionId = sessionStorage.getItem("session_id");
-    if (!currentSessionId) return;
-
-    const teamManagementProduct = currentUser?.portfolio_info.find(
-      (item) =>
-        item.product === teamManagementProductName && item.member_type === "owner"
-    );
-
-    if (
-      !(
-        (currentUser.settings_for_profile_info &&
-          currentUser.settings_for_profile_info.profile_info[
-            currentUser.settings_for_profile_info.profile_info.length - 1
-          ].Role === testingRoles.superAdminRole) ||
-        currentUser.isSuperAdmin
-      ) &&
-      !teamManagementProduct
-    ) {
-      console.log("No team management product found for current user");
-      setDesplaidMembers(
-        allCompanyApplications.map(application => {
-          return {
-            member: application.username,
-            id: application._id,
-          }
-        })
-      );
-      setIsNotOwnerUser(true);
-      return setPortfolioLoaded(true);
-    }
-
-    const dataToPost = {
-      session_id: currentSessionId,
-      product: teamManagementProduct?.product ? teamManagementProduct?.product : teamManagementProductName,
-    };
-
-    getUserInfoFromLoginAPI(dataToPost)
-      .then((res) => {
-        setCurrentUser(res.data);
-        setDesplaidMembers(
-          allCompanyApplications.map(application => {
-            return {
-              member: application.username,
-              id: application._id,
-            }
-          })
-        );
-        setPortfolioLoaded(true);
-        setIsNotOwnerUser(false);
+    setDesplaidMembers(
+      allCompanyApplications.filter(application => application.status === candidateStatuses.ONBOARDING).map(application => {
+        return {
+          applicant: application?.applicant,
+          member: application?.username,
+          id: application?._id,
+        }
       })
-      .catch((err) => {
-        console.log("Failed to get user details from login API");
-        console.log(err.response ? err.response.data : err.message);
-        setPortfolioLoaded(true);
-      });
-  }, []);
+    );
+  }, [allCompanyApplications]);
 
   const createTeamSubmit = () => {
     if (
@@ -217,8 +133,6 @@ const CreateTeam = ({ isAdmin }) => {
   // console.log(displaidMembers);
   const userIsThere = (user) =>
     data.selected_members.find((newUser) => newUser === user);
-
-  if (!portfolioLoaded) return <LoadingSpinner />;
 
   return (
     <>
@@ -297,16 +211,25 @@ const CreateTeam = ({ isAdmin }) => {
               <br />
               <label htmlFor="task_name">Select Members</label>
               <div className="members">
-                {[...new Map(displaidMembers.map((member) => [member.member, member])).values()]?.filter((f) => f.member.toLocaleLowerCase().includes(query.toLocaleLowerCase()))
-                  .length > 0 ? (
+                {[...new Map(displaidMembers.map((member) => [member.member, member])).values()]
+                  ?.filter((f) => 
+                    (
+                      f.member.toLocaleLowerCase().includes(query.toLocaleLowerCase()) || 
+                      f.applicant.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+                    )
+                  ).length > 0 ? (
                   [...new Map(displaidMembers.map((member) => [member.member, member])).values()]
-                    ?.filter((f) => f.member.toLocaleLowerCase().includes(query.toLocaleLowerCase()))
-                    ?.map((element) => (
+                    ?.filter((f) => 
+                      (
+                        f.member.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+                        f.applicant.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+                      )
+                    )?.map((element) => (
                       <div
                         className="single-member"
                         onClick={() => AddedMember(element.id)}
                       >
-                        <p>{element.member}</p>
+                        <p>{element?.applicant}</p>
                         <BsPlus />
                       </div>
                     ))

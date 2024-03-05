@@ -11,7 +11,7 @@ import { getAllTeams, getSingleTeam } from '../../../../../services/createMember
 import LoadingSpinner from '../../../../../components/LoadingSpinner/LoadingSpinner'; 
 
 const TeamScreenMembers = () => {
-  const { currentUser } = useCurrentUserContext();
+  const { currentUser, allCompanyApplications } = useCurrentUserContext();
     const {id} = useParams();
     const {team , setteam } = useTeam() ; 
     const [loading , setloading] = useState(false);
@@ -53,7 +53,10 @@ const TeamScreenMembers = () => {
       <div style={{height:'110%'}}>
         <Navbar title={team?.team_name} removeButton={true}/>
         <TeamScreenLinks id={id}/>
-        <TeamScreenMembersContainer members={team?.members} />
+        <TeamScreenMembersContainer 
+          members={team?.members} 
+          allUserFullNameList={allCompanyApplications}
+        />
         {showPopup && <AddMemberPopup bigMember={bigMember} members={team?.members} setmembers={setmembers} setTeamName={setTeamName} team_name={team?.team_name} close={()=>setShowPopup(false)} getElementToTeamState={getElementToTeamState} team={team} setteam={setteam}/>}
       {
         team?.created_by === currentUser.userinfo.username ? 

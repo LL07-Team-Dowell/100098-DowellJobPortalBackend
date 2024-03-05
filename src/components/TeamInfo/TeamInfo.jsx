@@ -1,3 +1,4 @@
+import { useCurrentUserContext } from "../../contexts/CurrentUserContext";
 import Navbar from "../../pages/TeamleadPage/views/CreateMembersTask/component/Navbar";
 import TeamScreenLinks from "../../pages/TeamleadPage/views/CreateMembersTask/views/compoonent/teamScreenLinks/teamScreenLinks";
 import "./TeamInfo.scss";
@@ -11,6 +12,10 @@ const TeamInfo = ({
   id,
   team_members,
 }) => {
+  const {
+    allCompanyApplications
+  } = useCurrentUserContext();
+
   return (
     <div>
       <Navbar title={team_name} removeButton={removeButton} />
@@ -25,7 +30,12 @@ const TeamInfo = ({
         </p>
         <p>
           <b>Team Created By: </b>
-          {created_by}
+          {
+            allCompanyApplications?.find(user => user.username === created_by) ?
+              allCompanyApplications?.find(user => user.username === created_by)?.applicant
+            :
+            created_by
+          } ({created_by})
         </p>
         <p>
           <b>Date created: </b>

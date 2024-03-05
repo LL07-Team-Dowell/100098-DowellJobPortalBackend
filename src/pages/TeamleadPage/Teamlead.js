@@ -217,7 +217,10 @@ const Teamlead = ({ isGrouplead }) => {
         type: candidateDataReducerActions.UPDATE_ALL_CANDIDATES,
         payload: {
           stateToChange: initialCandidatesDataStateNames.allCandidates,
-          value: allCompanyApplications?.filter(candidate => candidate.user_id).filter(candidate => candidate.user_id !== currentUser?.userinfo?.userID)
+          value: allCompanyApplications
+            ?.filter(candidate => candidate.user_id)
+            ?.filter(candidate => candidate.user_id !== currentUser?.userinfo?.userID)
+            ?.sort((a, b) => a?.applicant?.localeCompare(b?.applicant))
         }
       });
 
@@ -274,7 +277,10 @@ const Teamlead = ({ isGrouplead }) => {
           type: candidateDataReducerActions.UPDATE_ALL_CANDIDATES,
           payload: {
             stateToChange: initialCandidatesDataStateNames.allCandidates,
-            value: allCompanyApplications?.filter(candidate => candidate.user_id).filter(candidate => candidate.user_id !== currentUser?.userinfo?.userID)
+            value: allCompanyApplications
+              ?.filter(candidate => candidate.user_id)
+              ?.filter(candidate => candidate.user_id !== currentUser?.userinfo?.userID)
+              ?.sort((a, b) => a?.applicant?.localeCompare(b?.applicant))
           }
         });
 
@@ -470,7 +476,10 @@ const Teamlead = ({ isGrouplead }) => {
           type: candidateDataReducerActions.UPDATE_ALL_CANDIDATES,
           payload: {
             stateToChange: initialCandidatesDataStateNames.allCandidates,
-            value: applicationForMatching?.filter(candidate => candidate.user_id).filter(candidate => candidate.user_id !== currentUser?.userinfo?.userID)
+            value: applicationForMatching
+              ?.filter(candidate => candidate.user_id)
+              ?.filter(candidate => candidate.user_id !== currentUser?.userinfo?.userID)
+              ?.sort((a, b) => a?.applicant?.localeCompare(b?.applicant))
           }
         });
 

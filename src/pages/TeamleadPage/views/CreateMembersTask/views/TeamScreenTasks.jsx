@@ -30,27 +30,27 @@ const TeamScreenTasks = () => {
 
   // useEffect
   useEffect(() => {
-    if (team?.members === undefined) {
-      setloading(true);
+    setloading(true);
 
-      //   getAllTeams(currentUser.portfolio_info[0].org_id)
-      //     .then(resp =>{
-      //     setteam(resp.data.response.data.find(team => team["_id"] === id))
-      //     setloading(false)})
-      // .catch(err => console.log(err))
+    //   getAllTeams(currentUser.portfolio_info[0].org_id)
+    //     .then(resp =>{
+    //     setteam(resp.data.response.data.find(team => team["_id"] === id))
+    //     setloading(false)})
+    // .catch(err => console.log(err))
 
-      // GET A SINGLE TEAM INSTEAD
-      getSingleTeam(id)
-        .then((resp) => {
-          setteam(resp.data.response.data[0]);
-          setloading(false);
-        })
-        .catch((err) => console.log(err));
-    }
+    // GET A SINGLE TEAM INSTEAD
+    getSingleTeam(id)
+      .then((resp) => {
+        setteam(resp.data.response.data[0]);
+        setloading(false);
+      })
+      .catch((err) => console.log(err));
   }, []);
+
   useEffect(() => {
     console.log({ Team: team });
   }, [team]);
+
   useEffect(() => {
     if (tasks.length > 0) {
       const tasksCompletedNumber = tasks.filter(
@@ -62,6 +62,7 @@ const TeamScreenTasks = () => {
       );
     }
   }, [tasks]);
+
   useEffect(() => {
     if (addedNewTask) {
       getTeamTask(id)
@@ -79,8 +80,11 @@ const TeamScreenTasks = () => {
         });
     }
   }, [addedNewTask]);
+
   console.log({ tasks });
+  
   if (loading) return <LoadingSpinner />;
+  
   return (
     <div style={{ height: "130%" }}>
       {team?.team_name !== undefined ? (

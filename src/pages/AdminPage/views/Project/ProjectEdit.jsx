@@ -197,6 +197,10 @@ const ProjectEdit = () => {
       }
     } catch (error) {
       toast.error("Something went wrong");
+      setShowEditView(false);
+      setDataPosting(false);
+
+      return;
     }
 
     // navigate(`/projects/edit-project-time/?project=${project}&id=${id}`);

@@ -100,7 +100,7 @@ const AdminLogsHomePage = () => {
         (application) =>
             application.data_type === currentUser?.portfolio_info[0].data_type &&
             application.user_id
-        );
+        )?.sort((a, b) => a?.applicant?.localeCompare(b?.applicant));
         setFetchedOnboardingUsers(onboardingCandidates);
         setFetchedOnboardingUsersLoaded(true);
 
@@ -234,10 +234,10 @@ const AdminLogsHomePage = () => {
             setAllCompanyApplications(candidateDataFetched);
 
             const onboardingCandidates = candidateDataFetched
-            .filter(
+            ?.filter(
             (application) =>
                 application.user_id
-            );
+            )?.sort((a, b) => a?.applicant?.localeCompare(b?.applicant));
 
             const projectsGotten = res[1]?.data
             ?.filter(
