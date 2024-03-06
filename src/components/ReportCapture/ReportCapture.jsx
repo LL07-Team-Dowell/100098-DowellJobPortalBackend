@@ -30,15 +30,15 @@ const ReportCapture = ({
             </div>
             <p>Excel</p>
           </div>
-          <div className='' onClick={pdfBtnIsDisabled ? () => {} : () => htmlToPdfFunction()}>
+          <div className='' onClick={pdfBtnIsDisabled ? () => { } : () => htmlToPdfFunction()}>
             <div>
               <AiFillFilePdf />
             </div>
             <p>
               {
                 pdfBtnIsDisabled ? 'Please wait...'
-                :
-                'PDF'
+                  :
+                  'PDF'
               }
             </p>
           </div>

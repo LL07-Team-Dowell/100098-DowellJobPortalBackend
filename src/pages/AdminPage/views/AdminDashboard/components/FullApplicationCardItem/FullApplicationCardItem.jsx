@@ -221,7 +221,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
     }
 
     // console.log('days difference', getDaysDifferenceBetweenDates(startDate, endDate));
-    if (getDaysDifferenceBetweenDates(startDate, endDate) < 7) {
+    if (getDaysDifferenceBetweenDates(startDate, endDate) < 7 - 1) {
       setStartDate('');
       setEndDate('');
       return toast.info('Difference between start and end date should be greater than or equal to 7 days!');
@@ -469,7 +469,10 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
                   disabled
                 />
               </label>
-              <button className={styles.edit__Btn} onClick={handleSubmitClick}>Submit</button>
+              <button className={styles.edit__Btn} onClick={handleSubmitClick}>
+                {isLeaveLoading ? <LoadingSpinner width={18} height={18} /> :
+                  'Submit'
+                }</button>
             </div>
           </Overlay>
         )}
