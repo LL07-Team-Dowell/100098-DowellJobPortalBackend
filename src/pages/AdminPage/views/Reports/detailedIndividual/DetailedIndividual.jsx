@@ -24,6 +24,7 @@ import jsPDF from "jspdf";
 import { CSVLink } from "react-csv";
 import { candidateStatuses } from "../../../../CandidatePage/utils/candidateStatuses";
 import { indiv_report_img } from "../../../../../assets/assetsIndex";
+import { AiFillFilePdf } from "react-icons/ai";
 
 export const chartOptions = {
   responsive: true,
@@ -350,17 +351,17 @@ export default function DetailedIndividual({
   };
 
   const handleDownloadPDFData = (elemRef) => {
-    if (!elemRef.current) return;
+    if (!elemRef?.current) return;
 
     setPDFBtnDisabled(true);
 
-    html2canvas(elemRef.current).then((canvas) => {
+    html2canvas(elemRef?.current).then((canvas) => {
       let dataURL = canvas.toDataURL("image/png");
 
       const doc = new jsPDF({
         orientation: "portrait",
         unit: "px",
-        format: [elemRef.current.scrollHeight, elemRef.current.scrollWidth],
+        format: [elemRef?.current?.scrollHeight, elemRef?.current?.scrollWidth],
       });
 
       doc.addImage(dataURL, "PNG", 1, 1);
@@ -471,6 +472,18 @@ export default function DetailedIndividual({
                 <div className="personal__Info__Wrapper">
                   {/* {candidateName && <h3>Current candidate: {candidateName}</h3>} */}
                   <div className="personal_info">
+                    {/* <div className='' onClick={PDFbtnDisabled ? () => { } : () => handleDownloadPDFData()}>
+                      <div>
+                        <AiFillFilePdf />
+                      </div>
+                      <p>
+                        {
+                          PDFbtnDisabled ? 'Please wait...'
+                            :
+                            'PDF'
+                        }
+                      </p>
+                    </div> */}
                     <h3>Candidate personal info</h3>
                     <div>
                       <p>
@@ -1207,16 +1220,18 @@ export default function DetailedIndividual({
           )}
         </div>
       </div>
-      {reportCaptureModal && (
-        <ReportCapture
-          closeModal={() => closeReportCaptureModal()}
-          htmlToCanvaFunction={() => { }}
-          handleExcelItemDownload={handleDownloadExcelData}
-          htmlToPdfFunction={() => handleDownloadPDFData(mainDivRef)}
-          pdfBtnIsDisabled={PDFbtnDisabled}
-        />
-      )}
-    </StaffJobLandingLayout>
+      {
+        reportCaptureModal && (
+          <ReportCapture
+            closeModal={() => closeReportCaptureModal()}
+            htmlToCanvaFunction={() => { }}
+            handleExcelItemDownload={handleDownloadExcelData}
+            htmlToPdfFunction={() => handleDownloadPDFData(mainDivRef)}
+            pdfBtnIsDisabled={PDFbtnDisabled}
+          />
+        )
+      }
+    </StaffJobLandingLayout >
   );
 }
 // {Object.keys(candidateData).map((data, index) => (
