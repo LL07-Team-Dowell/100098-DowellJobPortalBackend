@@ -124,32 +124,33 @@ def get_projects_spent_total_time(company_id, search_date):
     task_details = json.loads(dowellconnection(*task_details_module, "fetch", task_field, update_field=None))["data"]
     count=1
     for task in task_details:
-        print(f"--checking task--{count}--of--{len(task_details)}--")
-        if "task_created_date" in task.keys() and set_date_format(task["task_created_date"]) != "":
-            try:                  
-                if "start_time" in task.keys() and "end_time" in task.keys():
-                    try:
-                        start_time = datetime.strptime(task["start_time"], "%H:%M")
-                    except ValueError:
-                        start_time = datetime.strptime(task["start_time"], "%H:%M:%S")
-                    try:
-                        end_time = datetime.strptime(task["end_time"], "%H:%M")
-                    except ValueError:
-                        end_time = datetime.strptime(task["end_time"], "%H:%M:%S")
-                    duration = end_time - start_time
-                    dur_secs = (duration).total_seconds()
-                    dur_mins = dur_secs / 60
-                    dur_hrs = dur_mins / 60
-                    
-                    if task["project"] in data.keys():
-                        data[task["project"]]+=dur_hrs  
-                    else:
-                        data[task["project"]]=dur_hrs
-            except Exception as error:
-                print(error)
-                pass
-            print(f"--retrieved project time--of--{task['_id']}--",task["project"])
-        count+=1
+        if 'task_type' in task.keys() and task["task_type"] == "TASK UPDATE":
+            print(f"--checking task--{count}--of--{len(task_details)}--")
+            if "task_created_date" in task.keys() and set_date_format(task["task_created_date"]) != "":
+                try:                  
+                    if "start_time" in task.keys() and "end_time" in task.keys():
+                        try:
+                            start_time = datetime.strptime(task["start_time"], "%H:%M")
+                        except ValueError:
+                            start_time = datetime.strptime(task["start_time"], "%H:%M:%S")
+                        try:
+                            end_time = datetime.strptime(task["end_time"], "%H:%M")
+                        except ValueError:
+                            end_time = datetime.strptime(task["end_time"], "%H:%M:%S")
+                        duration = end_time - start_time
+                        dur_secs = (duration).total_seconds()
+                        dur_mins = dur_secs / 60
+                        dur_hrs = dur_mins / 60
+                        
+                        if task["project"] in data.keys():
+                            data[task["project"]]+=dur_hrs  
+                        else:
+                            data[task["project"]]=dur_hrs
+                except Exception as error:
+                    print(error)
+                    pass
+                print(f"--retrieved project time--of--{task['_id']}--",task["project"])
+            count+=1
     print("----------Processing total time spent for projects (Done)----------")
     return data
 
@@ -169,10 +170,19 @@ def update_spent_time(project,company_id, spent_time):
             # print(total_time,"==========",get_response["data"])
             spent_time = float(get_response["data"][0]["spent_time"]) + float(spent_time)
 
-            update_field = {
-                "spent_time": spent_time,
-                "left_time": total_time - spent_time,
-            }
+            if total_time > 0:
+                update_field = {
+                    "total_time": total_time,
+                    "spent_time": spent_time,
+                    "left_time": total_time - spent_time if spent_time < total_time else 0.0,
+                }
+                    
+            else:
+                update_field={
+                    "total_time": total_time,
+                    "spent_time": spent_time,
+                    "left_time": "∞",
+                }
             response = json.loads(
                 dowellconnection(
                     *time_detail_module,
@@ -206,8 +216,8 @@ def update_project_time(company_id,_date):
     spent_time = get_projects_spent_total_time(company_id, search_date=_date)
     for k,v in spent_time.items():
         print(f"----project({k}) spent time is",f"{v}----")
-        response = update_spent_time(project=k,company_id=company_id, spent_time=v)
-        print(f"----project({k}) ",response,"--------\n")
+        #response = update_spent_time(project=k,company_id=company_id, spent_time=v)
+        #print(f"----project({k}) ",response,"--------\n")
     return True
 
 def main():

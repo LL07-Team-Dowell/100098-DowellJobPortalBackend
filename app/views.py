@@ -7958,12 +7958,13 @@ class ProjectTotalTime(APIView):
             field = {
                 "project": data.get("project"),
                 "company_id": data.get("company_id"),
-                "total_time": data.get("total_time"),
+                "total_time": data.get("total_time") if data.get("is_continuous") == False else 0,
                 "lead_name": data.get("lead_name"),
                 "editing_enabled": data.get("editing_enabled"),
                 "data_type": "Real_Data",
                 "spent_time": 0,
                 "left_time": data.get("total_time"),
+                "is_continuous": data.get("is_continuous"),
                 "date_created": self.get_current_datetime(datetime.now()),
             }
             response = json.loads(
@@ -8013,12 +8014,20 @@ class ProjectTotalTime(APIView):
                 dowellconnection(*time_detail_module, "fetch", field, update_field=None)
             )
             if len(get_response["data"]) > 0:
-                spent_time = get_response["data"][0]["spent_time"]
+                total_time = float(data.get("total_time"))
+                spent_time = float(get_response["data"][0]["spent_time"])
 
-                update_field = {
-                    "total_time": data.get("total_time"),
-                    "left_time": data.get("total_time") - spent_time,
-                }
+                if total_time > 0:
+                    update_field = {
+                        "total_time": total_time,
+                        "left_time": total_time - spent_time if spent_time < total_time else 0.0,
+                    }
+                        
+                else:
+                    update_field={
+                        "total_time": total_time,
+                        "left_time": "∞",
+                    }
                 response = json.loads(
                     dowellconnection(*time_detail_module, "update", field, update_field)
                 )
@@ -8177,16 +8186,22 @@ class UpdateProjectSpentTime(APIView):
             )
             if get_response["isSuccess"] is True:
                 if len(get_response["data"]) > 0:
-                    total_time = get_response["data"][0]["total_time"]
+                    total_time = float(get_response["data"][0]["total_time"])
                     # print(total_time,"==========",get_response["data"])
-                    spent_time = get_response["data"][0]["spent_time"] + data.get(
+                    spent_time = float(get_response["data"][0]["spent_time"]) + float(data.get(
                         "spent_time"
-                    )
-
-                    update_field = {
-                        "spent_time": spent_time,
-                        "left_time": total_time - spent_time,
-                    }
+                    ))
+                    if total_time > 0:
+                        update_field = {
+                            "spent_time": spent_time,
+                            "left_time": total_time - spent_time if spent_time < total_time else 0.0,
+                        }
+                            
+                    else:
+                        update_field={
+                            "spent_time": spent_time,
+                            "left_time": "∞",
+                        }
                     response = json.loads(
                         dowellconnection(
                             *time_detail_module,
