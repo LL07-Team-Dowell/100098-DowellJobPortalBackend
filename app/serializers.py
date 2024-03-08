@@ -1007,9 +1007,9 @@ class PaymentProcessSerializer(serializers.Serializer):
                 raise serializers.ValidationError(
                     "payment_from must be before payment_to."
                 )
-            elif (payment_to - payment_from).days != 7:
+            elif (payment_to - payment_from).days != 6:
                 raise serializers.ValidationError(
-                    "The difference between payment_from and payment_to must be exactly 7 days."
+                    "The difference between payment_from and payment_to must be exactly 6 days."
                 )
 
             payment_from_year = payment_from.year
