@@ -697,6 +697,7 @@ class AddProjectTimeSerializer(serializers.Serializer):
         max_length=255, allow_null=False, allow_blank=False
     )
     editing_enabled = serializers.BooleanField(allow_null=False)
+    is_continuous = serializers.BooleanField(allow_null=False)
 
 
 class UpdateProjectTimeSerializer(serializers.Serializer):
