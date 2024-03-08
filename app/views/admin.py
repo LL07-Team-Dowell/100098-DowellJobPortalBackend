@@ -55,7 +55,7 @@ class admin_create_jobs(APIView):
                 return Response(success=False, message=error_message, response=error,status=status.HTTP_400_BAD_REQUEST)
             
         response = json.loads(dowellconnection(*jobs, "insert", field, update_field=None))
-        print(response,'=============')
+        #print(response,'=============')
         if response["isSuccess"] == True:
             return  Response(success=True, message=success_message, response=response,status=status.HTTP_201_CREATED)   
         return Response(success=False, message=error_message, response=response,status=status.HTTP_400_BAD_REQUEST)
