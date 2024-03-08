@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 import threading
-from rest_framework import status
 import os
 import json
 import requests
@@ -219,7 +218,6 @@ def create_invoice_bot():
                     monday_of_previous_week,
                     sunday_of_previous_week
                 )
-                print(f"Status of invoice created for {application['username']}: status={status.HTTP_201_CREATED}")
                 print(result)  
             else:
                 print('Invoice not created because user was not present for at least one meeting last week') 
@@ -260,7 +258,6 @@ def create_invoice_bot():
                     sunday_of_previous_week
                 )
                 print(result)
-                print(f"Status of invoice created for {application['username']}: status={status.HTTP_201_CREATED}")
             else:
                 print('Invoice not created because user was not present for at least one meeting last week')
     
