@@ -27,7 +27,6 @@ import { getUserWiseAttendance } from "../../../../services/hrServices";
 const GenerateInvoice = ({
   handleCloseModal,
   requiredLogCount,
-  currentUserHiredApplications,
   // currentUserHiredApplicationsLoaded,
   isGrouplead,
   isTeamlead,
@@ -39,7 +38,10 @@ const GenerateInvoice = ({
   const [selectedYear, setSelectedYear] = useState("");
   const [paymentFrom, setPaymentFrom] = useState("");
   const [paymentTo, setPaymentTo] = useState("");
-  const { currentUser } = useCurrentUserContext();
+  const {
+    currentUser,
+    currentUserHiredApplications,
+  } = useCurrentUserContext();
   const [showMasterLink, setShowMasterLink] = useState("");
   const [showMasterCode, setShowMasterCode] = useState("");
   const [copied, setCopiedId] = useState("");
@@ -69,15 +71,14 @@ const GenerateInvoice = ({
 
     setDataProcessing(true);
 
-    Promise.all([
+    const requestsToMake = [
       getLogsBetweenRange({
         start_date: paymentFrom,
         end_date: paymentTo,
         user_id: currentUser.userinfo.userID,
         company_id: currentUser.portfolio_info[0].org_id,
       }),
-      // getInternetSpeedTest(currentUser.userinfo.email),
-      attendanceProjects.map((project) => {
+      ...attendanceProjects.map((project) => {
         return getUserWiseAttendance({
           usernames: [currentUser.userinfo.username],
           start_date: formatDateForAPI(monday),
@@ -88,11 +89,13 @@ const GenerateInvoice = ({
           project: project,
         });
       }),
-    ])
+    ]
+
+    Promise.all(requestsToMake)
       .then((res) => {
         console.log(res[0]?.data);
         // console.log(res[2]);
-        console.log(res[1]);
+        console.log(res[1]?.data);
 
         const taskDetails = res[0]?.data?.task_details;
 
@@ -112,11 +115,11 @@ const GenerateInvoice = ({
         let allAttendanceData = [];
 
         for (
-          let i = res[1];
-          i <= res[1 + (attendanceProjects.length - 1)];
+          let i = 1;
+          i <= 1 + (attendanceProjects.length - 1);
           i++
         ) {
-          return allAttendanceData.push(
+          allAttendanceData.push(
             res[i]?.data?.data[`${currentUser.userinfo.username}`]
           );
         }
