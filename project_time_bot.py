@@ -216,8 +216,8 @@ def update_project_time(company_id,_date):
     spent_time = get_projects_spent_total_time(company_id, search_date=_date)
     for k,v in spent_time.items():
         print(f"----project({k}) spent time is",f"{v}----")
-        #response = update_spent_time(project=k,company_id=company_id, spent_time=v)
-        #print(f"----project({k}) ",response,"--------\n")
+        response = update_spent_time(project=k,company_id=company_id, spent_time=v)
+        print(f"----project({k}) ",response,"--------\n")
     return True
 
 def main():
