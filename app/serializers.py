@@ -191,29 +191,8 @@ class regionalassociateSerializer(serializers.Serializer):
     continent = serializers.CharField()
 #/admin serializers>________________________________________________________________________
 
-# candidate serializers__________________________________________________________________
+# <candidate serializers__________________________________________________________________
 class CandidateSerializer(serializers.Serializer):
-    DATA_TYPE_CHOICE = (
-        ("Real_Data", "Real_Data"),
-        ("Learning_Data", "Learning_Data"),
-        ("Testing_Data", "Testing_Data"),
-        ("Archived_Data", "Archived_Data"),
-    )
-    JOB_CATEGORY_CHOICE = (
-        ("Freelancer", "Freelancer"),
-        ("Internship", "Internship"),
-        ("Employee", "Employee"),
-    )
-
-    MODULE_CHOICE = (
-        ("Frontend", "Frontend"),
-        ("Backend", "Backend"),
-        ("UI/UX", "UI/UX"),
-        ("Virtual Assistant", "Virtual Assistant"),
-        ("Web", "Web"),
-        ("Mobile", "Mobile"),
-    )
-
     job_number = serializers.CharField(allow_null=False, allow_blank=False)
     job_title = serializers.CharField(allow_null=False, allow_blank=False)
     applicant = serializers.CharField(allow_null=False, allow_blank=False)
@@ -232,7 +211,7 @@ class CandidateSerializer(serializers.Serializer):
     agree_to_all_term = serializers.BooleanField(default=False)
     internet_speed = serializers.CharField(allow_null=True, allow_blank=True)
     payment = serializers.CharField(allow_null=False, allow_blank=False)
-    company_id = serializers.CharField(allow_null=False, allow_blank=False)
+    company_id = IDField(allow_null=False, allow_blank=False)
     username = serializers.CharField(allow_null=False, allow_blank=False)
     data_type = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE
@@ -254,7 +233,7 @@ class CandidateSerializer(serializers.Serializer):
             del fields["freelancePlatform"]
             del fields["freelancePlatformUrl"]
         return fields
-
+# /candidate serializers>__________________________________________________________________
 
 # hr serializers__________________________________________________________________
 class HRSerializer(serializers.Serializer):
@@ -282,7 +261,6 @@ class HRShortlistSerializer(serializers.Serializer):
         allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE
     )
     selected_on = DateField(allow_null=False, allow_blank=False)
-
 
 class HRRejectSerializer(serializers.Serializer):
    

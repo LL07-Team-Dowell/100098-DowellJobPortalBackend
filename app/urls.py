@@ -25,44 +25,31 @@ urlpatterns = [
     path("admin_update_jobs/", admin_update_jobs.as_view()),
     path("admin_delete_job/<str:document_id>/", admin_delete_job.as_view()),
 
-
-
-
-
     # candidate management-------------------------------------------
     path("candidate_apply_job/", candidate_apply_job.as_view()),
-    path(
-        "candidate_get_job_application/<str:company_id>/",
-        candidate_get_job_application.as_view(),
-    ),
-    path(
-        "get_all_onboarded_candidate/<str:company_id>/",
-        get_all_onboarded_candidate.as_view(),
-    ),
-    path(
-        "get_all_removed_candidate/<str:company_id>/",
-        get_all_removed_candidate.as_view(),
-    ),
-    path(
-        "get_all_hired_candidate/<str:company_id>/",
-        get_all_hired_candidate.as_view(),
-    ),
-    path("get_all_renew_contract_candidate/<str:company_id>/",
-        get_all_renew_contract_candidate.as_view(),
-    ),
-    path(
-        "get_candidate_application/<str:document_id>/",
-        get_candidate_application.as_view(),
-    ),
-    path(
-        "delete_candidate_application/<str:document_id>/",
-        delete_candidate_application.as_view(),
-    ),
-    path("update_candidates_application/",update_candidates_application.as_view()),
+
+    path("get_candidate_application/<str:document_id>/",get_candidate_application.as_view()),
+    path("delete_candidate_application/<str:document_id>/",delete_candidate_application.as_view()),
+    path("update_candidate_application/",update_candidates_application.as_view()),
+
+    path("get_job_applications/<str:company_id>/",candidate_get_job_application.as_view()),
+    path("get_deleted_job_applications/<str:company_id>/",get_all_deleted_candidate_applications.as_view()),
+    path("get_all_onboarded_candidates/<str:company_id>/",get_all_onboarded_candidate.as_view()),
+    path("get_all_removed_candidates/<str:company_id>/",get_all_removed_candidate.as_view()),
+    path("get_all_hired_candidates/<str:company_id>/",get_all_hired_candidate.as_view()),
+    path("get_all_renew_contract_candidates/<str:company_id>/",get_all_renew_contract_candidate.as_view()),
+    
+
     # hr management--------------------------------------------------
     path("hr_shortlisted_candidate/", hr_shortlisted_candidate.as_view()),
     path("hr_selected_candidate/", hr_selected_candidate.as_view()),
     path("hr_reject_candidate/", hr_reject_candidate.as_view()),
+
+
+
+
+
+
     # lead management------------------------------------------------
     path("lead_hire_candidate/", lead_hire_candidate.as_view()),
     path("lead_rehire_candidate/", lead_rehire_candidate.as_view()),
