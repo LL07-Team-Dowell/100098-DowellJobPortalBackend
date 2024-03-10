@@ -85,11 +85,11 @@ const JobCard = ({
                     />
                 </>
             }
-            <h2 style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+            <h2 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <b>
                     {changeToTitleCase(
                         job ?
-                            job.job_title
+                            job?.job_title
                             :
                             candidateData ?
                                 taskView ?
@@ -118,13 +118,13 @@ const JobCard = ({
                 <div className="detail__Item">
                     <span className="dot"></span>
                     <span className="job__Highlight__Item">Duration: </span>
-                    <span>{job.time_interval.length > 20 ? job.time_interval.slice(0, 20) + "..." : job.time_interval}</span>
+                    <span>{job?.time_interval?.length > 20 ? job.time_interval.slice(0, 20) + "..." : job.time_interval}</span>
                 </div>
                 <div className="vertical__Seperator"></div>
                 <div className="detail__Item">
                     <span className="dot"></span>
                     <span className="job__Highlight__Item">Skills: </span>
-                    <span>{job.skills.length > 18 ? job.skills.slice(0, 18) + "..." : job.skills}</span>
+                    <span>{job?.skills?.length > 18 ? job.skills.slice(0, 18) + "..." : job.skills}</span>
                 </div>
                 <div className="vertical__Seperator"></div>
                 <div className="detail__Item">

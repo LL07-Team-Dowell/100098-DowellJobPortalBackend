@@ -1,0 +1,61 @@
+.main_div_wrap {
+    width: 100%;
+    height: max-content;
+    padding: 4%;
+    margin-bottom: 20%;
+}
+
+.job_cards {
+    width: 45%;
+    height: auto;
+    border-radius: 20px;
+    padding: 1%;
+    margin: 1rem;
+    cursor: pointer;
+}
+
+.job_main_wrap {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.apply_btn_ {
+    padding: 4px 7px;
+    color: #fff;
+    background-color: #005734;
+    border: none;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    margin: 0.5rem;
+}
+
+.job_cards .job_title {
+    font-size: 1.6rem;
+    font-weight: 500;
+}
+
+.other_info_ {
+    font-size: 0.9rem;
+}
+
+.other_info_tag {
+    font-size: 1rem;
+}
+
+.main_title_ {
+    font-size: 1.8rem;
+    margin: 0.2rem 1rem;
+    color: #005734;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-bottom: 0.1px solid #005734;
+    width: max-content;
+    margin-top: 0px;
+}
+
+@media screen and (max-width: 767px) {
+    .job_cards {
+        width: 90%;
+    }
+}

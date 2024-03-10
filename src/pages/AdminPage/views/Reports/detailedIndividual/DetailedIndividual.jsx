@@ -74,6 +74,7 @@ export default function DetailedIndividual({
   const csvLinkRef = useRef();
   const mainDivRef = useRef();
   const roleFilterRef = useRef();
+  const workLogRef = useRef();
 
   const date = new Date();
   const yesterdayDate = new Date(new Date().setDate(date.getDate() - 1));
@@ -472,18 +473,17 @@ export default function DetailedIndividual({
                 <div className="personal__Info__Wrapper">
                   {/* {candidateName && <h3>Current candidate: {candidateName}</h3>} */}
                   <div className="personal_info">
-                    {/* <div className='' onClick={PDFbtnDisabled ? () => { } : () => handleDownloadPDFData()}>
-                      <div>
-                        <AiFillFilePdf />
+                    <div className='download_btn_' onClick={PDFbtnDisabled ? () => { } : () => handleDownloadPDFData(mainDivRef)}>
+                      <div className='internal_content'>
+                        <p className='download_text'>
+                          {
+                            PDFbtnDisabled ? 'Please wait...'
+                              :
+                              'Download Report'
+                          }
+                        </p>
                       </div>
-                      <p>
-                        {
-                          PDFbtnDisabled ? 'Please wait...'
-                            :
-                            'PDF'
-                        }
-                      </p>
-                    </div> */}
+                    </div>
                     <h3>Candidate personal info</h3>
                     <div>
                       <p>
@@ -819,7 +819,7 @@ export default function DetailedIndividual({
                         )}
                       </div>
                     </div>
-                    <div className="task__item tasks">
+                    <div className="task__item tasks" ref={workLogRef}>
                       <h4>Work log details</h4>
                       <p className="project__Select">Select project</p>
                       <Select
@@ -984,7 +984,7 @@ export default function DetailedIndividual({
                               </button>
                             </>
                           )}
-                          <div className="cand__task__Wrap">
+                          <div className="cand__task__Wrap" >
                             {!taskReportData?.find(
                               (task) =>
                                 task.project === projectSelectedForTasksBox
@@ -1226,7 +1226,7 @@ export default function DetailedIndividual({
             closeModal={() => closeReportCaptureModal()}
             htmlToCanvaFunction={() => { }}
             handleExcelItemDownload={handleDownloadExcelData}
-            htmlToPdfFunction={() => handleDownloadPDFData(mainDivRef)}
+            htmlToPdfFunction={() => handleDownloadPDFData(workLogRef)}
             pdfBtnIsDisabled={PDFbtnDisabled}
           />
         )

@@ -646,3 +646,24 @@
     }
   }
 }
+
+.download_btn_{
+  width:100%;
+  display: flex;
+  align-items:center;
+  justify-content: right;
+  cursor: pointer;
+}
+
+.internal_content{
+  width: max-content;
+  color: #ffff;
+  background-color: #005734;
+  padding: 4px 8px;
+  border-radius: 5px;
+}
+
+.internal_content .download_text{
+  padding: 2px 4px;
+  margin-bottom: 0px;
+}
