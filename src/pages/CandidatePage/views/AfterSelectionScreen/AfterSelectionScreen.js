@@ -18,6 +18,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { getAllTeams } from "../../../../services/createMembersTasks";
 import { getSettingUserProject } from "../../../../services/hrServices";
 import UsersLogsScreen from "../../../../common/screens/UserLogsScreen/UserLogsScreen";
+import InternalJobApply from "../../../../common/screens/InternalJobApply/InternalJobApply";
 
 const AfterSelectionScreen = ({ assignedProjects }) => {
   const { currentUser } = useCurrentUserContext();
@@ -154,6 +155,10 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
       ) : section === "invoice" ? (
         <JobLandingLayout user={currentUser} afterSelection={true}>
           <InvoicePayment />
+        </JobLandingLayout>
+      ) : section === "internal-job-apply" ? (
+        <JobLandingLayout user={currentUser} afterSelection={true}>
+          <InternalJobApply />
         </JobLandingLayout>
       ) : (
         <ErrorPage />
