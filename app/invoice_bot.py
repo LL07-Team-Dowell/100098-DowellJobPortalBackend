@@ -135,7 +135,6 @@ def process_payment(
     res = json.loads(response.text)
     return res
 
-
 def calculate_hours(worklogs):
     total_hours = 0
     for log in worklogs:
