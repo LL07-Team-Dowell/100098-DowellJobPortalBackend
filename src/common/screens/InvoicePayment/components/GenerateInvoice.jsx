@@ -12,6 +12,7 @@ import {
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import {
   calculateHoursOfLogs,
+  extractMonthandYear,
   formatDateForAPI,
   getDaysDifferenceBetweenDates,
   getMondayAndFridayOfWeek,
@@ -27,36 +28,26 @@ import { getUserWiseAttendance } from "../../../../services/hrServices";
 const GenerateInvoice = ({
   handleCloseModal,
   requiredLogCount,
-  // currentUserHiredApplicationsLoaded,
   isGrouplead,
   isTeamlead,
   options,
 }) => {
   const [dataProcessing, setDataProcessing] = useState(false);
   const [showInvoicePage, setShowInvoicePage] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
   const [paymentFrom, setPaymentFrom] = useState("");
   const [paymentTo, setPaymentTo] = useState("");
-  const {
-    currentUser,
-    currentUserHiredApplications,
-  } = useCurrentUserContext();
+  const { currentUser, currentUserHiredApplications } = useCurrentUserContext();
   const [showMasterLink, setShowMasterLink] = useState("");
   const [showMasterCode, setShowMasterCode] = useState("");
   const [copied, setCopiedId] = useState("");
 
   const handleProcessInvoice = async () => {
-    if (!selectedMonth) return toast.info("Select Month");
-
-    if (!selectedYear) return toast.info("Select Year");
-
     if (!paymentFrom || !paymentTo)
       return toast.info("Select a both start and end dates");
 
-    if (getDaysDifferenceBetweenDates(paymentFrom, paymentTo) !== 7) {
+    if (getDaysDifferenceBetweenDates(paymentFrom, paymentTo) !== 6) {
       return toast.info(
-        "Difference between start and end date should be equal to 7 days!"
+        "Difference between start and end date should be equal to 6 days!"
       );
     }
 
@@ -68,6 +59,9 @@ const GenerateInvoice = ({
         return item.project;
       })
       .flat();
+
+    const { month, year } = extractMonthandYear(paymentTo);
+    console.log(month, year);
 
     setDataProcessing(true);
 
@@ -89,7 +83,7 @@ const GenerateInvoice = ({
           project: project,
         });
       }),
-    ]
+    ];
 
     Promise.all(requestsToMake)
       .then((res) => {
@@ -114,11 +108,7 @@ const GenerateInvoice = ({
 
         let allAttendanceData = [];
 
-        for (
-          let i = 1;
-          i <= 1 + (attendanceProjects.length - 1);
-          i++
-        ) {
+        for (let i = 1; i <= 1 + (attendanceProjects.length - 1); i++) {
           allAttendanceData.push(
             res[i]?.data?.data[`${currentUser.userinfo.username}`]
           );
@@ -139,8 +129,8 @@ const GenerateInvoice = ({
 
         const dataForInvoice = {
           user_id: currentUser.userinfo.userID,
-          payment_month: selectedMonth.label,
-          payment_year: selectedYear.label,
+          payment_month: month,
+          payment_year: year,
           payment_from: paymentFrom,
           payment_to: paymentTo,
           approved_logs_count: approvedLogs.length,
@@ -154,8 +144,8 @@ const GenerateInvoice = ({
           created_by: currentUser.userinfo.username,
           portfolio: currentUser.portfolio_info[0].portfolio_name,
           data_type: currentUser.portfolio_info[0].data_type,
-          payment_month: selectedMonth.label,
-          payment_year: selectedYear.label,
+          payment_month: month,
+          payment_year: year,
           hr_username: "DummyHR",
           hr_portfolio: "DummyHR_Portfolio",
           accounts_username: "DummyAC",
@@ -248,40 +238,6 @@ const GenerateInvoice = ({
                         onChange={({ target }) => setPaymentTo(target.value)}
                         id="payment_to"
                         className={styles.invoice_months}
-                      />
-                    </div>
-                  </label>
-                  <label htmlFor="new_event">
-                    <span>Select Payment Month and Year</span>
-                    <div className={styles.invoice_details_select}>
-                      <Select
-                        options={[
-                          { label: "January", value: "01" },
-                          { label: "February", value: "02" },
-                          { label: "March", value: "03" },
-                          { label: "April", value: "04" },
-                          { label: "May", value: "05" },
-                          { label: "June", value: "06" },
-                          { label: "July", value: "07" },
-                          { label: "August", value: "08" },
-                          { label: "September", value: "09" },
-                          { label: "October", value: "10" },
-                          { label: "November", value: "11" },
-                          { label: "December", value: "12" },
-                        ]}
-                        onChange={(selectedOption) => {
-                          setSelectedMonth(selectedOption);
-                        }}
-                        className={styles.invoice__select__date}
-                        placeholder="Select month"
-                      />
-                      <Select
-                        options={options}
-                        onChange={(selectedOption) => {
-                          setSelectedYear(selectedOption);
-                        }}
-                        className={styles.invoice__select__year}
-                        placeholder="Select year"
                       />
                     </div>
                   </label>

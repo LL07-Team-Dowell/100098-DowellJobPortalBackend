@@ -183,6 +183,13 @@
   display: flex;
 }
 
+.is_continious_desc {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #005734;
+  display: flex;
+}
+
 .job__details input {
   padding: 1.1rem 1.1rem 1.1rem 2rem;
   border-radius: 0.8rem;
@@ -288,6 +295,48 @@
   left: -9rem;
   letter-spacing: 0.05em;
   transition: 0.3s ease;
+}
+
+.is_continious_edit {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.is_continuous[type="checkbox"] {
+  position: relative;
+  width: 25px;
+  height: 25px;
+  background-color: #cfcfcf;
+  border-radius: 0.25rem;
+  appearance: none;
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.is_continuous[type="checkbox"]:after {
+  font-family: "Font Awesome 6 Free";
+  content: "\f00c";
+  font-weight: 900;
+  font-size: 1rem;
+  color: #fff;
+  display: none;
+}
+
+.is_continuous[type="checkbox"]:hover {
+  background-color: #a5a5a5;
+}
+
+.is_continuous[type="checkbox"]:checked {
+  background-color: #005734;
+  transition: 0.2s ease;
+}
+
+.is_continuous[type="checkbox"]:checked:after {
+  display: block;
 }
 
 .project__btn {
