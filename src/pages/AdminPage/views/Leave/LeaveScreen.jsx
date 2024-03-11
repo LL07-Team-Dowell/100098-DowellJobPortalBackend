@@ -7,6 +7,7 @@ import Avatar from "react-avatar";
 import { adminLeaveApplication, denyLeaveApplication } from "../../../../services/adminServices";
 import { toast } from "react-toastify";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
+import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuses";
 
 const LeaveScreen = () => {
     const { currentUser, allCompanyApplications, setAllCompanyApplications } = useCurrentUserContext();
@@ -67,9 +68,9 @@ const LeaveScreen = () => {
 
 
     const updatingAllCompanyApplications = (_id) => {
-        const index = allCompanyApplications.findIndex(application => application.status === 'hired' && application.user_id === _id);
+        const index = allCompanyApplications.findIndex(application => application?.status === candidateStatuses?.ONBOARDING && application?.user_id === _id);
         console.log('Index where condition is true:', index);
-        setAllCompanyApplications(allCompanyApplications[index].status = 'leave');
+        setAllCompanyApplications(allCompanyApplications[index].status = candidateStatuses?.LEAVE);
     }
 
     const handleApproveApplication = async (_id, user_id) => {
@@ -83,8 +84,8 @@ const LeaveScreen = () => {
             updatedApplications[index] = { ...updatedApplications[index], Leave_Approved: true };
 
             setAllLeaveApplications(updatedApplications);
-            setIsApproveLeaveLoading(false);
             handleOptionClick(0);
+            setIsApproveLeaveLoading(false);
         }).catch(err => {
             toast.error('Unable to approve leave!');
             setIsApproveLeaveLoading(false);
