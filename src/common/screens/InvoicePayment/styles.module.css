@@ -150,6 +150,7 @@
   background-color: white;
   border-bottom: 1px solid #ddd;
   color: #000;
+  min-width: 12rem;
   /* padding: 2%; */
 }
 
