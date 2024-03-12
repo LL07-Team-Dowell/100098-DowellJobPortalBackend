@@ -1042,12 +1042,12 @@ class PaymentProcessSerializer(serializers.Serializer):
                     f"Invalid month name: {payment_month}."
                 )
 
-            if (
-                payment_from.month != payment_month_int
-                or payment_to.month != payment_month_int
-            ):
-                raise serializers.ValidationError(
-                    f"The month of payment_from and payment_to must match the payment_month ({payment_month})."
-                )
+            # if (
+            #     payment_from.month != payment_month_int
+            #     or payment_to.month != payment_month_int
+            # ):
+            #     raise serializers.ValidationError(
+            #         f"The month of payment_from and payment_to must match the payment_month ({payment_month})."
+            #     )
 
         return data
