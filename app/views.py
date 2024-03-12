@@ -9046,6 +9046,7 @@ class dashboard_services(APIView):
             *task_details_module, "fetch", field, update_field=None
         )
         response = json.loads(response)
+        print(response)
 
         if response["isSuccess"]:
             log_counts = {}
@@ -9072,20 +9073,24 @@ class dashboard_services(APIView):
     def logs_for_month(self, request):
         today = date.today()
         _, number_of_days = calendar.monthrange(today.year, today.month)
-        month_dates=[f"{today.year}-{today.month}-{d}" for d in range(1,number_of_days+1)]
-
+        month_dates = [f"{today.year}-{today.month:02d}-{d}" for d in range(1, number_of_days + 1)]
         log_counts = {}
+        
         def call_dowell(field):
             res=dowellconnection(*task_details_module, "fetch", field, update_field=None)
-            response_str = json.loads(res)['data']
-            # Process the response_str here or store it in a suitable data structure
-            for item in response_str:
-                if "project" in item.keys():
-                    project_name = item["project"]
-                    if project_name in log_counts.keys():
-                        log_counts[project_name] += 1
-                    else:
-                        log_counts[project_name] = 1
+        
+            try:
+                response_str = json.loads(res)['data']
+                print(response_str)  # Check the response data
+        
+                # Process the response_str here or store it in a suitable data structure
+                for item in response_str:
+                    project_name = item.get("project")  # Get project name if it exists
+                    if project_name:
+                        log_counts[project_name] = log_counts.get(project_name, 0) + 1
+            except Exception as e:
+                print(f"An error occurred: {e}")
+
         # Define a function to fetch data using threads
         def fetch_data_for_date(task_created_date, company_id):
             field = {"company_id": company_id, "task_created_date": task_created_date}
