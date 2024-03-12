@@ -39,7 +39,9 @@ const JobLandingLayout = ({
     currentAuthSessionExpired,
     setCurrentAuthSessionExpired,
     currentUserHiredApplications,
+    setCurrentUserHiredApplications,
     currentUserHiredApplicationsLoaded,
+    setCurrentUserHiredApplicationsLoaded,
   } = useCurrentUserContext();
   const [isSuperUser, setIsSuperUser] = useState(false);
   const [linkCopy, setLinkCopy] = useState(afterSelectionLinks);
@@ -47,6 +49,18 @@ const JobLandingLayout = ({
   useCheckCurrentAuthStatus(currentUser, setCurrentAuthSessionExpired);
 
   useEffect(() => {
+    if (!currentUserHiredApplicationsLoaded) {
+      try {
+        const savedHiredApplications = JSON.parse(sessionStorage.getItem("user-hired-applications"));
+        
+        setCurrentUserHiredApplications(savedHiredApplications);
+        setCurrentUserHiredApplicationsLoaded(true);
+
+      } catch (error) {
+        console.log("No 'user-hired-applications' saved in session storage");
+      }
+    }
+
     console.log(currentUserHiredApplicationsLoaded, currentUserHiredApplications);
     if (currentUserHiredApplications.find(app => getDaysDifferenceBetweenDates(app.onboarded_on, new Date()) > 180)) {
       setLinkCopy([...afterSelectionLinks, {

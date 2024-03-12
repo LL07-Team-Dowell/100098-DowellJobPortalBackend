@@ -58,6 +58,8 @@ function Home({
         setCurrentUserHiredApplications(userSelectedJobs);
         setCurrentUserHiredApplicationsLoaded(true);
 
+        sessionStorage.setItem("user-hired-applications", JSON.stringify(userSelectedJobs));
+
         if (
           currentUserAppliedJobs.find(
             (application) => application.status === candidateStatuses.REMOVED

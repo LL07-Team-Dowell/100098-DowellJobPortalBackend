@@ -14,7 +14,7 @@ const LoadingPage = () => {
             <circle
               fill="none"
               stroke="#fff"
-              stroke-width="5"
+              strokeWidth="5"
               cx="50"
               cy="50"
               r="40"
