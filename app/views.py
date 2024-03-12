@@ -9512,6 +9512,10 @@ class WeeklyAgenda(APIView):
             return self.all_approved_weekly_agendas(request)
         elif type_request == "grouplead_agenda_check":
             return self.grouplead_agenda_check(request)
+        elif type_request == "set_complete_agenda":
+            return self.set_complete_agenda(request)
+        elif type_request =="all_completed_weekly_agendas":
+            return self.all_completed_weekly_agendas(request)
         elif type_request == "agenda_suprojects":
             return self.agenda_suprojects(request)
         else:
@@ -9899,13 +9903,118 @@ class WeeklyAgenda(APIView):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
+    def set_complete_agenda(self, request):
+        agenda_id = request.GET.get("agenda_id")
+        sub_project = request.GET.get("sub_project")
+
+        data = {"agenda_id": agenda_id, "sub_project": sub_project}
+
+        field = {
+            "_id": agenda_id,
+        }
+
+        update_data = {
+            "completed": True,
+        }
+
+        serializer = agendaapproveserializer(data=data)
+        if not serializer.is_valid():
+            error = {field_name: field_errors[0] if isinstance(field_errors, list) else [field_errors] for field_name, field_errors in serializer.errors.items()}
+            return Response({"success": False, "message": "posting invalid data", 'response':error},status=status.HTTP_400_BAD_REQUEST)
+            
+
+        response = json.loads(
+            datacube_data_retrival_function(
+                API_KEY, DB_Name, sub_project, data=field, limit=40, offset=0,payment=False
+            )
+        )
+
+        if "lead_approval" in response["data"][0].keys() and response["data"][0]["lead_approval"] is True:
+            return Response(
+                {"success": False, "message": "Lead agenda is already approved"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        datacube_response = json.loads(
+            datacube_data_update(
+                API_KEY,
+                DB_Name,
+                coll_name=sub_project,
+                query=field,
+                update_data=update_data,
+            )
+        )
+
+        if not datacube_response["success"]:
+            return Response(
+                {
+                    "success": False,
+                    "message": "Failed to approve the group lead agenda",
+                    "database_response": {
+                        "success": datacube_response["success"],
+                        "message": datacube_response["message"],
+                    },
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         return Response(
+            {
+                "success": True,
+                "message": "Weekly agenda was approved successfully",
+                "database_response": {
+                    "success": datacube_response["success"],
+                    "message": datacube_response["message"],
+                },
+                "response": datacube_response["data"],
+            },
+            status=status.HTTP_200_OK,
+        )
+    
+    def all_completed_weekly_agendas(self, request):
+        limit = request.GET.get("limit")
+        offset = request.GET.get("offset")
+        project = request.GET.get("project")
+        sub_project = request.GET.get("sub_project")
+        data={"completed": True}
+        if project:
+            data["project"] =project
+        field = {
+            "limit": limit,
+            "offset": offset,
+            "sub_project": sub_project
+        }
+
+        serializer = GetWeeklyAgendasSerializer(data=field)
+        if not serializer.is_valid():
+            return Response(
+                {
+                    "success": False,
+                    "message": "Unable to fetch agenda",
+                    "response": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        response = json.loads(datacube_data_retrival_function(API_KEY, DB_Name, sub_project, data, limit, offset,False))
+        #print(response,"=================")
+        if response["success"] is True and len(response["data"])>0:
+            return Response(
             {
                 "success": True,
                 "message": "Weekly agenda was retrieved successfully",
                 "response": response["data"],
             },
             status=status.HTTP_200_OK,
+        )
+        return Response(
+            {
+                "success": False,
+                "message": "Failed to retrieve weekly agenda",
+                "response": response["message"],
+                
+            },
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
     def grouplead_agenda_check(self, request):
