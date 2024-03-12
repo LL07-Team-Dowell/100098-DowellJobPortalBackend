@@ -156,10 +156,11 @@ const ProjectEdit = () => {
 
     try {
       if (params.get("id") && params.get("id") !== "null") {
-        Promise.all([
+        await Promise.all([
           updateProjectTime({
             total_time: Number(copyOfProjectTimeDetail.total_time),
             document_id: params.get("id"),
+            is_continuous: copyOfProjectTimeDetail.is_continuous,
           }),
           updateProjectTimeEnabled({
             editing_enabled: copyOfProjectTimeDetail.editing_enabled,
@@ -174,6 +175,7 @@ const ProjectEdit = () => {
               return {
                 ...prevProjectDetail,
                 total_time: copyOfProjectTimeDetail.total_time,
+                is_continuous: copyOfProjectTimeDetail.is_continuous,
                 editing_enabled: copyOfProjectTimeDetail.editing_enabled,
               };
             });
@@ -423,7 +425,8 @@ const ProjectEdit = () => {
                     />
                     <TimeDetails
                       title={"Total time"}
-                      time={projectTimeDetail.total_time}
+                      time={projectTimeDetail?.is_continuous === true ? '∞' : projectTimeDetail.total_time}
+                      isTimeStr={true}
                     />
                   </div>
 
@@ -622,25 +625,31 @@ const ProjectEdit = () => {
                           />
                         </div>
                         <br />
-                        <div className={styles.job__details}>
-                          <label htmlFor="total_time">
-                            Total Time Allocated (in hours)
-                          </label>
-                          <input
-                            type="text"
-                            id="total_time"
-                            name="total_time"
-                            placeholder="Enter total time"
-                            value={copyOfProjectTimeDetail.total_time}
-                            onChange={(e) =>
-                              handleTotalTimeChange(
-                                e.target.value,
-                                e.target.name
-                              )
-                            }
-                          />
-                        </div>
-                        <br />
+                        {
+                          copyOfProjectTimeDetail.is_continuous ? <></> 
+                          :
+                          <>
+                            <div className={styles.job__details}>
+                              <label htmlFor="total_time">
+                                Total Time Allocated (in hours)
+                              </label>
+                              <input
+                                type="text"
+                                id="total_time"
+                                name="total_time"
+                                placeholder="Enter total time"
+                                value={copyOfProjectTimeDetail.total_time}
+                                onChange={(e) =>
+                                  handleTotalTimeChange(
+                                    e.target.value,
+                                    e.target.name
+                                  )
+                                }
+                              />
+                            </div>
+                            <br />
+                          </>
+                        }
                         <div className={styles.is_continious_edit}>
                           <div>
                             <input
@@ -683,26 +692,32 @@ const ProjectEdit = () => {
                           />
                         </div>
                         <br />
-                        <div className={styles.job__details}>
-                          <label htmlFor="total_time">
-                            Total Time Allocated (in hours)
-                          </label>
-                          <input
-                            type="text"
-                            id="total_time"
-                            name="total_time"
-                            placeholder="Enter total time"
-                            value={copyOfProjectTimeDetail.total_time}
-                            onChange={(e) =>
-                              handleTotalTimeChange(
-                                e.target.value,
-                                e.target.name
-                              )
-                            }
-                            disabled
-                          />
-                        </div>
-                        <br />
+                        {
+                          copyOfProjectTimeDetail.is_continuous ? <></> 
+                          :
+                          <>
+                            <div className={styles.job__details}>
+                              <label htmlFor="total_time">
+                                Total Time Allocated (in hours)
+                              </label>
+                              <input
+                                type="text"
+                                id="total_time"
+                                name="total_time"
+                                placeholder="Enter total time"
+                                value={copyOfProjectTimeDetail.total_time}
+                                onChange={(e) =>
+                                  handleTotalTimeChange(
+                                    e.target.value,
+                                    e.target.name
+                                  )
+                                }
+                                disabled
+                              />
+                            </div>
+                            <br />
+                          </>
+                        }
                         <div className={styles.is_continious_edit}>
                           <div>
                             <input

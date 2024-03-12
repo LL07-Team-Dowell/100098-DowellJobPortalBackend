@@ -7,6 +7,7 @@ export default function TimeDetails({
   isSubproject,
   subprojects,
   returnEmptyContent,
+  isTimeStr,
   children
 }) {
   if (returnEmptyContent && children) return (
@@ -37,9 +38,14 @@ export default function TimeDetails({
       <h3>{title}</h3>
       <div>
         <p className={styles.hour__Info}>
-          {Number(time).toLocaleString("en-US", {
-            maximumFractionDigits: 2,
-          })}
+          {
+            isTimeStr ? 
+              time 
+            :
+            Number(time).toLocaleString("en-US", {
+              maximumFractionDigits: 2,
+            })
+          }
         </p>
         <p className={styles.hour__Label}>hours</p>
       </div>
