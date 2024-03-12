@@ -11,11 +11,7 @@ import { toast } from "react-toastify";
 
 const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
   const [showInvoicePopup, setShowInvoicePopup] = useState(false);
-  const {
-    currentUser,
-    currentUserHiredApplications,
-    currentUserHiredApplicationsLoaded,
-  } = useCurrentUserContext();
+  const { currentUser } = useCurrentUserContext();
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const [dataLoading, setDataLoading] = useState(false);
@@ -185,10 +181,6 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
         <GenerateInvoice
           handleCloseModal={handleCloseModal}
           requiredLogCount={requiredLogCount}
-          currentUserHiredApplications={currentUserHiredApplications}
-          currentUserHiredApplicationsLoaded={
-            currentUserHiredApplicationsLoaded
-          }
           isGrouplead={isGrouplead}
           isTeamlead={isTeamlead}
           options={options}

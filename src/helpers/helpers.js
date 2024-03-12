@@ -198,3 +198,25 @@ export const getMondayAndFridayOfWeek = (date) => {
 
   return { monday, friday };
 };
+
+export const extractMonthandYear = (date) => {
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const validDateFormat = new Date(date);
+  const monthIndex = validDateFormat.getMonth();
+  const year = validDateFormat.getFullYear();
+  const monthName = months[monthIndex];
+  return { month: monthName, year };
+};

@@ -308,41 +308,34 @@ const Project = ({ _id }) => {
                             <p className={styles.project_time}>
                               Spent time:{" "}
                               <>
-                                {
-                                  projectTime.find(
-                                    (item) => item.project === project
-                                  ) ?
-                                    Number(
+                                {projectTime.find(
+                                  (item) => item.project === project
+                                )
+                                  ? Number(
                                       projectTime.find(
-                                          (item) => item.project === project
-                                        )?.spent_time
-                                      ).toLocaleString("en-US", {
-                                        maximumFractionDigits: 2,
-                                      }
-                                    )
-                                  :
-                                  0
-                                }
+                                        (item) => item.project === project
+                                      )?.spent_time
+                                    ).toLocaleString("en-US", {
+                                      maximumFractionDigits: 2,
+                                    })
+                                  : 0}
                               </>
                               <span>Hours</span>
                             </p>
                             <p className={styles.project_time}>
                               Total time:{" "}
                               <>
-                              {
-                                projectTime.find(
+                                {projectTime.find(
                                   (item) => item.project === project
-                                ) ?
-                                  Number(
-                                    projectTime.find(
-                                      (item) => item.project === project
-                                    )?.total_time
-                                  ).toLocaleString("en-US", {
-                                    maximumFractionDigits: 2,
-                                  })
-                                :
-                                0
-                              }
+                                )
+                                  ? Number(
+                                      projectTime.find(
+                                        (item) => item.project === project
+                                      )?.total_time
+                                    ).toLocaleString("en-US", {
+                                      maximumFractionDigits: 2,
+                                    })
+                                  : 0}
                               </>
                               <span>Hours</span>
                             </p>
