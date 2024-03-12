@@ -5,7 +5,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { HiLightBulb } from "react-icons/hi";
 import { GoTasklist } from "react-icons/go";
 import "./style.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { addNewCandidateTaskV2, createCandidateTask, deleteSingleCandidateTaskV2, getCandidateTasksOfTheDayV2, saveCandidateTaskV2, updateNewCandidateTaskV2, updateSingleCandidateTaskV2 } from "../../../../services/candidateServices";
 import { toast } from "react-toastify";
@@ -37,45 +37,57 @@ const AddTaskScreen = ({
 }) => {
   const showTaskForm = true;
 
+  const { 
+    currentUser 
+  } = useCurrentUserContext();
+
   const ref = useRef(null);
+
   const [disabled, setDisabled] = useState(true);
-  const navigate = useNavigate();
-  const { currentUser } = useCurrentUserContext();
-  // const [time, settime] = useState(new Date().toString());
-  // const [ TimeValue, setTimeValue ] = useState(new Date());
-  // const TimeValue = `${time.split(" ")[0]} ${time.split(" ")[1]} ${time.split(" ")[2]
-  //   } ${time.split(" ")[3]}`;
+  
+  // time states
   const time = new Date().toString();
   const [TimeValue, setTimeValue] = useState(`${time.split(" ")[0]} ${time.split(" ")[1]} ${time.split(" ")[2]} ${time.split(" ")[3]}`);
+  const [allowedTimeInterval, setAllowedTimeInterval] = useState(15);
+  
+  // states for start time, end time, project, task type, subproject, task image
   const [optionValue, setoptionValue] = useState("");
   const [taskStartTime, setTaskStartTime] = useState("");
   const [taskEndTime, setTaskEndTime] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [notesOverlayVisibility, setNotesOverlayVisibility] = useState(false);
   const [taskName, setTaskName] = useState("");
   const [details, setDetails] = useState("");
   const [tasks, setTasks] = useState([]);
+  const [taskType, setTaskType] = useState("");
+  const [subprojectSelected, setSubprojectSelected] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
-  // console.log({ tasks });
-  const [taskId, setTaskId] = useState("");
-  const [isCreatingTask, setIsCreatingTask] = useState(true);
-  const [showSubmitTaskInfo, setShowSubmitTaskInfo] = useState(false);
-  const [taskDetailForToday, setTaskDetailForToday] = useState(null);
-  const [taskDetailForTodayLoaded, setTaskDetailForTodayLoaded] = useState(false);
-  const [taskDetailForTodayLoading, setTaskDetailForTodayLoading] = useState(true);
+  
+  // loading states
+  const [loading, setLoading] = useState(false);
   const [savingLoading, setSavingLoading] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [taskType, setTaskType] = useState("");
-  const [subprojectSelected, setSubprojectSelected] = useState(null);
+  
+  // task details states
+  const [taskDetailForToday, setTaskDetailForToday] = useState(null);
+  const [taskDetailForTodayLoaded, setTaskDetailForTodayLoaded] = useState(false);
+  const [taskDetailForTodayLoading, setTaskDetailForTodayLoading] = useState(true);
+  const [taskId, setTaskId] = useState("");
+  const [isCreatingTask, setIsCreatingTask] = useState(true);
+  const [showSubmitTaskInfo, setShowSubmitTaskInfo] = useState(false);
+
+  // subprojects states
+  const [ allSubProjects, setAllSubprojects ] = useState([]);
+  const [ allSubProjectsLoaded, setAllSubprojectsLoaded ] = useState(false);
+
+  // notes modal state
+  const [notesOverlayVisibility, setNotesOverlayVisibility] = useState(false);
+
+  // state for showing initial task instructions modal
   const [showInfoModal, setShowInfoModal] = useState(
     localStorage.getItem('log_info_shown') ? false
       :
       true
   );
-  const [allowedTimeInterval, setAllowedTimeInterval] = useState(15);
-  const [ allSubProjects, setAllSubprojects ] = useState([]);
-  const [ allSubProjectsLoaded, setAllSubprojectsLoaded ] = useState(false);
 
   const textareaRef = useRef();
   const subprojectRef = useRef();
@@ -94,6 +106,7 @@ const AddTaskScreen = ({
     new Date(`${new Date().toDateString()} ${taskStartTime}`),
     new Date(`${new Date().toDateString()} ${taskEndTime}`)
   );
+
   //   lest important functions
   const clearAllInputs = () => {
     // setTaskStartTime("");
@@ -104,6 +117,7 @@ const AddTaskScreen = ({
     // setTaskType("");
     setSubprojectSelected(null);
   };
+
   const fillAllInputs = (taskStartTime, taskEndTime, taskName, details, project, taskType, subproject) => {
     setTaskStartTime(taskStartTime);
     setTaskEndTime(taskEndTime);
@@ -153,21 +167,25 @@ const AddTaskScreen = ({
       })
     );
   };
+
   const getTaskId = (id) => {
     setTaskId(id);
     editTaskCondition();
     getInputsForEditing(id);
     setEditLoading(true);
   };
+
   const compareStrings = (str1, str2) => {
     const formattedStr1 = str1.replace(/[. ]/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
     const formattedStr2 = str2.replace(/[. ]/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
     return formattedStr1 === formattedStr2;
   };
+
   function removeSpaces(inputString) {
     // Use a regular expression to replace all spaces with an empty string
     return inputString.replace(/\s/g, '');
   }
+
   // complete
   function isStringValid(inputString) {
     if (inputString === undefined) return ''
@@ -175,11 +193,13 @@ const AddTaskScreen = ({
     const words = trimmedString.split(/\s+/);
     return trimmedString.length >= 25 && words.length >= 5;
   }
+
   function cleanString(inputString) {
     const cleanedString = inputString.replace(/[!?.]/g, '');
     const trimmedString = cleanedString.trim();
     return trimmedString;
   }
+
   //   importand fuction
   const addNewTask = () => {
     if (optionValue.length < 1) return toast.info("Please select a project before proceding");
@@ -293,6 +313,7 @@ const AddTaskScreen = ({
   const selctChange = (e) => {
     setoptionValue(e.target.value);
   };
+
   function convertDateFormat(date) {
     const dateObj = new Date(date);
     const month = dateObj.getMonth() + 1; // Months are zero-based
@@ -505,8 +526,7 @@ const AddTaskScreen = ({
     true
   )
 
-  // console.log({ taskStartTime });
-
+  
   const makeAPICallToAddTasks = async (
     today,
     startTime,
