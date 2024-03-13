@@ -19,6 +19,7 @@ import { getAllTeams } from "../../../../services/createMembersTasks";
 import { getSettingUserProject } from "../../../../services/hrServices";
 import UsersLogsScreen from "../../../../common/screens/UserLogsScreen/UserLogsScreen";
 import InternalJobApply from "../../../../common/screens/InternalJobApply/InternalJobApply";
+import WorklogsLandingPage from "../WorklogsLandingPage/WorklogsLandingPage";
 
 const AfterSelectionScreen = ({ assignedProjects }) => {
   const { currentUser } = useCurrentUserContext();
@@ -143,9 +144,15 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
           >
             <div className="candidate__After__Selection__Screen">
               <UsersLogsScreen />
+              {/* <WorklogsLandingPage /> */}
             </div>
           </JobLandingLayout>
         </>
+      ) : section === "worklogs" ? (
+        <JobLandingLayout user={currentUser} afterSelection={true}>
+          {/* <UsersLogsScreen /> */}
+          <WorklogsLandingPage />
+        </JobLandingLayout>
       ) : section === "teams" ? (
         <TeamsScreen />
       ) : section === "user" ? (
