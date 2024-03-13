@@ -29,9 +29,11 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
     setInvoiceResults(false);
     setDataLoading(true);
 
-    getInvoice(currentUser.userinfo.userID, selectedYear.label, {
-      payment_month: selectedMonth.label,
-    })
+    getInvoice(
+      currentUser.userinfo.userID,
+      selectedYear.label,
+      selectedMonth.label
+    )
       .then((res) => {
         console.log(res);
         setInvoiceDetails(res.data.response);
