@@ -136,6 +136,7 @@
 .weekly_agenda_list_table_div {
   max-height: 420px;
   overflow: auto;
+  scrollbar-width: thin;
 }
 
 .weekly_agenda_list_table {
@@ -149,6 +150,7 @@
   background-color: white;
   border-bottom: 1px solid #ddd;
   color: #000;
+  min-width: 12rem;
   /* padding: 2%; */
 }
 
@@ -185,6 +187,12 @@
   color: #000;
   display: flex;
   margin-left: 1.2rem;
+}
+
+.invoice__select__date,
+.invoice__select__year {
+  min-width: 10rem;
+  max-width: 14rem;
 }
 
 @media screen and (max-width: 767px) {

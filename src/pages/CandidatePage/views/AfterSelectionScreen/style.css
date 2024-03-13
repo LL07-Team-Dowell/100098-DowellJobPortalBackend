@@ -20,6 +20,10 @@
     cursor: pointer;
 }
 
+.candidate__Back__Btnnn__Wrapp {
+    margin-top: 0.8rem;
+    margin-bottom: 0.4rem;
+}
 
 
 @media screen and (max-width:990px) {
@@ -133,5 +137,14 @@
     .candidate__After__Selection__Screen {
         width: 80%;
         margin: 1.8rem auto;
+    }
+
+    .candidate__Back__Btnnn__Wrapp {
+        width: 100%;
+    }
+
+    .candidate__Back__Btnnn {
+        width: 3.5rem !important;
+        height: 3rem !important;
     }
 }

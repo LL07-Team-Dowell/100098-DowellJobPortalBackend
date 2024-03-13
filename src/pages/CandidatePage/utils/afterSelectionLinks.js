@@ -17,13 +17,13 @@ export const afterSelectionLinks = [
   {
     text: "Work logs",
     icon: <ImStack />,
-    linkAddress: "/task",
+    linkAddress: "/worklogs",
   },
-  {
-    text: "Log Requests",
-    icon: <RiFileList3Line />,
-    linkAddress: "/work-log-request",
-  },
+  // {
+  //   text: "Log Requests",
+  //   icon: <RiFileList3Line />,
+  //   linkAddress: "/work-log-request",
+  // },
   {
     text: "Teams",
     icon: <AiOutlineTeam />,

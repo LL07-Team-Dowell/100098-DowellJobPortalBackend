@@ -250,39 +250,56 @@ const Project = ({ _id }) => {
                 projectsAdded[0]?.project_list
                   .sort((a, b) => a.localeCompare(b))
                   .map((project) => {
+                    const foundProjectTimeDetail = projectTime.find(
+                      (item) => item.project === project
+                    );
+
                     return (
                       <div className={styles.project__card}>
                         <div className={styles.project__card__header}>
                           <h2>{project}</h2>
                           <>
-                            {projectTime.find(
-                              (item) => item.project === project
-                            ) ? (
+                            {foundProjectTimeDetail ? (
                               <div style={{ width: 60, height: 60 }}>
                                 <CircularProgressbar
-                                  value={Number(
-                                    (projectTime.find(
-                                      (item) => item.project === project
-                                    ).spent_time /
-                                      projectTime.find(
-                                        (item) => item.project === project
-                                      ).total_time) *
+                                  value={
+                                    foundProjectTimeDetail?.is_continuous === true ?
+                                      0 
+                                    :
+                                    Number(
+                                    (foundProjectTimeDetail.spent_time /
+                                      foundProjectTimeDetail.total_time
+                                    ) *
                                       100
-                                  ).toFixed(2)}
-                                  text={`${Number(
-                                    (projectTime.find(
-                                      (item) => item.project === project
-                                    ).spent_time /
-                                      projectTime.find(
-                                        (item) => item.project === project
-                                      ).total_time) *
-                                      100
-                                  ).toFixed(2)}%`}
+                                  ).toFixed(2)
+                                  }
+                                  text={
+                                    foundProjectTimeDetail?.is_continuous === true ?
+                                      '∞'
+                                    :
+                                    `${Number(
+                                      (foundProjectTimeDetail.spent_time /
+                                        foundProjectTimeDetail.total_time) *
+                                        100
+                                    ).toFixed(2)}%`
+                                  }
                                   styles={buildStyles({
-                                    pathColor: `#005734`,
-                                    textColor: "#005734",
+                                    pathColor: Number(
+                                      (foundProjectTimeDetail.spent_time /
+                                        foundProjectTimeDetail.total_time) *
+                                        100
+                                      ) > 100 ? '#ff0000' : `#005734`,
+                                    textColor: Number(
+                                      (foundProjectTimeDetail.spent_time /
+                                        foundProjectTimeDetail.total_time) *
+                                        100
+                                      ) > 100 ? '#ff0000' : "#005734",
                                     trailColor: "#efefef",
-                                    backgroundColor: "#005734",
+                                    backgroundColor: Number(
+                                      (foundProjectTimeDetail.spent_time /
+                                        foundProjectTimeDetail.total_time) *
+                                        100
+                                      ) > 100 ? '#ff0000' : "#005734",
                                   })}
                                 />
                               </div>
@@ -308,13 +325,9 @@ const Project = ({ _id }) => {
                             <p className={styles.project_time}>
                               Spent time:{" "}
                               <>
-                                {projectTime.find(
-                                  (item) => item.project === project
-                                )
+                                {foundProjectTimeDetail
                                   ? Number(
-                                      projectTime.find(
-                                        (item) => item.project === project
-                                      )?.spent_time
+                                      foundProjectTimeDetail?.spent_time
                                     ).toLocaleString("en-US", {
                                       maximumFractionDigits: 2,
                                     })
@@ -325,13 +338,9 @@ const Project = ({ _id }) => {
                             <p className={styles.project_time}>
                               Total time:{" "}
                               <>
-                                {projectTime.find(
-                                  (item) => item.project === project
-                                )
+                                {foundProjectTimeDetail
                                   ? Number(
-                                      projectTime.find(
-                                        (item) => item.project === project
-                                      )?.total_time
+                                      foundProjectTimeDetail?.total_time
                                     ).toLocaleString("en-US", {
                                       maximumFractionDigits: 2,
                                     })
