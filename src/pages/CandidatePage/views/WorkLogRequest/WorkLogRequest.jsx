@@ -8,6 +8,7 @@ import Buttons from "./component/Buttons";
 import { useState } from "react";
 import Card from "./component/Card";
 import { useNavigate } from "react-router-dom";
+import TitleNavigationBar from "../../../../components/TitleNavigationBar/TitleNavigationBar";
 
 const WorkLogRequest = () => {
   const { currentUser } = useCurrentUserContext();
@@ -28,6 +29,11 @@ const WorkLogRequest = () => {
   return (
     <JobLandingLayout user={currentUser} afterSelection={true}>
       <div className='work__log__request'>
+        <TitleNavigationBar
+          className={'req__candidate__Back__Btnnn__Wrapp'}
+          handleBackBtnClick={() => navigate(-1)}
+          buttonWrapClassName={'req__candidate__Back__Btnnn'}
+        />
         <Buttons changeCardsStats={changeCardsStats} />
         {!loading ? (
           <div className='cards'>
