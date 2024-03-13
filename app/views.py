@@ -9953,7 +9953,7 @@ class WeeklyAgenda(APIView):
         }
 
         update_data = {
-            "timeline": [],
+            
         }
 
         if not (request.GET.get("agenda_id") or request.GET.get("sub_project") or request.GET.get("assignee")):
@@ -9997,7 +9997,6 @@ class WeeklyAgenda(APIView):
                 "success": False,
                 "message": response["message"],
                 "response": response["data"],
-                
             },
             status=status.HTTP_400_BAD_REQUEST,
         )
