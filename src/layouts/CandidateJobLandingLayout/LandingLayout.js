@@ -66,7 +66,7 @@ const JobLandingLayout = ({
       setLinkCopy([...afterSelectionLinks, {
         text: "Internal Job Apply",
         icon: <MdOutlineWorkHistory />,
-        linkAddress: "/internal-job-apply?type=Group_lead",
+        linkAddress: "/internal-job-apply?type=Group_Lead",
       }])
     }
   }, [currentUserHiredApplicationsLoaded])
@@ -79,6 +79,7 @@ const JobLandingLayout = ({
     if (location.pathname.includes("work-log-request"))
       return setScreenTitle("Work log requests");
     if (location.pathname.includes("invoice")) return setScreenTitle("");
+    if (location.pathname.includes("internal-job-apply")) return setScreenTitle("Internal Job Application");
 
     setScreenTitle("Work logs");
   }, [location]);

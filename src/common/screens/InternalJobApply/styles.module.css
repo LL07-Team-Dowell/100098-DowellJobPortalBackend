@@ -43,17 +43,6 @@
     font-size: 1rem;
 }
 
-.main_title_ {
-    font-size: 1.8rem;
-    margin: 0.2rem 1rem;
-    color: #005734;
-    font-weight: 600;
-    padding: 4px 8px;
-    border-bottom: 0.1px solid #005734;
-    width: max-content;
-    margin-top: 0px;
-}
-
 @media screen and (max-width: 767px) {
     .job_cards {
         width: 90%;

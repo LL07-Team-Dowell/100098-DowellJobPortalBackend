@@ -17,8 +17,12 @@ const InternalJobApply = () => {
     useEffect(() => {
         setIsLoading(true);
         getJobsFromAdmin(currentUser?.portfolio_info[0]?.org_id).then(res => {
-            console.log('ressss>>>>>>>>', res?.data?.response?.data);
-            setAllJobsFromAdmin(res?.data?.response?.data);
+            console.log('ressss>>>>>>>>', res?.data?.response?.data, searchParams.get('type'));
+            const filteredJobs = res?.data?.response?.data?.filter(job => {
+                return job.type_of_opening === searchParams.get('type') && job.is_internal === true && currentUser?.portfolio_info[0]?.data_type === job?.data_type;
+            });
+            console.log('filtereddddd>>>>>>>>>>>>>>>>>.', filteredJobs);
+            setAllJobsFromAdmin(filteredJobs);
             setIsLoading(false);
         }).catch(err => {
             console.log('errrr>>>>>>', err);
@@ -33,7 +37,6 @@ const InternalJobApply = () => {
 
     return (
         <div className={styles.main_div_wrap}>
-            <p className={styles.main_title_}>Internal Job Apply</p>
             {
                 isLoading ? <LoadingSpinner width={35} height={35} /> :
                     <div className={styles.job_main_wrap}>
