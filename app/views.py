@@ -9986,7 +9986,7 @@ class WeeklyAgenda(APIView):
                 return Response(
                 {
                     "success": True,
-                    "message": "Weekly agenda was retrieved successfully",
+                    "message": "Weekly agenda was updated successfully",
                     "response": response["data"],
                 },
                 status=status.HTTP_200_OK,
