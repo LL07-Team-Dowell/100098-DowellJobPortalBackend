@@ -114,10 +114,15 @@
   cursor: pointer;
 }
 
+.invoice_date_select {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
 .invoice_months {
   padding: 0.6rem;
-  border-radius: 0.5rem;
-  border: 1px solid #ccc;
+  border: 1px solid #000;
   margin-right: 1rem;
 }
 

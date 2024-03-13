@@ -8,6 +8,7 @@ import { getInvoice } from "../../../services/paymentService";
 import Select from "react-select";
 import LoadingSpinner from "../../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
+import { formatDate } from "../../../helpers/helpers";
 
 const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
   const [showInvoicePopup, setShowInvoicePopup] = useState(false);
@@ -28,7 +29,9 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
     setInvoiceResults(false);
     setDataLoading(true);
 
-    getInvoice(currentUser.userinfo.userID, selectedYear.label)
+    getInvoice(currentUser.userinfo.userID, selectedYear.label, {
+      payment_month: selectedMonth.label,
+    })
       .then((res) => {
         console.log(res);
         setInvoiceDetails(res.data.response);
@@ -155,8 +158,8 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
                       <tbody>
                         {invoiceDetails.map((item, index) => (
                           <tr key={index}>
-                            <td>{item.payment_from}</td>
-                            <td>{item.payment_to}</td>
+                            <td>{formatDate(item.payment_from)}</td>
+                            <td>{formatDate(item.payment_to)}</td>
                             <td style={{ color: "#005734" }}>
                               {item.amount_paid}
                             </td>
