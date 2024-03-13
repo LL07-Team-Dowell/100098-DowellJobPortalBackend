@@ -63,6 +63,8 @@ from .helper import (
     datacube_delete_function,
     valid_teamlead,
     check_position,
+    decode_payload,
+    encode_payload
 )
 from .serializers import (
     AccountSerializer,
@@ -156,6 +158,8 @@ if not is_windows:
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
     LEAVE_DB = str(os.getenv("LEAVE_DB_NAME"))
     DB_PAYMENT_RECORDS = str(os.getenv("DB_PAYMENT_RECORDS"))
+    SALT_KEY= str(os.getenv("SALT_KEY"))
+    SALT_INDEX= str(os.getenv("SALT_INDEX"))
     
 if is_windows:
     """for windows local"""
@@ -171,6 +175,8 @@ if is_windows:
     Events_collection=str(os.getenv("Events_collection"))
     LEAVE_DB=str(os.getenv("LEAVE_DB_NAME"))
     DB_PAYMENT_RECORDS = str(os.getenv("DB_PAYMENT_RECORDS"))
+    SALT_KEY= str(os.getenv("SALT_KEY"))
+    SALT_INDEX= str(os.getenv("SALT_INDEX"))
 
 # Create your views here.
 
@@ -2676,10 +2682,11 @@ class delete_task(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class task_module(APIView):
     def max_updated_date(self, updated_date):
-        task_updated_date = datetime.strptime(updated_date, "%Y-%m-%d")
+        task_updated_date = datetime.strptime(str(updated_date), "%Y-%m-%d %H:%M:%S.%f")
         _date = task_updated_date + relativedelta(hours=336)
         _date = _date.strftime("%Y-%m-%d %H:%M:%S")
         return _date
+    
     #@verify_user_token
     def post(self, request):
         type_request = request.GET.get("type")
@@ -2718,7 +2725,25 @@ class task_module(APIView):
 
     #@verify_user_token
     def add_task(self,request):
-        data = request.data
+        if not (request.data or 'payload' in request.data.keys()):
+            return Response(
+                                {
+                                    "success": False,
+                                    "message": "Invalid Payload"
+                                },
+                                status.HTTP_400_BAD_REQUEST,
+                            )
+        try:
+            data =  decode_payload(request.data['payload'], SALT_KEY, SALT_INDEX)
+        except Exception as e:
+            return Response(
+                                {
+                                    "success": False,
+                                    "message": "Invalid Payload",
+                                },
+                                status.HTTP_400_BAD_REQUEST,
+                            )
+        
         payload = {
             "project": data.get("project"),
             "subproject": data.get("subproject"),
@@ -2734,7 +2759,7 @@ class task_module(APIView):
             "start_time": data.get("start_time"),
             "end_time": data.get("end_time"),
             "user_id": data.get("user_id"),
-            "max_updated_date": self.max_updated_date(data.get("task_created_date")),
+            "max_updated_date": self.max_updated_date(datetime.now()),
         }
 
         serializer = TaskModuleSerializer(data=payload)
@@ -2768,9 +2793,7 @@ class task_module(APIView):
                     "is_active": True,
                     "task_created_date": data.get("task_created_date"),
                     "task_id": response["inserted_id"],
-                    "max_updated_date": self.max_updated_date(
-                        data.get("task_created_date")
-                    ),
+                    "max_updated_date": self.max_updated_date(datetime.now()),
                     "status": "Incomplete",
                     "approval": False,
                 }
@@ -2937,6 +2960,24 @@ class task_module(APIView):
     @verify_user_token
     def update_candidate_task(self, request, user):
         data = request.data
+        if not (request.data or 'payload' in request.data.keys()):
+            return Response(
+                                {
+                                    "success": False,
+                                    "message": "Invalid Payload"
+                                },
+                                status.HTTP_400_BAD_REQUEST,
+                            )
+        try:
+            data =  decode_payload(request.data['payload'], SALT_KEY, SALT_INDEX)
+        except Exception as e:
+            return Response(
+                                {
+                                    "success": False,
+                                    "message": "Invalid Payload",
+                                },
+                                status.HTTP_400_BAD_REQUEST,
+                            )
         payload = {
             "task_id": request.GET.get("task_id"),
             "project": data.get("project"),
@@ -9702,8 +9743,6 @@ class WeeklyAgenda(APIView):
         response = json.loads(
             datacube_data_retrival_function(API_KEY, DB_Name, sub_project, data, limit, offset,False)
         )
-        # response2 = json.loads(datacube_data_retrival_function(API_KEY,"MetaDataTest","agenda_subtask",data,limit,offset,False))
-
         if not response["success"]:
             return Response(
                 {
@@ -9777,11 +9816,7 @@ class WeeklyAgenda(APIView):
         return Response(
             {
                 "success": True,
-                "message": "Weekly agenda was retrived successfully",
-                "database_response": {
-                    "success": response["success"],
-                    "message": response["message"],
-                },
+                "message": response["message"]+" Weekly agenda was retrived successfully",
                 "response": response["data"],
             },
             status=status.HTTP_200_OK,
@@ -9911,69 +9946,60 @@ class WeeklyAgenda(APIView):
     def set_complete_agenda(self, request):
         agenda_id = request.GET.get("agenda_id")
         sub_project = request.GET.get("sub_project")
-
-        data = {"agenda_id": agenda_id, "sub_project": sub_project}
+        timelineindex = request.GET.get("timelineindex")
 
         field = {
             "_id": agenda_id,
         }
 
         update_data = {
-            "completed": True,
+            "timeline": [],
         }
 
-        serializer = agendaapproveserializer(data=data)
-        if not serializer.is_valid():
-            error = {field_name: field_errors[0] if isinstance(field_errors, list) else [field_errors] for field_name, field_errors in serializer.errors.items()}
-            return Response({"success": False, "message": "posting invalid data", 'response':error},status=status.HTTP_400_BAD_REQUEST)
-            
-
-        response = json.loads(
-            datacube_data_retrival_function(
-                API_KEY, DB_Name, sub_project, data=field, limit=40, offset=0,payment=False
-            )
-        )
-
-        if "lead_approval" in response["data"][0].keys() and response["data"][0]["lead_approval"] is True:
-            return Response(
-                {"success": False, "message": "Lead agenda is already approved"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        datacube_response = json.loads(
-            datacube_data_update(
-                API_KEY,
-                DB_Name,
-                coll_name=sub_project,
-                query=field,
-                update_data=update_data,
-            )
-        )
-
-        if not datacube_response["success"]:
+        if not (request.GET.get("agenda_id") or request.GET.get("sub_project") or request.GET.get("assignee")):
             return Response(
                 {
                     "success": False,
-                    "message": "Failed to approve the group lead agenda",
-                    "database_response": {
-                        "success": datacube_response["success"],
-                        "message": datacube_response["message"],
-                    },
+                    "message": "Posting wrong data",
+                    "response": "Ensure agenda_id, assignee and subproject are correct",
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        response = json.loads(
+            datacube_data_retrival_function(API_KEY, DB_Name, sub_project, field, 1000, 0,False)
+        )
+        
+        
+        if response["success"] is True and len(response["data"])>0:
+            for i, res in enumerate(response['data']):
+                if 'timeline' in res.keys():
+                    newtimeline=res['timeline']
+                    if int(timelineindex) == i:
+                        newtimeline[i]['completed']=True
+                        print(res['timeline'][i])
+                    else:
+                        newtimeline[i]['completed']=False
+                    update_data['timeline']=newtimeline
+            update_response = json.loads(datacube_data_update(API_KEY,DB_Name,coll_name=sub_project,query=field,update_data=update_data,))
+            if update_response["success"] is True :
+                return Response(
+                {
+                    "success": True,
+                    "message": "Weekly agenda was retrieved successfully",
+                    "response": response["data"],
+                },
+                status=status.HTTP_200_OK,
+            )
+        response["message"]=update_response["message"]
         return Response(
             {
-                "success": True,
-                "message": "Weekly agenda was approved successfully",
-                "database_response": {
-                    "success": datacube_response["success"],
-                    "message": datacube_response["message"],
-                },
-                "response": datacube_response["data"],
+                "success": False,
+                "message": response["message"],
+                "response": response["data"],
+                
             },
-            status=status.HTTP_200_OK,
+            status=status.HTTP_400_BAD_REQUEST,
         )
     
     def all_completed_weekly_agendas(self, request):

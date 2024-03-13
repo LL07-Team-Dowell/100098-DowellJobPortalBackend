@@ -1198,3 +1198,24 @@ def check_position(username, company_id):
                             return positions[d["Role"]]
 
     return "None"
+
+def decode_payload(encoded_payload, salt_key=None, salt_index=None):
+    salt_key = "te#am-manageme&nt-payload"
+    salt_index = "1"
+    decoded_payload = base64.b64decode(encoded_payload.encode()).decode()
+    if decoded_payload.startswith(salt_key) and decoded_payload.endswith(salt_index):
+        payload_str = decoded_payload[len(salt_key):-1*len(salt_index)]
+        res= eval(payload_str)
+        if not isinstance(res, dict):
+            return {}
+        return res
+    else:
+        raise ValueError("Salt key and index do not match.")
+    
+def encode_payload(payload):
+    salt_key = "te#am-manageme&nt-payload"
+    salt_index = "1"
+    payload_str = json.dumps(payload)
+    salted = payload_str + salt_key + salt_index
+    encoded_data = base64.b64encode(salted.encode()).decode()
+    return encoded_data

@@ -455,12 +455,12 @@ class TaskModuleSerializer(serializers.Serializer):
     applicant = serializers.CharField(allow_null=False, allow_blank=False)
     task = serializers.CharField(allow_null=False, allow_blank=False)
     task_added_by = serializers.CharField(allow_null=False, allow_blank=False)
-    data_type = serializers.CharField(allow_null=True, allow_blank=True)
-    company_id = serializers.CharField(allow_null=True, allow_blank=True)
-    task_created_date = serializers.DateField(allow_null=True)
+    data_type = serializers.CharField(allow_null=False, allow_blank=False)
+    company_id = serializers.CharField(allow_null=False, allow_blank=False)
+    task_created_date = serializers.DateField(allow_null=False)
     start_time = serializers.TimeField(allow_null=False)
     end_time = serializers.TimeField(allow_null=False)
-    user_id = serializers.CharField(allow_null=True, allow_blank=True)
+    user_id = serializers.CharField(allow_null=False, allow_blank=False)
 
 
 class GetCandidateTaskSerializer(serializers.Serializer):
