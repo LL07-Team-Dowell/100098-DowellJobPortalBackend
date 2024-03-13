@@ -41,6 +41,21 @@ const GenerateInvoice = ({
   const [showMasterCode, setShowMasterCode] = useState("");
   const [copied, setCopiedId] = useState("");
 
+  const handleFromDateChange = (e) => {
+    const fromDate = e.target.value;
+    setPaymentFrom(fromDate);
+
+    //Calsulate the "Payment To" date 6 days ahead
+    const toDate = new Date(
+      new Date(fromDate).setDate(new Date(fromDate).getDate() + 6)
+    );
+    setPaymentTo(formatDateForAPI(toDate));
+  };
+
+  const handleToDateChange = (e) => {
+    setPaymentTo(e.target.value);
+  };
+
   const handleProcessInvoice = async () => {
     if (!paymentFrom || !paymentTo)
       return toast.info("Select a both start and end dates");
@@ -228,15 +243,16 @@ const GenerateInvoice = ({
                       <input
                         type="date"
                         value={formatDateForAPI(paymentFrom)}
-                        onChange={({ target }) => setPaymentFrom(target.value)}
+                        onChange={handleFromDateChange}
                         id="payment_from"
                         className={styles.invoice_months}
                       />
                       <input
                         type="date"
                         value={formatDateForAPI(paymentTo)}
-                        onChange={({ target }) => setPaymentTo(target.value)}
+                        onChange={handleToDateChange}
                         id="payment_to"
+                        min={formatDateForAPI(paymentFrom)}
                         className={styles.invoice_months}
                       />
                     </div>

@@ -20,9 +20,9 @@ export const processPayment = async (data) => {
   );
 };
 
-export const getInvoice = async (userID, year) => {
+export const getInvoice = async (userID, year, month) => {
   return await currentBackendAxiosInstance.get(
-    `invoice_module/?type=get-invoice&user_id=${userID}&payment_year=${year}`
+    `invoice_module/?type=get-invoice&user_id=${userID}&payment_year=${year}&payment_month=${month}`
   );
 };
 

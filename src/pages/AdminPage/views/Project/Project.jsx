@@ -263,43 +263,51 @@ const Project = ({ _id }) => {
                               <div style={{ width: 60, height: 60 }}>
                                 <CircularProgressbar
                                   value={
-                                    foundProjectTimeDetail?.is_continuous === true ?
-                                      0 
-                                    :
-                                    Number(
-                                    (foundProjectTimeDetail.spent_time /
-                                      foundProjectTimeDetail.total_time
-                                    ) *
-                                      100
-                                  ).toFixed(2)
+                                    foundProjectTimeDetail?.is_continuous ===
+                                    true
+                                      ? 0
+                                      : Number(
+                                          (foundProjectTimeDetail.spent_time /
+                                            foundProjectTimeDetail.total_time) *
+                                            100
+                                        ).toFixed(2)
                                   }
                                   text={
-                                    foundProjectTimeDetail?.is_continuous === true ?
-                                      '∞'
-                                    :
-                                    `${Number(
-                                      (foundProjectTimeDetail.spent_time /
-                                        foundProjectTimeDetail.total_time) *
-                                        100
-                                    ).toFixed(2)}%`
+                                    foundProjectTimeDetail?.is_continuous ===
+                                    true
+                                      ? "∞"
+                                      : `${Number(
+                                          (foundProjectTimeDetail.spent_time /
+                                            foundProjectTimeDetail.total_time) *
+                                            100
+                                        ).toFixed(2)}%`
                                   }
                                   styles={buildStyles({
-                                    pathColor: Number(
-                                      (foundProjectTimeDetail.spent_time /
-                                        foundProjectTimeDetail.total_time) *
-                                        100
-                                      ) > 100 ? '#ff0000' : `#005734`,
-                                    textColor: Number(
-                                      (foundProjectTimeDetail.spent_time /
-                                        foundProjectTimeDetail.total_time) *
-                                        100
-                                      ) > 100 ? '#ff0000' : "#005734",
+                                    pathColor:
+                                      Number(
+                                        (foundProjectTimeDetail.spent_time /
+                                          foundProjectTimeDetail.total_time) *
+                                          100
+                                      ) > 100
+                                        ? "#ff0000"
+                                        : `#005734`,
+                                    textColor:
+                                      Number(
+                                        (foundProjectTimeDetail.spent_time /
+                                          foundProjectTimeDetail.total_time) *
+                                          100
+                                      ) > 100
+                                        ? "#ff0000"
+                                        : "#005734",
                                     trailColor: "#efefef",
-                                    backgroundColor: Number(
-                                      (foundProjectTimeDetail.spent_time /
-                                        foundProjectTimeDetail.total_time) *
-                                        100
-                                      ) > 100 ? '#ff0000' : "#005734",
+                                    backgroundColor:
+                                      Number(
+                                        (foundProjectTimeDetail.spent_time /
+                                          foundProjectTimeDetail.total_time) *
+                                          100
+                                      ) > 100
+                                        ? "#ff0000"
+                                        : "#005734",
                                   })}
                                 />
                               </div>
@@ -338,13 +346,13 @@ const Project = ({ _id }) => {
                             <p className={styles.project_time}>
                               Total time:{" "}
                               <>
-                                {foundProjectTimeDetail
-                                  ? Number(
+                                {foundProjectTimeDetail?.is_continuous
+                                  ? "∞"
+                                  : Number(
                                       foundProjectTimeDetail?.total_time
                                     ).toLocaleString("en-US", {
                                       maximumFractionDigits: 2,
-                                    })
-                                  : 0}
+                                    })}
                               </>
                               <span>Hours</span>
                             </p>
