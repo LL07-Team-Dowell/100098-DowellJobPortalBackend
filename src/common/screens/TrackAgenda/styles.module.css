@@ -466,6 +466,19 @@
     max-width: 5rem;
 }
 
+.approve_btn_{
+    height: auto;
+}
+
+.approve_btn_ .approve_btn_btn{
+    padding: 6px 10px;
+    background-color: #005734;
+    border: none;
+    color: #fff;
+    font-size: 1.1rem;
+    border-radius: 8px;
+}
+
 @media screen and (max-width: 500px) {
     .wrapper {
         margin-bottom: 120px;

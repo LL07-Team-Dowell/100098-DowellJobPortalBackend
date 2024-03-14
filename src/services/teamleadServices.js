@@ -129,3 +129,7 @@ export const createNewTeamTask = async (data) => {
 export const editTeamTask = async (taskId, data) => {
   return await currentBackendAxiosInstance.patch(`/edit_team_task/${taskId}/`, data)
 }
+
+export const approveGroupLeadAgenda = async (agenda_id,sub_project) => {
+  return await currentBackendAxiosInstance.post(`/weekly_agenda/?type=approve_group_lead_agenda&agenda_id=${agenda_id}&sub_project=${sub_project}`)
+}
