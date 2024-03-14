@@ -8062,12 +8062,14 @@ class ProjectTotalTime(APIView):
                     update_field = {
                         "total_time": total_time,
                         "left_time": total_time - spent_time if spent_time < total_time else 0.0,
+                        "is_continuous":data.get("is_continuous")
                     }
                         
                 else:
                     update_field={
                         "total_time": total_time,
                         "left_time": "∞",
+                        "is_continuous":data.get("is_continuous")
                     }
                 response = json.loads(
                     dowellconnection(*time_detail_module, "update", field, update_field)
