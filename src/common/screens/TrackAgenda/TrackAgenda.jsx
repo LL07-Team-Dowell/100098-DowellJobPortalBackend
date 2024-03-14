@@ -10,10 +10,12 @@ import { calculateHoursOfLogs, formatDateForAPI } from "../../../helpers/helpers
 import { getAllCompanyUserSubProject, getSubprojectAgendaAddedDates, getWeeklyAgenda, getWorkLogsAddedUnderSubproject } from "../../../services/commonServices";
 import LoadingSpinner from "../../../components/LoadingSpinner/LoadingSpinner";
 import { getSettingUserProject } from "../../../services/hrServices";
+import { approveGroupLeadAgenda } from "../../../services/teamleadServices";
 
 
 const TrackAgendaPage = ({
     restrictProjects = false,
+    isTeamLead = false
 }) => {
     const navigate = useNavigate();
     const { currentUser } = useCurrentUserContext();
@@ -39,6 +41,7 @@ const TrackAgendaPage = ({
     const [startSelectedDate, setStartSelectedDate] = useState(new Date());
     const firstRender = useRef(true);
     const [datesFetched, setDatesFetched] = useState(true);
+    const [isAgendaApproving, setIsAgendaApproving] = useState(false);
 
     const handleAgendaDetailUpdate = (keyToUpdate, newVal) => {
         setAgendaDetails((prevDetails) => {
@@ -208,6 +211,18 @@ const TrackAgendaPage = ({
         }
     }
 
+    const approveAgenda = async (agenda_id, agendaSubproject) => {
+        setIsAgendaApproving(true);
+        await approveGroupLeadAgenda(agenda_id,agendaSubproject).then(() => {
+            toast.success('Agenda approved successfully');
+        setIsAgendaApproving(false);
+        }).catch(err => {
+            console.log(err);
+            toast.error('Failed to approve agenda, please try again later');
+        setIsAgendaApproving(false);
+        })
+    }
+    
     return <>
         <div className={styles.wrapper}>
 
@@ -364,16 +379,31 @@ const TrackAgendaPage = ({
                                 </div>
                             </div>
                             <div style={{ width: '100%' }}>
-                                <div className={styles.track__Agenda__Item}>
-                                    <div>
-                                        <p className={styles.date__Title}>
-                                            {new Date(agenda.week_start).getDate()} {new Date(agenda.week_start).toLocaleString('en-us', { month: 'short' })}, {`${new Date(agenda.week_start).getFullYear()}`.slice(-2)}
-                                        </p>
-                                        <p className={styles.stat__Subtitle}>Start</p>
+                                <div style={{ display: 'flex' }}>
+                                    <div className={styles.track__Agenda__Item}>
+                                        <div>
+                                            <p className={styles.date__Title}>
+                                                {new Date(agenda.week_start).getDate()} {new Date(agenda.week_start).toLocaleString('en-us', { month: 'short' })}, {`${new Date(agenda.week_start).getFullYear()}`.slice(-2)}
+                                            </p>
+                                            <p className={styles.stat__Subtitle}>Start</p>
+                                        </div>
+                                        <div>
+                                            <p className={styles.item__Title}>{agenda.agenda_title}</p>
+                                            <p className={styles.item__Subtitle}>{agenda.sub_project} . 0/{agenda.total_time} hrs</p>
+                                        </div>
+
                                     </div>
-                                    <div>
-                                        <p className={styles.item__Title}>{agenda.agenda_title}</p>
-                                        <p className={styles.item__Subtitle}>{agenda.sub_project} . 0/{agenda.total_time} hrs</p>
+                                    <div className={styles.approve_btn_}>
+                                        {
+                                            (isTeamLead && !agenda.lead_approval)?
+                                            <button className={styles.approve_btn_btn}
+                                                onClick={() => approveAgenda(agenda._id, agenda.sub_project)}
+                                            >{isAgendaApproving ?
+                                                <LoadingSpinner width={20} height={20} /> :
+                                                'Approve'
+                                                }
+                                            </button>:<></>
+                                        }
                                     </div>
                                 </div>
                                 {
