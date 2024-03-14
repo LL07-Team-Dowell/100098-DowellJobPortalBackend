@@ -8151,6 +8151,7 @@ class AllProjectTotalTime(APIView):
         response = json.loads(
             dowellconnection(*time_detail_module, "fetch", field, update_field=None)
         )
+        
         return Response(
             {
                 "success": True,
