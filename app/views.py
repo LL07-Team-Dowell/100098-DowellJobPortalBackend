@@ -8006,6 +8006,7 @@ class ProjectTotalTime(APIView):
                 "spent_time": 0,
                 "left_time": data.get("total_time"),
                 "is_continuous": data.get("is_continuous"),
+                "repository_name":data.get("repository_name"),
                 "date_created": self.get_current_datetime(datetime.now()),
             }
             response = json.loads(
