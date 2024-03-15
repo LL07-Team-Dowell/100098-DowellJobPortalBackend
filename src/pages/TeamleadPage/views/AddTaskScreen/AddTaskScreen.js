@@ -22,6 +22,7 @@ import { getCurrentTimeFromDowell } from "../../../../services/dowellTimeService
 import { rolesNamesDict } from "../../../AdminPage/views/Settings/AdminSettings";
 import Overlay from "../../../../components/Overlay";
 import { getAllCompanyUserSubProject } from "../../../../services/commonServices";
+import { encryptPayload } from "../../../../helpers/apiHelper";
 
 const AddTaskScreen = ({
   teamMembers,
@@ -597,13 +598,17 @@ const AddTaskScreen = ({
       "task_created_date": todayDate,
     }
 
+    const encryptedNewTaskDataToPost = {
+      "payload": encryptPayload(dataToPost),
+    };
+
     try {
 
       let res;
 
       // UPDATE TASKS FOR THE DAY AFTER FIRST TASK IS ADDED
       if (updateTask) {
-        res = (await updateNewCandidateTaskV2(dataToPost, taskDetailForToday?.parentTask?._id)).data;
+        res = (await updateNewCandidateTaskV2(encryptedNewTaskDataToPost, taskDetailForToday?.parentTask?._id)).data;
 
         toast.success(res?.message);
 
@@ -630,7 +635,7 @@ const AddTaskScreen = ({
       }
 
       // ADD FIRST TASK OF THE DAY
-      res = (await addNewCandidateTaskV2(dataToPost)).data;
+      res = (await addNewCandidateTaskV2(encryptedNewTaskDataToPost)).data;
       console.log(res);
 
       try {

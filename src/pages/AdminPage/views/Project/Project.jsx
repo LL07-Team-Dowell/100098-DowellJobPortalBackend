@@ -33,7 +33,7 @@ const Project = ({ _id }) => {
       setShowProjectsPop(true);
 
       // RESET STATE TO PREVENT PROJECT MODAL FROM POPPING UP AFTER EVERY RELOAD
-      window.history.replaceState({}, "/100098-DowellJobPortal/#/projects");
+      window.history.replaceState({}, document.title, "/100098-DowellJobPortal/#/projects");
     }
 
     //Getting project time
