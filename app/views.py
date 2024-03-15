@@ -2682,7 +2682,10 @@ class delete_task(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class task_module(APIView):
     def max_updated_date(self, updated_date):
-        task_updated_date = datetime.strptime(str(updated_date), "%Y-%m-%d %H:%M:%S.%f")
+        try:
+            task_updated_date = datetime.strptime(str(updated_date), "%Y-%m-%d %H:%M:%S.%f")
+        except ValueError as e:
+            task_updated_date = datetime.strptime(str(updated_date), "%Y-%m-%d")
         _date = task_updated_date + relativedelta(hours=336)
         _date = _date.strftime("%Y-%m-%d %H:%M:%S")
         return _date
