@@ -2743,7 +2743,7 @@ class task_module(APIView):
                                 },
                                 status.HTTP_400_BAD_REQUEST,
                             )
-        print(data,"=========")
+        print(" ")
         payload = {
             "project": data.get("project"),
             "subproject": data.get("subproject"),
