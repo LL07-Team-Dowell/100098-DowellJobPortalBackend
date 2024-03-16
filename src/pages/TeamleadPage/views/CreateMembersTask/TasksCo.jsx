@@ -74,8 +74,14 @@ const  TasksCo = ({bback}) => {
           // Creating a Team Task 
           if(data.discription && data.taskName){
               setloading(true) ;
-              createTeamTask({assignee:currentUser.userinfo.username
-              ,title:data.taskName ,description:data.discription,team:data.teamId , completed:false})
+              createTeamTask({
+                assignee: currentUser?.userinfo?.username,
+                title: data?.taskName,
+                description: data?.discription,
+                team: data?.teamId, 
+                completed: false,
+                user_id: currentUser?.userinfo?.userID,
+              })
               .then(r => {console.log(r.data);
                 setloading(false)
                 toast("task created successfully.") ; 
