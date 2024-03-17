@@ -18,7 +18,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import {Doughnut, Bar } from "react-chartjs-2";
+import { Doughnut, Bar } from "react-chartjs-2";
 import { getProjectTime } from "../../../../services/projectTimeServices";
 
 ChartJS.register(
@@ -95,29 +95,29 @@ const TaskReports = ({ subAdminView, isPublicReportUser, isProjectLead }) => {
         console.log(res[1].data);
         const projectsGotten = isPublicReportUser
           ? res[0]?.data
-              ?.filter(
-                (project) =>
-                  project?.data_type === reportsUserDetails?.data_type &&
-                  project?.company_id === reportsUserDetails?.company_id &&
-                  project.project_list &&
-                  project.project_list.every(
-                    (listing) => typeof listing === "string"
-                  )
-              )
-              ?.reverse()
+            ?.filter(
+              (project) =>
+                project?.data_type === reportsUserDetails?.data_type &&
+                project?.company_id === reportsUserDetails?.company_id &&
+                project.project_list &&
+                project.project_list.every(
+                  (listing) => typeof listing === "string"
+                )
+            )
+            ?.reverse()
           : res[0]?.data
-              ?.filter(
-                (project) =>
-                  project?.data_type ===
-                    currentUser.portfolio_info[0].data_type &&
-                  project?.company_id ===
-                    currentUser.portfolio_info[0].org_id &&
-                  project.project_list &&
-                  project.project_list.every(
-                    (listing) => typeof listing === "string"
-                  )
-              )
-              ?.reverse();
+            ?.filter(
+              (project) =>
+                project?.data_type ===
+                currentUser.portfolio_info[0].data_type &&
+                project?.company_id ===
+                currentUser.portfolio_info[0].org_id &&
+                project.project_list &&
+                project.project_list.every(
+                  (listing) => typeof listing === "string"
+                )
+            )
+            ?.reverse();
         setProjects(projectsGotten[0]?.project_list);
         console.log(res[1]?.data?.data)
         setProjectTime(
@@ -144,12 +144,13 @@ const TaskReports = ({ subAdminView, isPublicReportUser, isProjectLead }) => {
       company_id: isPublicReportUser
         ? reportsUserDetails?.company_id
         : currentUser.portfolio_info[0].org_id,
+      active_users_only: 1,
     };
 
     const foundProjectTimeFromArr = projectTime.find(
       (item) => item.project === selectedProject
     );
-    console.log(foundProjectTimeFromArr);
+    console.log('foundddddd',foundProjectTimeFromArr);
     console.log(projectTime, selectedProject)
 
     setReportsLoading(true);
@@ -158,10 +159,11 @@ const TaskReports = ({ subAdminView, isPublicReportUser, isProjectLead }) => {
 
     generateCommonAdminReport(dataToPost)
       .then((res) => {
-        console.log(res.data);
-        const labels = res.data?.data?.users_that_added.map(
+        console.log('work log report',res.data.data);
+        const labels = res.data?.data?.map(
           (item) => item.user
         );
+        // console.log('labels>>>>>>>>>.',labels);
 
         const formattedData = {
           labels,
@@ -175,7 +177,7 @@ const TaskReports = ({ subAdminView, isPublicReportUser, isProjectLead }) => {
             // },
             {
               label: "Work logs",
-              data: res.data?.data?.users_that_added.map(
+              data: res.data?.data?.map(
                 (item) => item.tasks_added
               ),
               backgroundColor: "#005734",
@@ -183,7 +185,7 @@ const TaskReports = ({ subAdminView, isPublicReportUser, isProjectLead }) => {
             },
             {
               label: "Hours",
-              data: res.data?.data?.users_that_added.map(
+              data: res.data?.data?.map(
                 (item) => item.total_hours
               ),
               backgroundColor: "red",
@@ -191,14 +193,15 @@ const TaskReports = ({ subAdminView, isPublicReportUser, isProjectLead }) => {
             },
           ],
         };
+        // console.log('formattedData>>>>>>>>',formattedData);
 
         const uniqueSubprojects = [
           ...new Set(
-            res.data?.data?.users_that_added
-              .map((item) => Object.keys(item.subprojects || {}))
+            res.data?.data?.map((item) => Object.keys(item.subprojects || {}))
               .flat()
           ),
         ];
+        // console.log('uniqueSubprojects>>>>>>>>',uniqueSubprojects);
         let currentTrack = 0;
 
         const formattedDataForSubproject = {
@@ -212,7 +215,7 @@ const TaskReports = ({ subAdminView, isPublicReportUser, isProjectLead }) => {
 
             return {
               label: subproject,
-              data: res.data?.data?.users_that_added.map((dataItem) => {
+              data: res.data?.data?.map((dataItem) => {
                 if (!dataItem?.subprojects[subproject]) return 0;
                 return dataItem?.subprojects[subproject];
               }),
@@ -225,14 +228,19 @@ const TaskReports = ({ subAdminView, isPublicReportUser, isProjectLead }) => {
           }),
         };
 
-        setTableData(res.data?.data?.users_that_added); // Set table data
-
+        // console.log('formated data fro subproject.....>>>>>',formattedDataForSubproject);
+        setTableData(res.data?.data); // Set table data
+        const totalTasksAdded = res.data?.data?.reduce(
+          (accumulator, currentItem) => accumulator + currentItem.tasks_added,
+          0
+        );
         setReport(formattedData);
         setProjectTaskInfo(
-          `A total of ${res?.data?.data?.total_tasks_added} work logs have been added in ${selectedProject}`
+          `A total of ${totalTasksAdded} work logs have been added in ${selectedProject}`
         );
         setFoundProjectTime(foundProjectTimeFromArr);
         setReportsLoading(false);
+        
         setSubProjectReport(formattedDataForSubproject);
       })
       .catch((err) => {
@@ -361,7 +369,7 @@ const TaskReports = ({ subAdminView, isPublicReportUser, isProjectLead }) => {
                                 "#D3D3D3",
                                 "#005734",
                               ],
-                              borderColor: ["#160291", "#D3D3D3", "#005734" ],
+                              borderColor: ["#160291", "#D3D3D3", "#005734"],
                             },
                           ],
                         }}
