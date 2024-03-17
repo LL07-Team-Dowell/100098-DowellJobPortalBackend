@@ -408,7 +408,7 @@ const SubTasks = ({ subTasks, setSubTasks }) => {
           </div>
         </>
       ))}
-      <div className='btn'>
+      <div className='btn__Sub'>
         <button onClick={handleClick}>
           <FiPlus />
         </button>

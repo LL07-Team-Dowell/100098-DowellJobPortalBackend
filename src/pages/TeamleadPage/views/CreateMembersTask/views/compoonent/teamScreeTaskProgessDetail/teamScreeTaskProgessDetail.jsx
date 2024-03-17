@@ -1,12 +1,9 @@
 // styles
 import "./teamScreeTaskProgessDetail.scss";
 // react
-import React, { useEffect } from "react";
-// icons
-import { HiPlus } from "react-icons/hi";
+import React, { useEffect, useState } from "react";
 import { useCurrentUserContext } from "../../../../../../../contexts/CurrentUserContext";
 import image from "../../../../../../../assets/images/4380.jpg";
-import axios from "axios";
 import SingleTask from "../SingleTask/SingleTask";
 import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
 
@@ -20,7 +17,20 @@ const TeamScreeTaskProgessDetail = ({
   team,
   taskLoading,
 }) => {
-  console.log({ tasks });
+  const [ tasksToDisplay, setTasksToDisplay ] = useState([]);
+  const { currentUser } = useCurrentUserContext();
+
+  useEffect(() => {
+    if (!Array.isArray(tasks)) return setTasksToDisplay([]);
+
+    if (team?.created_by !== currentUser?.userinfo?.username) {
+      setTasksToDisplay(tasks?.filter(task => task?.assignee?.includes(currentUser?.userinfo?.username)));
+      return;
+    }
+
+    setTasksToDisplay(tasks);
+  }, [team, tasks, currentUser])
+
   return (
     <div className='team-screen-task-progress-detail'>
       <div className='team-screen-task-progress-detail-header'>
@@ -42,8 +52,8 @@ const TeamScreeTaskProgessDetail = ({
       ) : (
         <>
           {detail === "in progress" &&
-            (tasks?.filter((task) => task.completed === false).length > 0 ? (
-              tasks
+            (tasksToDisplay?.filter((task) => task.completed === false).length > 0 ? (
+              tasksToDisplay
                 ?.filter((task) => task.completed === false)
                 .reverse()
                 .map((task) => (
@@ -61,11 +71,18 @@ const TeamScreeTaskProgessDetail = ({
                     taskCompleted={false}
                     taskId={task._id}
                     team={team}
-                    {...tasks}
+                    {...tasksToDisplay}
                   />
                 ))
             ) : (
-              <h2>No Task is In Progress.</h2>
+              <h2>
+                {
+                  team?.created_by !== currentUser?.userinfo?.username ?
+                    'You do not have any assigned task in progress.'
+                    :
+                  'No task is in progress.'
+                }
+              </h2>
             ))}
 
           {detail === "completed" &&
