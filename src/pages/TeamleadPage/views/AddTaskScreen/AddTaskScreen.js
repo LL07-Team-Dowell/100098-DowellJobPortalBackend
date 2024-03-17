@@ -52,7 +52,7 @@ const AddTaskScreen = ({
   const [allowedTimeInterval, setAllowedTimeInterval] = useState(15);
   
   // states for start time, end time, project, task type, subproject, task image
-  const [optionValue, setoptionValue] = useState("");
+  const [projectSelected, setProjectSelected] = useState("");
   const [taskStartTime, setTaskStartTime] = useState("");
   const [taskEndTime, setTaskEndTime] = useState("");
   const [taskName, setTaskName] = useState("");
@@ -109,14 +109,16 @@ const AddTaskScreen = ({
   );
 
   //   lest important functions
-  const clearAllInputs = () => {
+  const clearAllInputs = (clearProjectsSelection=true) => {
     // setTaskStartTime("");
     setTaskEndTime("");
     // setTaskName("");
     // setDetails("");
-    setoptionValue("");
     // setTaskType("");
-    setSubprojectSelected(null);
+    if (clearProjectsSelection) {
+      setProjectSelected("");
+      setSubprojectSelected(null);
+    }
   };
 
   const fillAllInputs = (taskStartTime, taskEndTime, taskName, details, project, taskType, subproject) => {
@@ -124,7 +126,7 @@ const AddTaskScreen = ({
     setTaskEndTime(taskEndTime);
     setTaskName(taskName);
     setDetails(details);
-    setoptionValue(project);
+    setProjectSelected(project);
     setTaskType(taskType);
     setSubprojectSelected(subproject);
   };
@@ -203,7 +205,7 @@ const AddTaskScreen = ({
 
   //   importand fuction
   const addNewTask = () => {
-    if (optionValue.length < 1) return toast.info("Please select a project before proceding");
+    if (projectSelected.length < 1) return toast.info("Please select a project before proceding");
     if (inputsAreFilled) {
       console.log({ TASKSS: tasks.find(task => task.task === taskName) })
       if (tasks.find(task => task?.task?.toLocaleLowerCase().trim() === taskName.toLocaleLowerCase().trim() && task.is_active) !== undefined) return toast.info('You cannot add the same log')
@@ -241,7 +243,7 @@ const AddTaskScreen = ({
           const res = (await updateSingleCandidateTaskV2(
             {
               update_task: {
-                "project": optionValue,
+                "project": projectSelected,
                 "task": taskName,
                 "task_type": taskType,
                 "start_time": taskStartTime,
@@ -256,7 +258,7 @@ const AddTaskScreen = ({
           setDisabled(false);
           setEditLoading(false);
 
-          updateSingleTask(taskStartTime, taskEndTime, taskName, details, optionValue, taskType, subprojectSelected);
+          updateSingleTask(taskStartTime, taskEndTime, taskName, details, projectSelected, taskType, subprojectSelected);
           clearAllInputs();
           addTaskCondition();
           setTaskId("");
@@ -312,7 +314,7 @@ const AddTaskScreen = ({
   // Define the missing variables and functions here
 
   const selctChange = (e) => {
-    setoptionValue(e.target.value);
+    setProjectSelected(e.target.value);
   };
 
   function convertDateFormat(date) {
@@ -459,7 +461,7 @@ const AddTaskScreen = ({
   }, [])
 
   useEffect(() => {
-    if (taskName?.length < 1 || optionValue.length < 1)
+    if (taskName?.length < 1 || projectSelected.length < 1)
       return setDisabled(true);
     if (taskStartTime.length < 1 || taskEndTime.length < 1)
       return setDisabled(true);
@@ -467,7 +469,7 @@ const AddTaskScreen = ({
     if (taskType.length < 1) return setDisabled(true);
 
     setDisabled(false);
-  }, [taskName, optionValue, taskStartTime, taskEndTime, taskType]);
+  }, [taskName, projectSelected, taskStartTime, taskEndTime, taskType]);
 
   useEffect(() => {
     setFormattedTaskName(formatSubprojectStringItemToHTML(taskName));
@@ -483,7 +485,7 @@ const AddTaskScreen = ({
         taskStartTime.length < 1 ||
         taskEndTime.length < 1 ||
         taskName.length < 1 ||
-        optionValue.length < 1 ||
+        projectSelected.length < 1 ||
         !subprojectSelected
       ) return
 
@@ -575,7 +577,7 @@ const AddTaskScreen = ({
     }
 
     const dataToPost = {
-      "project": optionValue,
+      "project": projectSelected,
       "applicant": currentUser.userinfo.username,
       "task": task,
       "task_added_by": currentUser.userinfo.username,
@@ -620,7 +622,7 @@ const AddTaskScreen = ({
         setDisabled(false);
 
         setTasks(copyOfTasksForToday);
-        clearAllInputs();
+        clearAllInputs(false);
         setTaskId("");
         setTaskStartTime(endTime);
         setSelectedFile(null);
@@ -663,7 +665,7 @@ const AddTaskScreen = ({
         setLoading(false);
         setDisabled(false);
         setTasks(listsOfTasksForToday?.reverse());
-        clearAllInputs();
+        clearAllInputs(false);
         setTaskId("");
         setSelectedFile(null);
 
@@ -749,7 +751,7 @@ const AddTaskScreen = ({
 
   const handleSelectSubprojectFromListing = (subprojectPassed, projectPassed, idPassed) => {
     setSubprojectSelected(subprojectPassed);
-    setoptionValue(projectPassed);
+    setProjectSelected(projectPassed);
 
     const taskNamewithAtCharStripped = taskName.split('@')[0];
     setTaskName(taskNamewithAtCharStripped.concat(`<@${subprojectPassed}~${projectPassed}~${idPassed}!> `));
@@ -760,7 +762,7 @@ const AddTaskScreen = ({
   const handleCancelSubprojectSelection = () => {
     const [startIndex, endIndex] = [taskName.indexOf('<p><span'), taskName.indexOf('</span></p>')];
     setSubprojectSelected(null);
-    setoptionValue('');
+    setProjectSelected('');
     setTaskName(taskName.replace(`${taskName.substring(startIndex, endIndex + 11)}`, '@'))
   }
 
@@ -1133,15 +1135,15 @@ const AddTaskScreen = ({
                                   selectedSubProject={subprojectSelected}
                                   handleSelectItem={(subproject, project) => {
                                     setSubprojectSelected(subproject);
-                                    setoptionValue(project);
+                                    setProjectSelected(project);
                                   }}
                                   handleCancelSelection={
                                     () => {
                                       setSubprojectSelected(null);
-                                      setoptionValue('');
+                                      setProjectSelected('');
                                     }
                                   }
-                                  selectedProject={optionValue}
+                                  selectedProject={projectSelected}
                                 />
                               </div>
                               {/* <div className="task__Item">

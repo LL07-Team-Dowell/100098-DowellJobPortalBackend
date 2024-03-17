@@ -408,7 +408,6 @@ const TrackAgendaPage = ({
                                 </div>
                                 {
                                     React.Children.toArray(agenda.timeline.map(item => {
-                                        console.log(taskDetailsForPeriod);
                                         return <>
                                             <div className={styles.track__Agenda__Item}>
                                                 <div>
