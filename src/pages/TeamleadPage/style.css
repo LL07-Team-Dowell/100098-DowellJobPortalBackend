@@ -153,8 +153,8 @@
     margin: 2rem auto;
   }
 
-  .team__Lead__back__Btn__Wrap {
-    width: 85%;
+  .title__Navigation__Bar__Container.team__Lead__back__Btn__Wrap {
+    width: 91%;
     margin: 0 auto;
   }
 }

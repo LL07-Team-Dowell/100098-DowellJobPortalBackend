@@ -45,7 +45,7 @@ export const CloseButton = styled.button`
 export const EditButton = styled.button`
 position: absolute;
 top: 20px;
-right: 40px;
+right: 50px;
 background-color: transparent;
 border: none;
 cursor: pointer;
@@ -289,9 +289,13 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                 <CloseButton onClick={onClose}>
                     <FaTimes />
                 </CloseButton>
-                <EditButton onClick={() => { setEdit(true) }}>
-                    <AiTwotoneEdit />
-                </EditButton>
+                {
+                    teamOwner === currentUser?.userinfo?.username && <>
+                        <EditButton onClick={() => { setEdit(true) }}>
+                            <AiTwotoneEdit />
+                        </EditButton>
+                    </>
+                }
             </ModalContent>
         </ModalContainer>
     );

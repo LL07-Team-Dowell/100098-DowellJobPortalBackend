@@ -359,7 +359,7 @@ const TrackAgendaPage = ({
             <div className={styles.track__Agendas__Wrap}>
                 {
                     React.Children.toArray(agendasFetched.map(agenda => {
-                        const timelinesTodayOrBeforeToday = agenda.timeline.filter(item => new Date(item.timeline_start) <= new Date('2023-11-25')).length;
+                        const timelinesTodayOrBeforeToday = agenda.timeline.filter(item => new Date(item.timeline_start) <= new Date()).length;
                         const allTimelines = agenda.timeline.length;
 
                         const timelinesReached = Number((timelinesTodayOrBeforeToday / allTimelines) * 100).toFixed();
@@ -374,7 +374,7 @@ const TrackAgendaPage = ({
                                     <div className={styles.active__Progress} style={{ height: `${timelinesReached}%` }}></div>
                                     <div style={{ height: `${timeLineRemaining}%` }}></div>
                                 </div>
-                                <div className={styles.inactive}>
+                                <div className={timeLineRemaining === 0 ? styles.active : styles.inactive}>
                                     <div className={styles.inner__Marker}></div>
                                 </div>
                             </div>
@@ -408,6 +408,7 @@ const TrackAgendaPage = ({
                                 </div>
                                 {
                                     React.Children.toArray(agenda.timeline.map(item => {
+                                        console.log(taskDetailsForPeriod);
                                         return <>
                                             <div className={styles.track__Agenda__Item}>
                                                 <div>
@@ -416,29 +417,29 @@ const TrackAgendaPage = ({
                                                     </p>
                                                     <p className={styles.stat__Subtitle}>
                                                         {
-                                                            item.timeline_start === formatDateForAPI(new Date()) ? <>
+                                                            formatDateForAPI(item.timeline_start) === formatDateForAPI(new Date()) ? <>
                                                                 <span className={styles.agenda__in__Progress}>In progress</span>
                                                             </>
-                                                                :
-                                                                new Date(item.timeline_start) < new Date() ? <>
-                                                                    <span className={styles.agenda__To__Do}>To do</span>
+                                                            :
+                                                            new Date().getTime() < new Date(item.timeline_start).getTime() ? <>
+                                                                <span className={styles.agenda__To__Do}>To do</span>
+                                                            </>
+                                                            :
+                                                            calculateHoursOfLogs(
+                                                                taskDetailsForPeriod
+                                                                    .filter(
+                                                                        log =>
+                                                                            log.task_created_date === item.timeline_start ||
+                                                                            log.task_created_date === item.timeline_end
+                                                                    )
+                                                            ) <= item.hours ?
+                                                                <>
+                                                                    <span className={styles.agenda__On__time}>On time</span>
                                                                 </>
-                                                                    :
-                                                                    calculateHoursOfLogs(
-                                                                        taskDetailsForPeriod
-                                                                            .filter(
-                                                                                log =>
-                                                                                    log.task_created_date === item.timeline_start ||
-                                                                                    log.task_created_date === item.timeline_end
-                                                                            )
-                                                                    ) <= item.hours ?
-                                                                        <>
-                                                                            <span className={styles.agenda__On__time}>On time</span>
-                                                                        </>
-                                                                        :
-                                                                        <>
-                                                                            <span className={styles.agenda__Overdue}>Over Due</span>
-                                                                        </>
+                                                            :
+                                                            <>
+                                                                <span className={styles.agenda__Overdue}>Over Due</span>
+                                                            </>
                                                         }
                                                     </p>
                                                 </div>
