@@ -164,6 +164,10 @@ if os.getenv("LEAVE_DB_NAME"):
     LEAVE_DB = str(os.getenv("LEAVE_DB_NAME"))
 if os.getenv("DB_PAYMENT_RECORDS"):
     DB_PAYMENT_RECORDS = str(os.getenv("DB_PAYMENT_RECORDS"))
+if os.getenv("PUBLIC_KEY"):
+    PUBLIC_KEY = str(os.getenv("PUBLIC_KEY"))
+if os.getenv("PRIVATE_KEY"):
+    PRIVATE_KEY = str(os.getenv("PRIVATE_KEY"))
     
 else:
     """for windows local"""
@@ -179,6 +183,8 @@ else:
     Events_collection=str(os.getenv("Events_collection"))
     LEAVE_DB=str(os.getenv("LEAVE_DB_NAME"))
     DB_PAYMENT_RECORDS = str(os.getenv("DB_PAYMENT_RECORDS"))
+    PUBLIC_KEY = str(os.getenv("PUBLIC_KEY"))
+    PRIVATE_KEY = str(os.getenv("PRIVATE_KEY"))
 
 # Create your views here.
 

@@ -2,6 +2,7 @@ import json
 import requests
 import pprint
 import os
+import rsa
 import bson
 import calendar
 from datetime import datetime, timedelta
@@ -1002,3 +1003,10 @@ def delete_user_Report_data(api_key,db_name, report_uuid, user_id, task_date, up
             return update_report
     else:
         return get_report
+    
+def encrypt(message, PUBLIC_KEY):
+    ciphertext = rsa.encrypt(message.encode('utf8'), PUBLIC_KEY)
+    return ciphertext
+def decrypt(ciphertext, PRIVATE_KEY):
+    decrypted_message = rsa.decrypt(ciphertext, PRIVATE_KEY).decode('utf8')
+    return decrypted_message
