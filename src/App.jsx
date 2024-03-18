@@ -170,18 +170,20 @@ function App() {
     return (
       <Routes>
         {
-          publicUserRoutes.map(route => {
-            return <Route 
-              path={route.path}
-              element={
-                <JobContextProvider>
-                  <NewApplicationContextProvider>
-                    <route.component />
-                  </NewApplicationContextProvider>
-                </JobContextProvider>
-              }
-            />
-          })
+          React.Children.toArray(
+            publicUserRoutes.map(route => {
+              return <Route 
+                path={route.path}
+                element={
+                  <JobContextProvider>
+                    <NewApplicationContextProvider>
+                      <route.component />
+                    </NewApplicationContextProvider>
+                  </JobContextProvider>
+                }
+              />
+            })
+          )
         }
       </Routes>
     );
