@@ -8,7 +8,10 @@ import { useJobContext } from "../../../../contexts/Jobs";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { AddProjectPopup } from "../Add/Add";
 import { dowellProjects } from "../../../../utils/utils";
-import { getProjectTime } from "../../../../services/projectTimeServices";
+import {
+  getCommits,
+  getProjectTime,
+} from "../../../../services/projectTimeServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import SearchBar from "../../../../components/SearchBar/SearchBar";
@@ -27,6 +30,7 @@ const Project = ({ _id }) => {
   console.log(projectTime);
   const [searchValue, setSearchValue] = useState("");
   const [projectTimeLoading, setProjectTimeLoading] = useState(false);
+  const [commits, setCommits] = useState([]);
 
   useEffect(() => {
     if (state && state.showProject && state?.showProject === true) {
@@ -67,6 +71,12 @@ const Project = ({ _id }) => {
     ) {
       setInactiveProjects(projectsAdded[0]?.inactive_project_list);
     }
+
+    //Get number of commits
+    getCommits().then((res) => {
+      console.log(res?.data?.data);
+      const commitsData = res?.data?.data;
+    });
   }, []);
 
   const showProjectPopup = () => {
@@ -356,6 +366,7 @@ const Project = ({ _id }) => {
                               </>
                               <span>Hours</span>
                             </p>
+                            <p className={styles.project_time}>Commits: {""}</p>
                           </>
                         ) : null}
                         <div
