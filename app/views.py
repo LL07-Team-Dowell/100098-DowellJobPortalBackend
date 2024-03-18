@@ -3250,9 +3250,9 @@ class task_module(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        company_id = request.GET.get("company_id")
-        subproject = request.GET.get("subproject")
-        project = request.GET.get("project")
+        company_id = request.data.get("company_id")
+        subproject = request.data.get("subproject")
+        project = request.data.get("project")
 
         # Check for required parameters
         if not company_id:
@@ -3280,19 +3280,12 @@ class task_module(APIView):
             field["project"] = project
 
         filtered_tasks = []
-        response_json = dowellconnection(
-            *task_details_module, "fetch", field, update_field=None
-        )
-        response = json.loads(response_json)
+        response = json.loads(dowellconnection(*task_details_module, "fetch", field, update_field=None))
+        
         for task in response["data"]:
-            if (
-                "task_created_date" in task.keys()
-                and set_date_format(task["task_created_date"]) != ""
-            ):
+            if "task_created_date" in task.keys():
                 try:
-                    task_created_date = datetime.strptime(
-                        task["task_created_date"], "%Y-%m-%d "
-                    )
+                    task_created_date = datetime.strptime(task["task_created_date"], "%Y-%m-%d")
 
                     if start_date <= task_created_date <= end_date:
                         filtered_tasks.append(task)
