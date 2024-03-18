@@ -284,31 +284,67 @@ export default function StructureConfigurationModal ({
                                 <>
                                     <label>
                                         <p>
-                                            <span>Select team lead <span style={{ color: 'red' }}>*</span></span>
+                                            <span>Current project lead</span>
                                         </p>
-                                        {
-                                            
-                                        }
+                                        <Select 
+                                            placeholder={
+                                                applications?.find(application => application?.username === copyOfExistingStructure?.project_leads?.find(item => item?.projects_managed?.includes(selectedProject))?.project_lead) ?
+                                                    applications?.find(application => application?.username === copyOfExistingStructure?.project_leads?.find(item => item?.projects_managed?.includes(selectedProject))?.project_lead)?.applicant
+                                                :
+                                                copyOfExistingStructure?.project_leads?.find(item => item?.projects_managed?.includes(selectedProject))?.project_lead
+                                            }
+                                            value={
+                                                copyOfExistingStructure?.project_leads?.find(item => item?.projects_managed?.includes(selectedProject))?.project_lead
+                                            }
+                                            options={
+                                                [
+                                                    {
+                                                        label: applications?.find(application => application?.username === copyOfExistingStructure?.project_leads?.find(item => item?.projects_managed?.includes(selectedProject))?.project_lead) ?
+                                                            applications?.find(application => application?.username === copyOfExistingStructure?.project_leads?.find(item => item?.projects_managed?.includes(selectedProject))?.project_lead)?.applicant
+                                                        :
+                                                        copyOfExistingStructure?.project_leads?.find(item => item?.projects_managed?.includes(selectedProject))?.project_lead
+                                                        ,
+                                                        value: copyOfExistingStructure?.project_leads?.find(item => item?.projects_managed?.includes(selectedProject))?.project_lead
+                                                    }
+                                                ]
+                                            }
+                                            isDisabled={true}
+                                        />
+                                    </label>
+
+                                    <label>
+                                        <p>
+                                            <span>Select team lead</span>
+                                        </p>
                                         <Select 
                                             value={
-                                                {
-                                                    label: copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead ?
-                                                        applications?.find(item => item?.username === copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject)?.team_lead) ?
-                                                            applications?.find(item => item?.username === copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject)?.team_lead)?.applicant
+                                                copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead?.length < 1 ?
+                                                    []
+                                                :
+                                                [
+                                                    {
+                                                        label: copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead ?
+                                                            applications?.find(item => item?.username === copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject)?.team_lead) ?
+                                                                applications?.find(item => item?.username === copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject)?.team_lead)?.applicant
+                                                                :
+                                                                copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead
                                                             :
-                                                            copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead
-                                                        :
-                                                    'Select teamlead'
-                                                    ,
-                                                    value: copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead
-                                                }
+                                                        'Select teamlead'
+                                                        ,           
+                                                        value: copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead
+                                                    }
+                                                ]
                                             }
                                             options={
                                                 onboardedUsers?.map(user => {
                                                     return { label: user?.applicant, value: user?.username }
                                                 })
                                             }
-                                            onChange={(val) => handleUpdateProjectDetail(val.value, selectedProject, projectDetailUpdateType.teamlead_update)}  
+                                            onChange={(val) => {
+                                                if (val.length < 1) return handleUpdateProjectDetail('', selectedProject, projectDetailUpdateType.teamlead_update)
+                                                handleUpdateProjectDetail(val?.slice(-1)[0]?.value, selectedProject, projectDetailUpdateType.teamlead_update)
+                                            }}  
+                                            isMulti={true}
                                         />
                                     </label>
 

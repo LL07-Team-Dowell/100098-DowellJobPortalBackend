@@ -12,6 +12,9 @@
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
+  max-height: 80%;
+  overflow-y: auto;
+  scrollbar-width: thin;
 }
 
 .close__User__Detail {
@@ -177,20 +180,24 @@
     filter: brightness(0.8);
 }
 
-.structure__Form::-webkit-scrollbar {
+.structure__Form::-webkit-scrollbar,
+.structure__modal::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
-.structure__Form::-webkit-scrollbar-track {
+.structure__Form::-webkit-scrollbar-track,
+.structure__modal::-webkit-scrollbar-track {
   background: #efefef;
 }
 
-.structure__Form::-webkit-scrollbar-thumb {
+.structure__Form::-webkit-scrollbar-thumb, 
+.structure__modal::-webkit-scrollbar-thumb {
   background: #b8b8b8;
 }
 
-.structure__Form::-webkit-scrollbar-thumb:hover {
+.structure__Form::-webkit-scrollbar-thumb:hover,
+.structure__modal::-webkit-scrollbar-thumb:hover {
   background: #005734;
 }
 

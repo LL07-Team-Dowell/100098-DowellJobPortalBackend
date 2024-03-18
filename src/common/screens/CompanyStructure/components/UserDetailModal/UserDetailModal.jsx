@@ -58,12 +58,15 @@ export default function UserDetailModal ({
                         </p>
                     </div>
                     <div className={styles.user__Project__Details}>
-                        <p>Project: {currentSelectedUser?.project}</p>
-                        <p>Subprojects: {currentSelectedUser?.subprojects?.join(', ')}</p>
-                        <p>Team Members: {currentSelectedUser?.members?.map(member => {
-                            if (applications?.find(application => application.username === member)?.applicant) return applications?.find(application => application.username === member)?.applicant;
-                            return member;
-                        })?.join(', ')}</p>
+                        <p>Project: <span className={styles.user__Project__Detail__Item}>{currentSelectedUser?.project}</span></p>
+                        <p>Subprojects: <span className={styles.user__Project__Detail__Item}>{currentSelectedUser?.subprojects?.join(', ')}</span></p>
+                        <p>Team Members: <span className={styles.user__Project__Detail__Item}>
+                                {currentSelectedUser?.members?.map(member => {
+                                    if (applications?.find(application => application.username === member)?.applicant) return applications?.find(application => application.username === member)?.applicant;
+                                    return member;
+                                })?.join(', ')}
+                            </span>
+                        </p>
                     </div>
                 </div>
             </div>
