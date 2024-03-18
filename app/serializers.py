@@ -866,7 +866,7 @@ class CompanyStructureUpdateProjectLeadSerializer(serializers.Serializer):
 class CompanyStructureProjectsSerializer(serializers.Serializer):
     project = serializers.CharField(max_length=255, allow_null=False)
     company_id = serializers.CharField(max_length=255, allow_null=False)
-    team_lead = serializers.CharField(max_length=255, allow_null=True, required=False)
+    team_lead = serializers.CharField(max_length=255, allow_null=True, required=True)
     members = serializers.ListField(allow_null=True, required=False)
     group_leads = serializers.ListField(allow_null=True, required=False)
 
