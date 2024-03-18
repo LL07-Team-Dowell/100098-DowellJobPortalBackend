@@ -9083,17 +9083,9 @@ class dashboard_services(APIView):
     """TOTAL WORKLOGS FOR TODAY"""
 
     def logs_for_today(self, request):
-        company_id = request.GET.get("company_id")
-        today = date.today()
-        today_str = today.strftime("%Y-%m-%d")
-        field = {"company_id": company_id, "task_created_date": today_str}
+        field = {"company_id": request.GET.get("company_id"), "task_created_date": date.today().strftime("%Y-%m-%d")}
 
-        # print("Today field", field)
-
-        response = dowellconnection(
-            *task_details_module, "fetch", field, update_field=None
-        )
-        response = json.loads(response)
+        response = json.loads(dowellconnection(*task_details_module, "fetch", field, update_field=None))
         print(response)
 
         if response["isSuccess"]:
@@ -9124,33 +9116,32 @@ class dashboard_services(APIView):
         month_dates = [f"{today.year}-{today.month:02d}-{d}" for d in range(1, number_of_days + 1)]
         log_counts = {}
         
-        def call_dowell(field):
-            res=dowellconnection(*task_details_module, "fetch", field, update_field=None)
         
+        def call_dowell(*args):
+            
+            field = {"company_id": args[1], "task_created_date": args[0]}
             try:
-                response_str = json.loads(res)['data']
-                print(response_str)  # Check the response data
+                response_str = json.loads(dowellconnection(*task_details_module, "fetch", field, update_field=None))['data']
         
                 # Process the response_str here or store it in a suitable data structure
                 for item in response_str:
-                    project_name = item.get("project")  # Get project name if it exists
-                    if project_name:
-                        log_counts[project_name] = log_counts.get(project_name, 0) + 1
+                    if 'project' in item.keys():
+                        log_counts[item['project']] = log_counts.get(item['project'], 0) + 1
             except Exception as e:
-                print(f"An error occurred: {e}")
+                try:
+                    response_str = json.loads(dowellconnection(*task_details_module, "fetch", field, update_field=None))['data']
+            
+                    # Process the response_str here or store it in a suitable data structure
+                    for item in response_str:
+                        if 'project' in item.keys():
+                            log_counts[item['project']] = log_counts.get(item['project'], 0) + 1
+                except Exception as e:
+                    print(f"An error occurred: {e}")
 
-        # Define a function to fetch data using threads
-        def fetch_data_for_date(task_created_date, company_id):
-            field = {"company_id": company_id, "task_created_date": task_created_date}
-            try:
-                call_dowell(field)
-            except json.decoder.JSONDecodeError as error:
-                call_dowell(field)
-                
         # Create threads for each date
         threads = []
         for task_created_date in month_dates:
-            thread = threading.Thread(target=fetch_data_for_date, args=(task_created_date, request.GET.get("company_id")))
+            thread = threading.Thread(target=call_dowell, args=(task_created_date, request.GET.get("company_id")))
             threads.append(thread)
             thread.start()
         # Wait for all threads to complete
