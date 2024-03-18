@@ -96,6 +96,7 @@ import HRCompanyStructure from "./pages/HrPage/views/CompanyStructure/HrCompanyS
 import PaymentLandingPage from "./pages/AccountPage/views/PaymentLandingPage/PaymentLandingPage";
 import AccountsInvoicePage from "./pages/AccountPage/views/Payments/AccountsInvoicePage";
 import ResearchAssociatePage2 from "./pages/CandidatePage/views/ResearchAssocatiePage2/ResearchAssociatePage2";
+import { publicUserRoutes } from "./routes/publicUserRoutes";
 
 function App() {
   // console.log = () => { };
@@ -168,29 +169,20 @@ function App() {
   if (!currentUser && isPublicUser) {
     return (
       <Routes>
-        <Route
-          path="/apply/job/:id"
-          element={
-            <JobContextProvider>
-              <NewApplicationContextProvider>
-                <JobApplicationScreen />
-              </NewApplicationContextProvider>
-            </JobContextProvider>
-          }
-        >
-          <Route
-            path=":section"
-            element={
-              <JobContextProvider>
-                <NewApplicationContextProvider>
-                  <JobApplicationScreen />
-                </NewApplicationContextProvider>
-              </JobContextProvider>
-            }
-          />
-        </Route>
-
-        <Route path="*" element={<>Page Not found</>} />
+        {
+          publicUserRoutes.map(route => {
+            return <Route 
+              path={route.path}
+              element={
+                <JobContextProvider>
+                  <NewApplicationContextProvider>
+                    <route.component />
+                  </NewApplicationContextProvider>
+                </JobContextProvider>
+              }
+            />
+          })
+        }
       </Routes>
     );
   }
