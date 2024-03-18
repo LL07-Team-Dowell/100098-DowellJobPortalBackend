@@ -16,23 +16,34 @@ function UserScreen({ candidateSelected }) {
   const handleLogout = () => navigate("/logout");
 
   const [success, setsuccsess] = React.useState(false);
+
   React.useEffect(() => {
     const checkActive = setInterval(() => {
       //    getUserLiveStatus()
-      Promise.all([getUserLiveStatus(), postUserLiveStatus({ product: teamManagementProductName, session_id: sessionStorage.getItem("session_id") })])
-        .then(resp => { console.log(resp[0], resp[1]); setsuccsess(true) })
-        .catch(err => { console.log(err[0], err[1]); setsuccsess(false); });
+      Promise.all([
+        getUserLiveStatus(), 
+        postUserLiveStatus({ product: teamManagementProductName, session_id: sessionStorage.getItem("session_id") })
+      ])
+      .then(resp => { 
+        console.log(resp[0], resp[1]); 
+        setsuccsess(true) 
+      })
+      .catch(err => { 
+        console.log(err[0], err[1]); 
+        setsuccsess(false); 
+      });
     }, 60000)
+
     return () => clearInterval(checkActive)
   }, [])
 
   const [userProject, setUserProject] = useState('');
+
   useEffect(() => {
     if (currentUserHiredApplicationsLoaded) {
-      setUserProject(currentUserHiredApplications.map(app => app?.project).flat().join(', '));
+      setUserProject(currentUserHiredApplications?.map(app => app?.project)?.flat()?.join(', '));
     }
-  },
-    [currentUserHiredApplicationsLoaded])
+  }, [currentUserHiredApplicationsLoaded])
 
   return (
     <JobLandingLayout user={currentUser} afterSelection={candidateSelected}>
@@ -43,24 +54,24 @@ function UserScreen({ candidateSelected }) {
           <div className="user__Intro__Item__Container">
             <div className="user__Intro__Item">
               <h2>User Name</h2>
-              <span>{currentUser.userinfo.username}</span>
+              <span>{currentUser?.userinfo?.username}</span>
             </div>
             <ClaimVouchar />
 
           </div>
           <div className="user__Intro__Item">
             <h2>Email</h2>
-            <span>{currentUser.userinfo.email}</span>
+            <span>{currentUser?.userinfo?.email}</span>
           </div>
           <div className="user__Intro__Item">
             <h2>First Name</h2>
-            <span>{currentUser.userinfo.first_name}</span>
+            <span>{currentUser?.userinfo?.first_name}</span>
           </div>
           {
             currentUser.userinfo.last_name !== "" &&
             <div className="user__Intro__Item">
               <h2>Last Name</h2>
-              <span>{currentUser.userinfo.last_name}</span>
+              <span>{currentUser?.userinfo?.last_name}</span>
             </div>
           }
           <div className="user__Intro__Item" style={{ display: "flex", gap: 5, alignItems: "center" }}>

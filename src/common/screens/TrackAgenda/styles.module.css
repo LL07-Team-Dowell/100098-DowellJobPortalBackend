@@ -364,6 +364,10 @@
     height: max-content;
 }
 
+.track__Agendas__Wrap {
+    padding-bottom: 100px;
+}
+
 .track__Agenda__Item__Wrap {
     width: 100%;
     position: relative;
@@ -464,6 +468,19 @@
 .date_start_input {
     width: max-content;
     max-width: 5rem;
+}
+
+.approve_btn_{
+    height: auto;
+}
+
+.approve_btn_ .approve_btn_btn{
+    padding: 6px 10px;
+    background-color: #005734;
+    border: none;
+    color: #fff;
+    font-size: 1.1rem;
+    border-radius: 8px;
 }
 
 @media screen and (max-width: 500px) {

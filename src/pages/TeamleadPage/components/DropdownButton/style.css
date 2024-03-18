@@ -60,6 +60,9 @@
     align-items: center;
     gap: 0.4rem;
     padding: 0.6rem 0;
+    position: sticky;
+    top: 0;
+    background-color: #fff;
 }
 
 .dropdown-selections .search__Selections__Wrap svg {

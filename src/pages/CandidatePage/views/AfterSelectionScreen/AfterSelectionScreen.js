@@ -100,7 +100,7 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
     setShowAddTaskModal(true);
 
     // RESET STATE TO PREVENT ADD TASK MODAL FROM POPPING UP AFTER EVERY RELOAD
-    window.history.replaceState({}, "/100098-DowellJobPortal/#/");
+    window.history.replaceState({}, document.title, "/100098-DowellJobPortal/#/");
   }, [state]);
 
   return (

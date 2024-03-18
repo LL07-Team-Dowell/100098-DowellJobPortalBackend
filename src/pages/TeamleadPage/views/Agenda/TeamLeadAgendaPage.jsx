@@ -11,6 +11,7 @@ const TeamLeadAgendaPage = () => {
         >
             <TrackAgendaPage 
                 restrictProjects={true}
+                isTeamLead={true}
             />
         </StaffJobLandingLayout>
     </>

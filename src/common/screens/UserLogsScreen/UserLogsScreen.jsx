@@ -590,10 +590,15 @@ const UsersLogsScreen = ({
                                                     <p className={`${styles.single__log__Detail} ${logIsApproved ? styles.approved__log : ''}`}>
                                                         {
                                                             logIsApproved ? 
-                                                                <AiOutlineCheckCircle 
-                                                                    fontSize={'0.8rem'} 
-                                                                    color="#005734" 
-                                                                />
+                                                                <span
+                                                                    style={{
+                                                                        fontSize: '0.85rem'
+                                                                    }}
+                                                                >
+                                                                    <AiOutlineCheckCircle  
+                                                                        color="#005734" 
+                                                                    />
+                                                                </span>
                                                             :
                                                             <></>
                                                         }

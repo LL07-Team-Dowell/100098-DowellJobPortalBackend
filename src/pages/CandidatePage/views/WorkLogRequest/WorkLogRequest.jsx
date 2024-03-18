@@ -24,8 +24,7 @@ const WorkLogRequest = () => {
     navigate('/', { state: { log_request_date: detail?.update_task_date }})
   }
 
-
-  if (error) return <h1>{error}</h1>;
+  // if (error) return <h1>{error}</h1>;
   return (
     <JobLandingLayout user={currentUser} afterSelection={true}>
       <div className='work__log__request'>
@@ -37,7 +36,9 @@ const WorkLogRequest = () => {
         <Buttons changeCardsStats={changeCardsStats} />
         {!loading ? (
           <div className='cards'>
-            {cardData === "pending-approved"
+            {
+              error ? <></> :
+              cardData === "pending-approved"
               ? data
                   ?.filter(
                     (element) =>

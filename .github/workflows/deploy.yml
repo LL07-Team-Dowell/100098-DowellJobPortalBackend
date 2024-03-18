@@ -25,6 +25,9 @@ jobs:
       - run: npm i
       - run: npm ci
       - run: CI=false npm run build
+        env:
+          REACT_APP_TEST_KEY: ${{ secrets.REACT_APP_TEST_KEY }}
+          REACT_APP_TEST_KEY_2: ${{ secrets.REACT_APP_TEST_KEY_2 }}
       - uses: actions/upload-artifact@v2
         with:
           name: production

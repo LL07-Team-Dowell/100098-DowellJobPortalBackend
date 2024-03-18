@@ -8,6 +8,7 @@ import formatDate from "../../../../../../../helpers/formateDate";
 import { FiPlus } from "react-icons/fi";
 import "./createTask.scss";
 import { Close } from "@mui/icons-material";
+import { useCurrentUserContext } from "../../../../../../../contexts/CurrentUserContext";
 
 const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
   const [name, setname] = useState("");
@@ -25,6 +26,11 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
   );
   const [query, setquery] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+
+  const {
+    currentUser
+  } = useCurrentUserContext();
+
   const handleFileChange = async (e) => {
     setSelectedFile(e.target.files[0]);
     // setLoadingImage(true);
@@ -103,6 +109,7 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
             completed: false,
             due_date: formatDate(date),
             subtasks: arrayToObject(subTask),
+            user_id: currentUser?.userinfo?.userID,
           })
             .then((resp) => {
               toast.success("task created successfully");
@@ -161,6 +168,7 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
                 image: imageUrl,
                 due_date: formatDate(date),
                 subtasks: arrayToObject(subTask),
+                user_id: currentUser?.userinfo?.userID,
               })
                 .then((resp) => {
                   toast.success("task created successfully");
@@ -400,7 +408,7 @@ const SubTasks = ({ subTasks, setSubTasks }) => {
           </div>
         </>
       ))}
-      <div className='btn'>
+      <div className='btn__Sub'>
         <button onClick={handleClick}>
           <FiPlus />
         </button>
