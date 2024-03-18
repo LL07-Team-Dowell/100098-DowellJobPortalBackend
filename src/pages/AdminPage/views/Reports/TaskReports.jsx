@@ -236,7 +236,7 @@ const TaskReports = ({ subAdminView, isPublicReportUser, isProjectLead }) => {
         );
         setReport(formattedData);
         setProjectTaskInfo(
-          `A total of ${totalTasksAdded} work logs have been added in ${selectedProject}`
+          `A total of ${isNaN(totalTasksAdded) ? totalTasksAdded : Number(totalTasksAdded).toLocaleString()} work logs have been added in ${selectedProject}`
         );
         setFoundProjectTime(foundProjectTimeFromArr);
         setReportsLoading(false);
@@ -330,52 +330,18 @@ const TaskReports = ({ subAdminView, isPublicReportUser, isProjectLead }) => {
               {foundProjectTime && (
                 <>
                   {" "}
+                  {
+                    foundProjectTime?.is_continuous === true ? <p style={{ textAlign: "center", fontSize: "0.9rem" }}>
+                      This is a continuous project
+                    </p>
+                    :
+                      <p style={{ textAlign: "center", fontSize: "0.9rem" }}>
+                        {`The total time estimated for this project is ${isNaN(foundProjectTime.total_time) ? foundProjectTime.total_time : Number(foundProjectTime.total_time).toLocaleString()} hours`}
+                      </p>
+                  }
                   <p style={{ textAlign: "center", fontSize: "0.9rem" }}>
-                    {`The total time estimated for this project is ${foundProjectTime.total_time} hours`}
+                    {`The project lead of this project is ${foundProjectTime.lead_name}`}
                   </p>
-                  <p style={{ textAlign: "center", fontSize: "0.9rem" }}>
-                    {`The lead for this project is ${foundProjectTime.lead_name}`}
-                  </p>
-                  <div style={{ marginBottom: 60 }}>
-                    <div
-                      style={{
-                        maxWidth: "100%",
-                        padding: "20px 10px",
-                        margin: "2rem auto",
-                        width: "200px",
-                        minWidth:
-                          foundProjectTime?.labels?.length < 10
-                            ? "45%"
-                            : "45%",
-                      }}
-                      className="graph__Item"
-                    >
-                      <h2 style={{ textAlign: "center", marginBottom: "2rem" }}>
-                        Doughnut Chart showing the time spent as against the
-                        remaining time
-                      </h2>
-                      <Doughnut
-                        options={options}
-                        data={{
-                          labels: ["Spent time", "Left time"],
-                          datasets: [
-                            {
-                              data: [
-                                foundProjectTime.spent_time,
-                                foundProjectTime.left_time,
-                              ],
-                              backgroundColor: [
-                                "#160291",
-                                "#D3D3D3",
-                                "#005734",
-                              ],
-                              borderColor: ["#160291", "#D3D3D3", "#005734"],
-                            },
-                          ],
-                        }}
-                      />
-                    </div>
-                  </div>
                 </>
               )}
               <div
@@ -409,6 +375,55 @@ const TaskReports = ({ subAdminView, isPublicReportUser, isProjectLead }) => {
                 </h2>
                 <Bar options={options} data={subProjectReport} />
               </div>
+
+              {
+                foundProjectTime &&
+                <div
+                  style={{
+                    maxWidth: "100%",
+                    padding: "20px 10px",
+                    margin: "2rem auto",
+                    width: "200px",
+                    minWidth:
+                      foundProjectTime?.labels?.length < 10
+                        ? "60%"
+                        : "60%",
+                  }}
+                  className="graph__Item"
+                >
+                  <h2 style={{ textAlign: "center", marginBottom: "2rem" }}>
+                    Doughnut Chart showing the time spent
+                  </h2>
+                  <div 
+                    style={{ 
+                      width: 400, 
+                      height: 400,
+                      margin: '0 auto'
+                    }}
+                  >
+                    <Doughnut
+                      options={options}
+                      data={{
+                        labels: ["Spent time", "Left time"],
+                        datasets: [
+                          {
+                            data: [
+                              foundProjectTime.spent_time,
+                              foundProjectTime.left_time,
+                            ],
+                            backgroundColor: [
+                              "#005734",
+                              "#D3D3D3",
+                            ],
+                            borderColor: ["#005734", "#D3D3D3",],
+                          },
+                        ],
+                      }}
+                    />
+                  </div>
+                </div>
+              }
+
               {/* <div
                 style={{
                   maxWidth: "100%",
