@@ -97,7 +97,7 @@ def settinguserposition(username, company_id):
     if response.status_code == 200:
         return response.json().get('data', {}).get('role')
     else:
-        print("Failed to set user position. HTTP status code:", response.status_code)
+        # print("Failed to get user position. HTTP status code:", response.status_code)
         return None
 
 def get_userwise_attendance( username,monday_of_previous_week, friday_of_previous_week,company_id, project):
@@ -116,24 +116,23 @@ def get_userwise_attendance( username,monday_of_previous_week, friday_of_previou
     res = response.json()
     return res.get('data', {}).get(username, [])
 
-def process_payment(
-    user_id, payment_month, payment_year, approved_logs_count, total_logs_required, payment_from, payment_to
+def processpayment(user_id, payment_month, payment_year, approved_logs_count, total_logs_required, payment_from, payment_to
 ):
     url = "https://100098.pythonanywhere.com/invoice_module/?type=process-payment"
     payload = {
         "user_id": user_id,
         "payment_month": payment_month,
         "payment_year": payment_year,
+        "user_was_on_leave": False,
         "approved_logs_count": approved_logs_count,
         "total_logs_required": total_logs_required,
         "payment_from": payment_from,
         "payment_to": payment_to,
-        "user_was_on_leave": False
     }
     headers = {"Content-Type": "application/json"}
-    response = requests.request("POST", url, headers=headers, json=payload)
-    res = json.loads(response.text)
-    return res
+    response = requests.post(url, headers=headers, json=payload)
+    return response.status_code
+
 
 def calculate_hours(worklogs):
     total_hours = 0
@@ -150,14 +149,16 @@ def create_invoice_bot():
     monday_of_previous_week = previous_week_dates["Monday"]
     friday_of_previous_week = previous_week_dates["Friday"]
     sunday_of_previous_week = previous_week_dates["Sunday"]
-    company_id = "6385c0f18eca0fb652c94561"
+    company_id = "63a2b3fb2be81449d3a30d3f"
     
-
+    print(f'Getting all onboarded applications for company with id of {company_id}...')
 
     all_applications = get_all_onboarded_candidate(company_id=company_id)
     applications = all_applications.get("response")["data"]
+    applications_with_user_id = [application for application in applications if "user_id" in application]
 
-    for application in applications:
+    for application in applications_with_user_id:
+        print(f'Initiating invoice creation process for {application["username"]}.......')
         user_id = application["user_id"]
 
         user_approved_logs = get_all_task_details(
@@ -166,14 +167,16 @@ def create_invoice_bot():
             company_id,
             user_id,
         )
+
         logs = user_approved_logs.get("task_details")
         
         user_approved_logs = [log for log in logs if log.get("approval") == True or log.get("approved") == True]
         
-        hours = calculate_hours(user_approved_logs)      
+        hours = calculate_hours(user_approved_logs)
+        print(f'Total approved log hours for {application["username"]}: {hours}')     
         
         user_role = settinguserposition(application["username"], company_id)
-        
+        print(f'Current role of {application["username"]}: {user_role}')
 
         if user_role in ["Group lead", "Team Lead"]:
             if hours < 40:
@@ -208,7 +211,7 @@ def create_invoice_bot():
                 else:
                     total_logs_required = 80
 
-                result = process_payment(
+                result = processpayment(
                     user_id,
                     payment_month,
                     payment_year,
@@ -217,9 +220,9 @@ def create_invoice_bot():
                     monday_of_previous_week,
                     sunday_of_previous_week
                 )
-                print(result)  
+                print(f"status of invoice created for {application['username']} : {result}")
             else:
-                print('Invoice not created because user was not present for at least one meeting last week') 
+                print(f'Invoice not created for {application["username"]} because user was not present for at least one meeting last week') 
         else:   
             if hours < 20:
                 print(
@@ -247,7 +250,7 @@ def create_invoice_bot():
                 payment_month = sunday_of_previous_week_datetime.strftime("%B")
                 payment_year = sunday_of_previous_week_datetime.year
 
-                result = process_payment(
+                result = processpayment(
                     user_id,
                     payment_month,
                     payment_year,
@@ -256,9 +259,9 @@ def create_invoice_bot():
                     monday_of_previous_week,
                     sunday_of_previous_week
                 )
-                print(result)
+                print(f"status of invoice created for {application['username']} : {result}")
             else:
-                print('Invoice not created because user was not present for at least one meeting last week')
+                print(f'Invoice not created for {application["username"]} because user was not present for at least one meeting last week') 
     
 fun = create_invoice_bot()
 
