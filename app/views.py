@@ -11477,7 +11477,6 @@ class Company_Structure(APIView):
             '_coded_project':_coded_project,
             "company_id":company_id
         }
-        print(update_data,"===============")
         update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,update_data))
         if update_collection['success']==True:
             update_collection['message'] = f"{type_request} data has been updated successfully."
