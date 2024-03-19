@@ -46,15 +46,24 @@ const Project = ({ _id }) => {
 
     //Getting project time
     setProjectTimeLoading(true);
-    getProjectTime(currentUser.portfolio_info[0].org_id).then((res) => {
+
+    Promise.all([
+      getProjectTime(currentUser.portfolio_info[0].org_id),
+      getCommits(),
+    ]).then((res) => {
       setProjectTime(
-        res?.data?.data?.filter(
+        res[0]?.data?.data?.filter(
           (project) =>
             project?.data_type === currentUser.portfolio_info[0].data_type
         )
       );
+      //Get number of commits
+      const commitsData = res[1].data?.data;
+      setCommits(commitsData);
+
       setProjectTimeLoading(false);
       console.log(projectTime);
+      console.log(commits);
     });
 
     //Getting of Projects (Active/Inactive projects)
@@ -75,14 +84,6 @@ const Project = ({ _id }) => {
     ) {
       setInactiveProjects(projectsAdded[0]?.inactive_project_list);
     }
-
-    //Get number of commits
-    getCommits().then((res) => {
-      console.log(res);
-      const commitsData = res.data?.data;
-      setCommits(commitsData);
-      console.log(commits);
-    });
   }, []);
 
   const showProjectPopup = () => {
@@ -362,18 +363,15 @@ const Project = ({ _id }) => {
                             <p className={styles.project_time}>
                               Total time:{" "}
                               <>
-                                {
-                                  !foundProjectTimeDetail ? 0 
-                                  :
-                                  foundProjectTimeDetail?.is_continuous
-                                    ? "∞"
-                                  : 
-                                  Number(
-                                    foundProjectTimeDetail?.total_time
-                                  ).toLocaleString("en-US", {
-                                    maximumFractionDigits: 2,
-                                  })
-                                }
+                                {!foundProjectTimeDetail
+                                  ? 0
+                                  : foundProjectTimeDetail?.is_continuous
+                                  ? "∞"
+                                  : Number(
+                                      foundProjectTimeDetail?.total_time
+                                    ).toLocaleString("en-US", {
+                                      maximumFractionDigits: 2,
+                                    })}
                               </>
                               <span>Hours</span>
                             </p>

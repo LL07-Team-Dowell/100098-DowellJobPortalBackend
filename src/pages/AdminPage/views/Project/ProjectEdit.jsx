@@ -97,6 +97,13 @@ const ProjectEdit = () => {
 
     console.log("found project lead -> ", foundProjectlead);
 
+    //Getting the commits from secure repository api
+    getCommits().then((res) => {
+      const repos = res.data?.data;
+      setRepository(repos);
+      console.log(repository);
+    });
+
     const fetchProjectDetails = async () => {
       try {
         if (params.get("id") && params.get("id") !== "null") {
@@ -137,14 +144,6 @@ const ProjectEdit = () => {
         setLoading(false);
       }
     };
-
-    //Getting the commits from secure repository api
-
-    getCommits().then((res) => {
-      const repos = res.data?.data;
-      setRepository(repos);
-      console.log(repository);
-    });
 
     fetchProjectDetails();
   }, [params]);

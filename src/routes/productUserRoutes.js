@@ -7,10 +7,29 @@ import EmployeeJobScreen from "../pages/CandidatePage/views/JobsLandingScreens/E
 import InternJobScreen from "../pages/CandidatePage/views/JobsLandingScreens/InternJobLandingScreen";
 import FreelancerJobScreen from "../pages/CandidatePage/views/JobsLandingScreens/FreelancerJobScreen";
 
-export const currentUser = [
+//Highier order component for CandidateHomeScreen to pass props
+const CandidateHomeScreenWithProps = ({
+  setHired,
+  setAssignedProjects,
+  setCandidateShortListed,
+  setshorlistedJob,
+  setRemoved,
+}) => {
+  return (
+    <CandidateHomeScreen
+      setHired={setHired}
+      setAssignedProjects={setAssignedProjects}
+      setCandidateShortListed={setCandidateShortListed}
+      setshorlistedJob={setshorlistedJob}
+      setRemoved={setRemoved}
+    />
+  );
+};
+
+export const productUserRouteReject = [
   {
     path: "/",
-    component: CandidateHomeScreen,
+    component: CandidateHomeScreenWithProps,
   },
   {
     path: "/:section",

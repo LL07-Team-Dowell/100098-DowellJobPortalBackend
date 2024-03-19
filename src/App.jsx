@@ -97,7 +97,10 @@ import PaymentLandingPage from "./pages/AccountPage/views/PaymentLandingPage/Pay
 import AccountsInvoicePage from "./pages/AccountPage/views/Payments/AccountsInvoicePage";
 import ResearchAssociatePage2 from "./pages/CandidatePage/views/ResearchAssocatiePage2/ResearchAssociatePage2";
 import { publicUserRoutes } from "./routes/publicUserRoutes";
-import { productUserRoutes } from "./routes/productUserRoutes";
+import {
+  productUserRouteReject,
+  productUserRoutes,
+} from "./routes/productUserRoutes";
 
 function App() {
   // console.log = () => { };
@@ -219,118 +222,22 @@ function App() {
 
     return (
       <Routes>
-        <Route
-          path="/"
-          element={
-            <JobContextProvider>
-              <NewApplicationContextProvider>
-                <CandidateHomeScreen
-                  setHired={setCandidateHired}
-                  setAssignedProjects={setAssignedProjects}
-                  setCandidateShortListed={setCandidateShortListed}
-                  setshorlistedJob={setshorlistedJob}
-                  setRemoved={setCandidateRemoved}
-                />
-              </NewApplicationContextProvider>
-            </JobContextProvider>
-          }
-        >
-          <Route
-            path=":section"
-            element={
-              <JobContextProvider>
-                <NewApplicationContextProvider>
-                  <CandidateHomeScreen />
-                </NewApplicationContextProvider>
-              </JobContextProvider>
-            }
-          />
-        </Route>
-
-        <Route path="/jobs">
-          <Route
-            index
-            element={
-              <JobContextProvider>
-                <NewApplicationContextProvider>
-                  <JobScreen />
-                </NewApplicationContextProvider>
-              </JobContextProvider>
-            }
-          />
-          <Route
-            path=":jobTitle"
-            element={
-              <JobContextProvider>
-                <NewApplicationContextProvider>
-                  <SingleJobScreen />
-                </NewApplicationContextProvider>
-              </JobContextProvider>
-            }
-          />
-          <Route
-            exact
-            path="c/research-associate"
-            element={<ResearchAssociatePage />}
-          />
-          <Route
-            exact
-            path="c/employee"
-            element={
-              <JobContextProvider>
-                <NewApplicationContextProvider>
-                  <EmployeeJobScreen />
-                </NewApplicationContextProvider>
-              </JobContextProvider>
-            }
-          />
-          <Route
-            exact
-            path="c/intern"
-            element={
-              <JobContextProvider>
-                <NewApplicationContextProvider>
-                  <InternJobScreen />
-                </NewApplicationContextProvider>
-              </JobContextProvider>
-            }
-          />
-          <Route
-            exact
-            path="c/freelancer"
-            element={
-              <JobContextProvider>
-                <NewApplicationContextProvider>
-                  <FreelancerJobScreen />
-                </NewApplicationContextProvider>
-              </JobContextProvider>
-            }
-          />
-        </Route>
-
-        <Route
-          path="/apply/job/:id"
-          element={
-            <JobContextProvider>
-              <NewApplicationContextProvider>
-                <JobApplicationScreen />
-              </NewApplicationContextProvider>
-            </JobContextProvider>
-          }
-        >
-          <Route
-            path=":section"
-            element={
-              <JobContextProvider>
-                <NewApplicationContextProvider>
-                  <JobApplicationScreen />
-                </NewApplicationContextProvider>
-              </JobContextProvider>
-            }
-          />
-        </Route>
-
-        <Route path="*" element={<ErrorPage />} />
+        {React.Children.toArray(
+          productUserRouteReject.map((productRoute) => {
+            return (
+              <Route
+                path={productRoute.path}
+                element={
+                  <JobContextProvider>
+                    <NewApplicationContextProvider>
+                      <productRoute.component />
+                    </NewApplicationContextProvider>
+                  </JobContextProvider>
+                }
+              />
+            );
+          })
+        )}
       </Routes>
     );
   }
