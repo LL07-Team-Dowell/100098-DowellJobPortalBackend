@@ -37,7 +37,11 @@ const Project = ({ _id }) => {
       setShowProjectsPop(true);
 
       // RESET STATE TO PREVENT PROJECT MODAL FROM POPPING UP AFTER EVERY RELOAD
-      window.history.replaceState({}, document.title, "/100098-DowellJobPortal/#/projects");
+      window.history.replaceState(
+        {},
+        document.title,
+        "/100098-DowellJobPortal/#/projects"
+      );
     }
 
     //Getting project time
@@ -74,8 +78,10 @@ const Project = ({ _id }) => {
 
     //Get number of commits
     getCommits().then((res) => {
-      console.log(res?.data?.data);
-      const commitsData = res?.data?.data;
+      console.log(res);
+      const commitsData = res.data?.data;
+      setCommits(commitsData);
+      console.log(commits);
     });
   }, []);
 
@@ -366,7 +372,18 @@ const Project = ({ _id }) => {
                               </>
                               <span>Hours</span>
                             </p>
-                            <p className={styles.project_time}>Commits: {""}</p>
+                            <p className={styles.project_time}>
+                              Commits:{" "}
+                              <>
+                                {commits.map((repo) =>
+                                  repo.repository_name ===
+                                  foundProjectTimeDetail?.repository_name
+                                    ? repo.metadata.length
+                                    : null
+                                )}
+                                <span>Commits</span>
+                              </>
+                            </p>
                           </>
                         ) : null}
                         <div

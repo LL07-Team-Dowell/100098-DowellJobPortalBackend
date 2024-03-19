@@ -11,6 +11,7 @@ import { MdArrowBackIosNew } from "react-icons/md";
 import { useEffect } from "react";
 import {
   addProjectTime,
+  getCommits,
   getProjectTime,
   getSingleProjectTime,
   updateProjectTime,
@@ -26,6 +27,7 @@ import { toast } from "react-toastify";
 import SearchBar from "../../../../components/SearchBar/SearchBar";
 import { useCompanyStructureContext } from "../../../../contexts/CompanyStructureContext";
 import { labelColors } from "../../../../common/screens/CompanyStructure/utils/utils";
+import Select from "react-select";
 
 const ProjectEdit = () => {
   const navigate = useNavigate();
@@ -38,6 +40,8 @@ const ProjectEdit = () => {
   // const { id } = useParams();
   const [showEditView, setShowEditView] = useState(false);
   const [dataPosting, setDataPosting] = useState(false);
+  const [repository, setRepository] = useState([]);
+  const [selectedRepository, setSelectedRepository] = useState("");
 
   const [projectTimeDetail, setProjectTimeDetail] = useState({
     total_time: 0,
@@ -49,6 +53,7 @@ const ProjectEdit = () => {
     company_id: currentUser.portfolio_info[0].org_id,
     data_type: currentUser.portfolio_info[0].data_type,
     is_continuous: false,
+    repository_name: selectedRepository.label,
   });
 
   const [copyOfProjectTimeDetail, setCopyOfProjectTimeDetail] = useState({
@@ -61,6 +66,7 @@ const ProjectEdit = () => {
     company_id: currentUser.portfolio_info[0].org_id,
     data_type: currentUser.portfolio_info[0].data_type,
     is_continuous: false,
+    repository_name: selectedRepository.label,
   });
 
   const { subProjectsAdded, applications } = useJobContext();
@@ -132,8 +138,21 @@ const ProjectEdit = () => {
       }
     };
 
+    //Getting the commits from secure repository api
+
+    getCommits().then((res) => {
+      const repos = res.data?.data;
+      setRepository(repos);
+      console.log(repository);
+    });
+
     fetchProjectDetails();
   }, [params]);
+
+  const options = repository.map((repo) => ({
+    label: repo.repository_name,
+    value: repo.repository_name,
+  }));
 
   const handleEditProjectTime = () => {
     if (showEditView) setCopyOfProjectTimeDetail(projectTimeDetail);
@@ -161,6 +180,7 @@ const ProjectEdit = () => {
             total_time: Number(copyOfProjectTimeDetail.total_time),
             document_id: params.get("id"),
             is_continuous: copyOfProjectTimeDetail.is_continuous,
+            repository_name: copyOfProjectTimeDetail.repository_name,
           }),
           updateProjectTimeEnabled({
             editing_enabled: copyOfProjectTimeDetail.editing_enabled,
@@ -177,6 +197,7 @@ const ProjectEdit = () => {
                 total_time: copyOfProjectTimeDetail.total_time,
                 is_continuous: copyOfProjectTimeDetail.is_continuous,
                 editing_enabled: copyOfProjectTimeDetail.editing_enabled,
+                repository_name: copyOfProjectTimeDetail.repository_name,
               };
             });
 
@@ -425,7 +446,11 @@ const ProjectEdit = () => {
                     />
                     <TimeDetails
                       title={"Total time"}
-                      time={projectTimeDetail?.is_continuous === true ? '∞' : projectTimeDetail.total_time}
+                      time={
+                        projectTimeDetail?.is_continuous === true
+                          ? "∞"
+                          : projectTimeDetail.total_time
+                      }
                       isTimeStr={true}
                     />
                   </div>
@@ -618,16 +643,13 @@ const ProjectEdit = () => {
                             name="lead_name"
                             placeholder="Enter lead name"
                             value={copyOfProjectTimeDetail.lead_name}
-                            onChange={(e) =>
-                              handleInputChange(e.target.value, e.target.name)
-                            }
                             disabled
                           />
                         </div>
                         <br />
-                        {
-                          copyOfProjectTimeDetail.is_continuous ? <></> 
-                          :
+                        {copyOfProjectTimeDetail.is_continuous ? (
+                          <></>
+                        ) : (
                           <>
                             <div className={styles.job__details}>
                               <label htmlFor="total_time">
@@ -649,7 +671,27 @@ const ProjectEdit = () => {
                             </div>
                             <br />
                           </>
-                        }
+                        )}
+                        <div className={styles.job__details}>
+                          <label
+                            htmlFor="repository_name"
+                            className={styles.is_continious_desc}
+                          >
+                            Project Repository
+                          </label>
+                          <Select
+                            options={options}
+                            onChange={(selectedOption) => {
+                              setCopyOfProjectTimeDetail((prevValue) => ({
+                                ...prevValue,
+                                repository_name: selectedOption.value,
+                              }));
+                              setSelectedRepository(selectedOption);
+                            }}
+                            placeholder="Select project repository"
+                          />
+                        </div>
+                        <br />
                         <div className={styles.is_continious_edit}>
                           <div>
                             <input
@@ -692,9 +734,9 @@ const ProjectEdit = () => {
                           />
                         </div>
                         <br />
-                        {
-                          copyOfProjectTimeDetail.is_continuous ? <></> 
-                          :
+                        {copyOfProjectTimeDetail.is_continuous ? (
+                          <></>
+                        ) : (
                           <>
                             <div className={styles.job__details}>
                               <label htmlFor="total_time">
@@ -717,7 +759,28 @@ const ProjectEdit = () => {
                             </div>
                             <br />
                           </>
-                        }
+                        )}
+                        <div className={styles.job__details}>
+                          <label
+                            htmlFor="repository_name"
+                            className={styles.is_continious_desc}
+                          >
+                            Project Repository
+                          </label>
+                          <Select
+                            options={options}
+                            onChange={(selectedOption) => {
+                              setCopyOfProjectTimeDetail((prevValue) => ({
+                                ...prevValue,
+                                repository_name: selectedOption.value,
+                              }));
+                              setSelectedRepository(selectedOption);
+                            }}
+                            placeholder="Select project repository"
+                            disabled
+                          />
+                        </div>
+                        <br />
                         <div className={styles.is_continious_edit}>
                           <div>
                             <input

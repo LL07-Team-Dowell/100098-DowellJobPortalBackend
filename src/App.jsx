@@ -97,6 +97,7 @@ import PaymentLandingPage from "./pages/AccountPage/views/PaymentLandingPage/Pay
 import AccountsInvoicePage from "./pages/AccountPage/views/Payments/AccountsInvoicePage";
 import ResearchAssociatePage2 from "./pages/CandidatePage/views/ResearchAssocatiePage2/ResearchAssociatePage2";
 import { publicUserRoutes } from "./routes/publicUserRoutes";
+import { productUserRoutes } from "./routes/productUserRoutes";
 
 function App() {
   // console.log = () => { };
@@ -169,10 +170,10 @@ function App() {
   if (!currentUser && isPublicUser) {
     return (
       <Routes>
-        {
-          React.Children.toArray(
-            publicUserRoutes.map(route => {
-              return <Route 
+        {React.Children.toArray(
+          publicUserRoutes.map((route) => {
+            return (
+              <Route
                 path={route.path}
                 element={
                   <JobContextProvider>
@@ -182,9 +183,9 @@ function App() {
                   </JobContextProvider>
                 }
               />
-            })
-          )
-        }
+            );
+          })
+        )}
       </Routes>
     );
   }
@@ -194,55 +195,24 @@ function App() {
     if (productUserDetails.onlySingleJobCategoryPermitted) {
       return (
         <Routes>
-          {/* <Route
-            path={`c/${productUserDetails.categoryAllowed}`}
-            element={
-              <JobContextProvider>
-                <NewApplicationContextProvider>
-                  <>
-                    {
-                      React.Children.toArray(categoriesForScreen.map(item => {
-                        if (item.category === productUserDetails.categoryAllowed) return <item.component />
-                        return <></>
-                      }))
-                    }
-                  </>
-                </NewApplicationContextProvider>
-              </JobContextProvider>
-            }
-          /> */}
-          <Route
-            path={`/jobs`}
-            element={
-              <JobContextProvider>
-                <CandidateJobsContextProvider>
-                  <JobScreen />
-                </CandidateJobsContextProvider>
-              </JobContextProvider>
-            }
-          />
-          <Route
-            path="/apply/job/:id"
-            element={
-              <JobContextProvider>
-                <NewApplicationContextProvider>
-                  <JobApplicationScreen />
-                </NewApplicationContextProvider>
-              </JobContextProvider>
-            }
-          >
-            <Route
-              path=":section"
-              element={
-                <JobContextProvider>
-                  <NewApplicationContextProvider>
-                    <JobApplicationScreen />
-                  </NewApplicationContextProvider>
-                </JobContextProvider>
-              }
-            />
-          </Route>
-          <Route path="*" element={<>Page Not found</>} />
+          {React.Children.toArray(
+            productUserRoutes.map((productRoute) => {
+              return (
+                <Route
+                  path={productRoute.path}
+                  element={
+                    <JobContextProvider>
+                      <NewApplicationContextProvider>
+                        <CandidateJobsContextProvider>
+                          <productRoute.component />
+                        </CandidateJobsContextProvider>
+                      </NewApplicationContextProvider>
+                    </JobContextProvider>
+                  }
+                />
+              );
+            })
+          )}
         </Routes>
       );
     }
