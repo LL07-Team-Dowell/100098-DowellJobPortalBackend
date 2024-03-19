@@ -116,8 +116,7 @@ def get_userwise_attendance( username,monday_of_previous_week, friday_of_previou
     res = response.json()
     return res.get('data', {}).get(username, [])
 
-def processpayment(user_id, payment_month, payment_year, approved_logs_count, total_logs_required, payment_from, payment_to
-):
+def processpayment(user_id, payment_month, payment_year, approved_logs_count, total_logs_required, payment_from, payment_to):
     url = "https://100098.pythonanywhere.com/invoice_module/?type=process-payment"
     payload = {
         "user_id": user_id,
@@ -133,7 +132,6 @@ def processpayment(user_id, payment_month, payment_year, approved_logs_count, to
     response = requests.post(url, headers=headers, json=payload)
     return response.status_code
 
-
 def calculate_hours(worklogs):
     total_hours = 0
     for log in worklogs:
@@ -142,7 +140,6 @@ def calculate_hours(worklogs):
         time_diff = end_time - start_time
         total_hours += time_diff.total_seconds() / 3600 
     return total_hours
-
 
 def create_invoice_bot():
     previous_week_dates = getPreviousWeekDates()
@@ -263,6 +260,6 @@ def create_invoice_bot():
             else:
                 print(f'Invoice not created for {application["username"]} because user was not present for at least one meeting last week') 
     
-fun = create_invoice_bot()
+run = create_invoice_bot()
 
 
