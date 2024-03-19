@@ -75,14 +75,18 @@ const TeamScreeTaskProgessDetail = ({
                   />
                 ))
             ) : (
-              <h2>
-                {
-                  team?.created_by !== currentUser?.userinfo?.username ?
-                    'You do not have any assigned task in progress.'
-                    :
-                  'No task is in progress.'
-                }
-              </h2>
+              <>
+                <br />
+                <p>
+                  {
+                    team?.created_by !== currentUser?.userinfo?.username ?
+                      'You do not have any assigned task in progress.'
+                      :
+                    'There is no task in progress.'
+                  }
+                </p>
+                <br />
+              </>
             ))}
 
           {detail === "completed" &&
@@ -110,7 +114,11 @@ const TeamScreeTaskProgessDetail = ({
                   />
                 ))
             ) : (
-              <h2>No Task is Completed.</h2>
+              <>
+                <br />
+                <p>No Tasks have been completed.</p>
+                <br />
+              </>
             ))}
           <hr />
         </>

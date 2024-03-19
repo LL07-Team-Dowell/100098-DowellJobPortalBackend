@@ -175,6 +175,12 @@
   font-family: Poppins;
   max-height: 100px;
   overflow: auto;
+  
+  .single-member {
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+
   > div {
     display: flex;
     align-items: center;

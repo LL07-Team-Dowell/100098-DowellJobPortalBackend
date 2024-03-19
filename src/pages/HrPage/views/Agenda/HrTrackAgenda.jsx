@@ -8,7 +8,7 @@ const HrAgendaPage = () => {
         <StaffJobLandingLayout
             hrView={true}
             pageTitle={'Agenda'}
-
+            hideSearchBar={true}
         >
             <TrackAgendaPage />
         </StaffJobLandingLayout>

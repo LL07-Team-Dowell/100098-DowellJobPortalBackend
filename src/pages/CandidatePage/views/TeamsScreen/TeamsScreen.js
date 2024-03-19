@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import JobLandingLayout from "../../../../layouts/CandidateJobLandingLayout/LandingLayout";
-import { PageUnderConstruction } from "../../../UnderConstructionPage/ConstructionPage";
-import { useNavigate } from "react-router-dom";
-import { AiOutlineTeam } from "react-icons/ai";
 import { getAllTeams } from "../../../../services/createMembersTasks";
-import { imageReturn } from "../../../TeamleadPage/views/CreateMembersTask/assets/teamsName";
 import { useCandidateValuesProvider } from "../../../../contexts/CandidateTeamsContext";
 import Teams from "./components/Teams";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
@@ -36,6 +32,7 @@ const TeamsScreen = () => {
         setDataLoaded(true);
       });
   }, []);
+
   if (data.TeamsSelected.length === 0 && !dataLoaded)
     return (
       <JobLandingLayout user={currentUser} afterSelection={true}>

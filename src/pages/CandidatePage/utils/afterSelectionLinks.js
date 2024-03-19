@@ -7,6 +7,7 @@ import { IoMdNotificationsOutline } from "react-icons/io";
 import { AiOutlinePlus } from "react-icons/ai";
 import { RiFileList3Line } from "react-icons/ri";
 import { LiaFileInvoiceSolid } from "react-icons/lia";
+import { MdOutlineWorkHistory } from "react-icons/md";
 
 export const afterSelectionLinks = [
   {
@@ -58,3 +59,9 @@ export const loggedInCandidateNavLinks = [
     linkAddress: "/alerts",
   },
 ];
+
+export const candidateInternalJobRoute = {
+  text: "Internal Jobs",
+  icon: <MdOutlineWorkHistory />,
+  linkAddress: "/internal-job-apply?type=Group_Lead",
+}

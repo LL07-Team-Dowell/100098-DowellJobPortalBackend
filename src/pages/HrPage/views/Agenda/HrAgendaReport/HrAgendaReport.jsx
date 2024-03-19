@@ -3,7 +3,7 @@ import StaffJobLandingLayout from "../../../../../layouts/StaffJobLandingLayout/
 import AgendaReport from "../../../../../common/screens/AgendaReport/AgendaReport";
 
 const HrAgendaReport = () => {
-    return (<StaffJobLandingLayout hrView={true}><AgendaReport /></StaffJobLandingLayout>);
+    return (<StaffJobLandingLayout hrView={true} hideSearchBar={true} ><AgendaReport /></StaffJobLandingLayout>);
 }
 
 export default HrAgendaReport;

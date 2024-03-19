@@ -91,6 +91,7 @@ const SingleTask = ({
             date={date}
             teamOwner={team?.created_by}
             teamId={team?._id}
+            teamMembers={team?.members}
           />
         )}
         <div className='team-screen-task-progress-detail-content-data'>
@@ -109,7 +110,7 @@ const SingleTask = ({
                 </>
               ) : (
                 <>
-                  Started on . <span>{date}</span>
+                  Started on . <span>{new Date(date).toDateString()}</span>
                 </>
               )}
             </p>
@@ -143,14 +144,14 @@ const SingleTask = ({
                   value={
                     taskCompleted
                       ? 100
-                      : Number(
+                      : isNaN(
                           percentage(
                             Object.keys(subtasks || {}).length,
                             Object.values(subtasks || {}).filter(
                               (s) => s === true
                             ).length
                           )
-                        ) === NaN
+                        )
                       ? 0
                       : Number(
                           percentage(
@@ -164,14 +165,14 @@ const SingleTask = ({
                   text={
                     taskCompleted
                       ? "100%"
-                      : Number(
+                      : isNaN(
                           percentage(
                             Object.keys(subtasks || {}).length,
                             Object.values(subtasks || {}).filter(
                               (s) => s === true
                             ).length
                           )
-                        ) === NaN
+                        )
                       ? "00%"
                       : `${percentage(
                           Object.keys(subtasks || {}).length,

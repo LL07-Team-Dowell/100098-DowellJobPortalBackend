@@ -21,9 +21,14 @@ import UsersLogsScreen from "../../../../common/screens/UserLogsScreen/UserLogsS
 import InternalJobApply from "../../../../common/screens/InternalJobApply/InternalJobApply";
 import WorklogsLandingPage from "../WorklogsLandingPage/WorklogsLandingPage";
 import TitleNavigationBar from "../../../../components/TitleNavigationBar/TitleNavigationBar";
+import { getDaysDifferenceBetweenDates } from "../../../../helpers/helpers";
 
 const AfterSelectionScreen = ({ assignedProjects }) => {
-  const { currentUser } = useCurrentUserContext();
+  const { 
+    currentUser,
+    currentUserHiredApplications,
+    currentUserHiredApplicationsLoaded,
+  } = useCurrentUserContext();
 
   const { id } = useParams();
 
@@ -37,6 +42,7 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
   );
   const [allProjects, setAllProjects] = useState([]);
   const [logRequestDate, setLogRequestDate] = useState(null);
+  const [candidateIsPermittedToViewInternalJobs, setCandidateIsPermittedToViewInternalJobs] = useState(false);
   const { state } = useLocation();
 
   const navigate = useNavigate();
@@ -102,6 +108,11 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
     // RESET STATE TO PREVENT ADD TASK MODAL FROM POPPING UP AFTER EVERY RELOAD
     window.history.replaceState({}, document.title, "/100098-DowellJobPortal/#/");
   }, [state]);
+
+  useEffect(() => {
+    if (!currentUserHiredApplications.find(app => getDaysDifferenceBetweenDates(app.onboarded_on, new Date()) > 180)) return setCandidateIsPermittedToViewInternalJobs(false);
+    setCandidateIsPermittedToViewInternalJobs(true); 
+  }, [currentUserHiredApplications, currentUserHiredApplicationsLoaded])
 
   return (
     <>
@@ -173,7 +184,11 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
         </JobLandingLayout>
       ) : section === "internal-job-apply" ? (
         <JobLandingLayout user={currentUser} afterSelection={true}>
-          <InternalJobApply />
+          {
+            !currentUserHiredApplicationsLoaded ? <></> :
+            !candidateIsPermittedToViewInternalJobs ? <></> :
+            <InternalJobApply />
+          }
         </JobLandingLayout>
       ) : (
         <ErrorPage />

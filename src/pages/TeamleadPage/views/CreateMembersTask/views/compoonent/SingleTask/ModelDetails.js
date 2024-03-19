@@ -9,7 +9,10 @@ import { editTeamTask } from '../../../../../../../services/teamleadServices';
 import { arrayToObject, objectToArray } from './helper/arrayToObject';
 import { useCurrentUserContext } from '../../../../../../../contexts/CurrentUserContext';
 import { AiTwotoneEdit } from 'react-icons/ai';
-import './SingleTask.scss'
+import './SingleTask.scss';
+import Select from 'react-select';
+import LoadingSpinner from '../../../../../../../components/LoadingSpinner/LoadingSpinner';
+
 export const ModalContainer = styled.div`
   position: fixed;
   top: 0;
@@ -53,37 +56,63 @@ font-size: 18px;
 color: black;
 `;
 
-const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data, setTasks, date, teamOwner, completeTaskFunction }) => {
+const ModalDetails = ({ 
+    taskname, 
+    status, 
+    memberassign, 
+    onClose, 
+    description, 
+    subtasks, 
+    taskId, 
+    data, 
+    setTasks, 
+    date, 
+    teamOwner, 
+    completeTaskFunction, 
+    teamMembers,
+}) => {
     const [subTasks, setSubTask] = useState(objectToArray(subtasks));
     const [edit, setEdit] = useState(false);
-    const initialData = { taskname, description, subtasks: objectToArray(subtasks) }
-    const [editData, setEditData] = useState({ taskname, description, subtasks: objectToArray(subtasks) })
+    const [editLoading, setEditLoading] = useState(false);
+    const initialData = { taskname, description, assignee: memberassign, subtasks: objectToArray(subtasks) }
+    const [editData, setEditData] = useState({ taskname, description, assignee: memberassign, subtasks: objectToArray(subtasks) })
     const [checkedSubtask, setCheckedSubtask] = useState([]);
     const isSmallScreen = useMediaQuery('(max-width: 767px)');
     const { currentUser } = useCurrentUserContext();
     const [ subtasksBeingEdited, setSubtasksBeingEdited ] = useState([]);
 
     const EditFunction = () => {
+        if (editData.assignee.length < 1) return toast.info('Please select at least one assignee');
+
         const DATA = {
             ...data,
             title: editData.taskname,
             description: editData.description,
+            assignee: editData.assignee,
+            due_date: date,
             subtasks: arrayToObject(editData.subtasks),
         }
+
+        setEditLoading(true);
+
         editTeamTask(taskId, DATA)
             .then(resp => {
                 toast.success('task updated successfully');
                 setTasks(tasks => tasks.map(task => task._id === taskId ? DATA : task));
                 setEdit(false);
+                setEditLoading(false);
             })
             .catch(err => {
-                toast.error("something went wrong")
+                toast.error("something went wrong");
+                setEditLoading(false);
             })
     }
+
     const cancelEdit = () => {
         setEditData(initialData);
         setEdit(false)
     }
+
     const editSubtaskStatus = (name, value) => {
         setSubtasksBeingEdited((prev) => {
             return [
@@ -99,6 +128,7 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                 [name]: !value
             }
         }
+
         editTeamTask(taskId, newData)
             .then(() => {
                 setSubTask(subTasks.map(t => t.name === name ? { name, value: !t.value } : t))
@@ -117,6 +147,7 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                 setSubtasksBeingEdited(subtasksBeingEdited.filter(item => item !== name));
             })
     }
+    
     useEffect(() => {
         if (subtasks !== undefined && Object.keys(subtasks).length > 0) {
             setCheckedSubtask(subTasks.filter(s => s.value === true).map(s => s.name))
@@ -232,14 +263,40 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                 <br />
                 <div>
                     <h4>{`Member${memberassign?.length > 1 ? 's' : ''} Assigned`}</h4>
-
-                    {memberassign?.map((membur, index) => {
-                        // Assuming membur is a string with first and last name separated by a space
-                        const nameParts = membur.split(' ');
-                        const firstName = nameParts[0];
-                        // You can customize the size and style of the avatar using props of the Avatar component
-                        return <Avatar key={index} name={firstName} size="40" round />;
-                    })}
+                    {
+                        edit ?
+                        <Select 
+                            value={editData.assignee.map(assignee => {
+                                return {
+                                    label: assignee,
+                                    value: assignee,
+                                }
+                            })}
+                            onChange={(val) => setEditData({
+                                ...editData,
+                                assignee: val.map(item => item.value),
+                            })}
+                            options={teamMembers.map(member => {
+                                return {
+                                    label: member,
+                                    value: member,
+                                }
+                            })}
+                            isMulti={true}
+                            className='member__Asign__Team'
+                            placeholder={'Select team members'}
+                        /> 
+                        :
+                        <>
+                            {memberassign?.map((membur, index) => {
+                                // Assuming membur is a string with first and last name separated by a space
+                                const nameParts = membur.split(' ');
+                                const firstName = nameParts[0];
+                                // You can customize the size and style of the avatar using props of the Avatar component
+                                return <Avatar key={index} name={firstName} size="40" round />;
+                            })}
+                        </>
+                    }
                 </div>
                 {
                     date && typeof date != 'Invalid Date' && <>
@@ -253,7 +310,7 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                 {
                     edit
                     &&
-                    <div style={{ margin: '0 0 0 auto', width: 'fit-content' }}>
+                    <div style={{ margin: '0 0 0 auto', width: 'fit-content', display: 'flex', alignItems: 'center' }}>
                         <button style={{
                             marginRight: '10px',
                             width: '90px',
@@ -268,6 +325,7 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                             fontFamily: 'Poppins'
                         }}
                             onClick={cancelEdit}
+                            disabled={editLoading}
                         >Cancel</button>
                         <button
                             style={{
@@ -283,7 +341,21 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                                 fontFamily: 'Poppins'
                             }}
                             onClick={EditFunction}
-                        >Edit</button>
+                            disabled={editLoading}
+                        >
+                            {
+                                editLoading ?
+                                    <>
+                                        <LoadingSpinner 
+                                            color={'#fff'} 
+                                            width={'1rem'}
+                                            height={'1rem'}
+                                        /> 
+                                    </>
+                                :
+                                'Edit'
+                            }
+                        </button>
                     </div>
                 }
                 <CloseButton onClick={onClose}>

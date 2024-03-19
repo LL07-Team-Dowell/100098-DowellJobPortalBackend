@@ -264,6 +264,7 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
         {/*  */}
         {name && description && subTask && date ? (
           <div>
+            <br />
             <label>Task Type</label>
             <div>
               <div className='task-type'>
@@ -298,6 +299,7 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
               </div>
               {choosed && name && description && date ? (
                 <>
+                  <br />
                   <label>Task Members</label>
                   <div className='added-members-input'>
                     {inputMembers.map((v) => (
@@ -314,7 +316,6 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
                     />
                   </div>
                   <div></div>
-                  <br />
                   <label htmlFor='task_name'>Select Members</label>
                   <div className='members'>
                     {displaidMembers.filter((f) =>
@@ -349,7 +350,7 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
         <div className='buttons'>
           <button onClick={createTeamTaskFunction}>
             {loading ? (
-              <LoadingSpinner color={"white"} width='20px' height='20px' />
+              <LoadingSpinner color={"white"} width='18px' height='18px' />
             ) : (
               "submit"
             )}

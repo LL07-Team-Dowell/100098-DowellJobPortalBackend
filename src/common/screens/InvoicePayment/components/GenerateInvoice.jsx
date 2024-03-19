@@ -150,6 +150,7 @@ const GenerateInvoice = ({
           payment_to: paymentTo,
           approved_logs_count: approvedLogs.length,
           total_logs_required: requiredLogCount,
+          user_was_on_leave: false,
         };
 
         const dataForWorkflow = {
@@ -237,9 +238,10 @@ const GenerateInvoice = ({
               <>
                 <h2>New Invoice</h2>
                 <div>
-                  <label>
-                    <span>Select Payment From and To</span>
-                    <div className={styles.invoice_date_select}>
+                  <span>Select Dates</span>
+                  <div className={styles.invoice_date_select}>
+                    <label htmlFor="payment_from">
+                      <span>Payment from</span>
                       <input
                         type="date"
                         value={formatDateForAPI(paymentFrom)}
@@ -247,6 +249,9 @@ const GenerateInvoice = ({
                         id="payment_from"
                         className={styles.invoice_months}
                       />
+                    </label>
+                    <label htmlFor="payment_to">
+                      <span>Payment to</span>
                       <input
                         type="date"
                         value={formatDateForAPI(paymentTo)}
@@ -255,8 +260,8 @@ const GenerateInvoice = ({
                         min={formatDateForAPI(paymentFrom)}
                         className={styles.invoice_months}
                       />
-                    </div>
-                  </label>
+                    </label>
+                  </div>
                 </div>
                 <div className={styles.process_btn}>
                   {dataProcessing ? (

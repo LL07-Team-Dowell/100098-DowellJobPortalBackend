@@ -36,6 +36,7 @@ const TeamScreenTasksCandidate = () => {
       );
     }
   }, [tasks]);
+
   useEffect(() => {
     if (team?.members === undefined) {
       setloading(true);
@@ -63,9 +64,25 @@ const TeamScreenTasksCandidate = () => {
           setTaskLoading(false);
         });
     }
+
+    if (team && tasks.length < 1) {
+      getTeamTask(id).then(res => {
+        setTasks(
+          Array.isArray(res.data?.response?.data)
+            ? res.data?.response?.data
+            : []
+        );
+        setTaskLoading(false);
+      }).catch(err => {
+        console.log(err?.response?.data);
+        setTaskLoading(false);
+      })
+    }
   }, []);
+
   console.log({ team });
   if (loading) return <LoadingSpinner />;
+
   return (
     <div style={{ height: "130%" }}>
       {team?.team_name !== undefined ? (

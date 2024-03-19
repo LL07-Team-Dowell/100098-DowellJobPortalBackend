@@ -10,6 +10,7 @@ const AdminAgendaPage = () => {
             newSidebarDesign={true}
             adminAlternativePageActive={true}
             pageTitle={'Agenda'}
+            hideSearchBar={true}
         >
             <TrackAgendaPage />
         </StaffJobLandingLayout>

@@ -41,7 +41,8 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
         setDataLoading(false);
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err?.response ? err?.response?.data?.message : err?.message);
+        toast.error(err?.response ? err?.response?.data?.message : err?.message);
         setDataLoading(false);
       });
   };
@@ -119,8 +120,8 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
                 <span>
                   {dataLoading ? (
                     <LoadingSpinner
-                      width={"1.5rem"}
-                      height={"1.5rem"}
+                      width={"1.1rem"}
+                      height={"1.1rem"}
                       color={"white"}
                     />
                   ) : (

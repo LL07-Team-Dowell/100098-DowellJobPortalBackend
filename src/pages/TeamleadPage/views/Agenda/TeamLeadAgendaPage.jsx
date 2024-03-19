@@ -8,6 +8,7 @@ const TeamLeadAgendaPage = () => {
     return <>
         <StaffJobLandingLayout
             teamleadView={true}
+            hideSearchBar={true}
         >
             <TrackAgendaPage 
                 restrictProjects={true}

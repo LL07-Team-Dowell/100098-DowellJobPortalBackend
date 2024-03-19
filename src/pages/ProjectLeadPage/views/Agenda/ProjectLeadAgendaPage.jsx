@@ -8,6 +8,7 @@ const ProjectLeadAgendaPage = () => {
     return <>
         <StaffJobLandingLayout
             projectLeadView={true}
+            hideSearchBar={true}
         >
             <TrackAgendaPage />
         </StaffJobLandingLayout>
