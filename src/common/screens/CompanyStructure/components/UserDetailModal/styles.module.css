@@ -78,6 +78,11 @@
     flex-direction: column;
     gap: 0.6rem;
     text-transform: capitalize;
+    font-size: 0.95rem;
+}
+
+.user__Project__Detail__Item {
+    font-size: 0.85rem;
 }
 
 

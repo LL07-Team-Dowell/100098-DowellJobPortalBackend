@@ -63,7 +63,7 @@ const ReportPages = ({ subAdminView }) => {
             </div>
             <h4>Leaderboard report</h4>
             <p>
-              Get insights into the top performers in your organization
+              Get insights into the most active users in your organization
             </p>
           </div>
         </div>
@@ -84,6 +84,20 @@ const ReportPages = ({ subAdminView }) => {
         </div>
         <div
           className="Create_Team"
+          onClick={() => navigate("task-report")}
+        >
+          <div>
+            <div>
+              <FaTasks className="icon" />
+            </div>
+            <h4>Project report</h4>
+            <p>
+              Get insights into the progress of active projects in your organization
+            </p>
+          </div>
+        </div>
+        <div
+          className="Create_Team"
           onClick={() => navigate("team-report")}
         >
           <div>
@@ -93,20 +107,6 @@ const ReportPages = ({ subAdminView }) => {
             <h4>Team report</h4>
             <p>
               Get insights into how well teams are performing in your organization
-            </p>
-          </div>
-        </div>
-        <div
-          className="Create_Team"
-          onClick={() => navigate("task-report")}
-        >
-          <div>
-            <div>
-              <FaTasks className="icon" />
-            </div>
-            <h4>Work log report</h4>
-            <p>
-              Get insights into tasks uploaded per project in your organization
             </p>
           </div>
         </div>

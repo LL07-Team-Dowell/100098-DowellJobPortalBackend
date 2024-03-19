@@ -362,13 +362,18 @@ const Project = ({ _id }) => {
                             <p className={styles.project_time}>
                               Total time:{" "}
                               <>
-                                {foundProjectTimeDetail?.is_continuous
-                                  ? "∞"
-                                  : Number(
-                                      foundProjectTimeDetail?.total_time
-                                    ).toLocaleString("en-US", {
-                                      maximumFractionDigits: 2,
-                                    })}
+                                {
+                                  !foundProjectTimeDetail ? 0 
+                                  :
+                                  foundProjectTimeDetail?.is_continuous
+                                    ? "∞"
+                                  : 
+                                  Number(
+                                    foundProjectTimeDetail?.total_time
+                                  ).toLocaleString("en-US", {
+                                    maximumFractionDigits: 2,
+                                  })
+                                }
                               </>
                               <span>Hours</span>
                             </p>

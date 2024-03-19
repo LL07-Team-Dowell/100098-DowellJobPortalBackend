@@ -51,8 +51,18 @@ const LeaveScreen = () => {
             console.log('all applications', allCompanyApplications);
             try {
                 const res = (await getAllLeaveApplication(currentUser?.portfolio_info[0]?.org_id))?.data?.response;
-                setAllLeaveApplications(res);
-                setFilteredLeaveApplications(res?.filter(application => application.Leave_Denied === false && application.Leave_Approved === false))
+                setAllLeaveApplications(
+                    Array.isArray(res) ? 
+                        res
+                    :
+                    []
+                );
+                setFilteredLeaveApplications(
+                    Array.isArray(res) ? 
+                        res?.filter(application => application.Leave_Denied === false && application.Leave_Approved === false)
+                    :
+                    []
+                )
                 console.log('resssssssss', res);
                 setApproveOrDeny(true);
                 setIsLoading(false);
