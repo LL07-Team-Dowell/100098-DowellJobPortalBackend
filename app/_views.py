@@ -494,8 +494,13 @@ class Invoice_module(APIView):
             amount_to_pay = weekly_payment_amount
 
             if approved_logs_count < total_logs_required:
-                logs_ratio = approved_logs_count / total_logs_required
-                amount_to_pay *= logs_ratio
+                return Response(
+                {
+                    "success": False,
+                    "message": "Invoice creation failed. User does not have up to the required number of approved logs",
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
             if user_was_on_leave:
                 amount_to_pay = 0
