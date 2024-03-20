@@ -459,9 +459,6 @@ class Invoice_module(APIView):
             insert_data = {
                 "db_record_type": "payment_detail",
                 "company_id": company_id,
-                "company_name": company_name,
-                "created_by": created_by,
-                "portfolio": portfolio,
                 "data_type": data_type,
                 "payment_month": payment_month,
                 "payment_year": payment_year,
