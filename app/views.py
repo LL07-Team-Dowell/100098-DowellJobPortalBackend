@@ -11460,8 +11460,7 @@ class Company_Structure(APIView):
         if group_leads:
             update_data["group_leads"] = group_leads
 
-        print(team_lead,"===================")
-        if team_lead:
+        if team_lead or team_lead=="":
             update_data["team_lead"] = team_lead
 
         for user in update_data["members"]:
