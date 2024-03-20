@@ -180,11 +180,16 @@ const GenerateInvoice = ({
 
           setDataProcessing(false);
           setShowInvoicePage(true);
+        }).catch(err => {
+          console.log(err?.response ? err?.response?.data : err?.message);
+          setDataProcessing(false);
+          toast.error('Invoice creation not successful. Please try again or contact team for assistance')
         });
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err?.response ? err?.response?.data : err?.message);
         setDataProcessing(false);
+        toast.error('Invoice creation failed. Please try again')
       });
   };
 

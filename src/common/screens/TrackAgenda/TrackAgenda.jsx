@@ -172,12 +172,12 @@ const TrackAgendaPage = ({
             const res = await Promise.all([
                 getWeeklyAgenda(copyOfApiLimits.start, copyOfApiLimits.end, agendaDetails.sub_project.replaceAll(' ', '-'), agendaDetails.project, {}),
                 getWorkLogsAddedUnderSubproject(
-                    currentUser.portfolio_info[0].org_id,
-                    agendaDetails.project,
-                    agendaDetails.sub_project,
                     {
                         start_date: agendaDetails.week_start,
-                        end_date: agendaDetails.week_end
+                        end_date: agendaDetails.week_end,
+                        project: agendaDetails.project,
+                        subproject: agendaDetails.sub_project,
+                        company_id: currentUser.portfolio_info[0].org_id,
                     }
                 )
             ])
@@ -408,6 +408,15 @@ const TrackAgendaPage = ({
                                 </div>
                                 {
                                     React.Children.toArray(agenda.timeline.map(item => {
+                                        const hourFromWorklogs = calculateHoursOfLogs(
+                                            taskDetailsForPeriod
+                                                .filter(
+                                                    log =>
+                                                        formatDateForAPI(log.task_created_date) === formatDateForAPI(item.timeline_start) ||
+                                                        formatDateForAPI(log.task_created_date) === formatDateForAPI(item.timeline_end)
+                                                )
+                                        );
+
                                         return <>
                                             <div className={styles.track__Agenda__Item}>
                                                 <div>
@@ -417,27 +426,20 @@ const TrackAgendaPage = ({
                                                     <p className={styles.stat__Subtitle}>
                                                         {
                                                             formatDateForAPI(item.timeline_start) === formatDateForAPI(new Date()) ? <>
-                                                                <span className={styles.agenda__in__Progress}>In progress</span>
+                                                                <span className={styles.agenda__in__Progress}>In progress ({hourFromWorklogs} hours of logs/{item.hours} estimated hours)</span>
                                                             </>
                                                             :
                                                             new Date().getTime() < new Date(item.timeline_start).getTime() ? <>
-                                                                <span className={styles.agenda__To__Do}>To do</span>
+                                                                <span className={styles.agenda__To__Do}>To do ({hourFromWorklogs} hours of logs/{item.hours} estimated hours)</span>
                                                             </>
                                                             :
-                                                            calculateHoursOfLogs(
-                                                                taskDetailsForPeriod
-                                                                    .filter(
-                                                                        log =>
-                                                                            log.task_created_date === item.timeline_start ||
-                                                                            log.task_created_date === item.timeline_end
-                                                                    )
-                                                            ) <= item.hours ?
+                                                            hourFromWorklogs <= Number(item.hours) ?
                                                                 <>
-                                                                    <span className={styles.agenda__On__time}>On time</span>
+                                                                    <span className={styles.agenda__On__time}>On time ({hourFromWorklogs} hours of logs/{item.hours} estimated hours)</span>
                                                                 </>
                                                             :
                                                             <>
-                                                                <span className={styles.agenda__Overdue}>Over Due</span>
+                                                                <span className={styles.agenda__Overdue}>Over Time ({hourFromWorklogs} hours of logs/{item.hours} estimated hours)</span>
                                                             </>
                                                         }
                                                     </p>

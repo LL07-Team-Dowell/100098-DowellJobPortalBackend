@@ -139,7 +139,7 @@ const ModalDetails = ({
                     }
                 } : t
                 ))
-                toast.success(`Updated the status of ${name}`);
+                toast.success(`Successfully updated status of subtask: '${name}'`);
                 setSubtasksBeingEdited(subtasksBeingEdited.filter(item => item !== name));
             })
             .catch(err => {
@@ -172,7 +172,12 @@ const ModalDetails = ({
                     letterSpacing: '0.03em',
                     color: '#005734'
                 }}>
-                    View Team Task Details
+                    {
+                        isSmallScreen ? 
+                            'View Details' 
+                        :
+                        'View Team Task Details'
+                    }
                 </h3>
 
                 <div>
