@@ -26,10 +26,11 @@ const CandidateHomeScreenWithProps = ({
   );
 };
 
-export const productUserRouteReject = [
+export const productUserRoutes = [
   {
     path: "/",
     component: CandidateHomeScreenWithProps,
+    hasProps: true,
   },
   {
     path: "/:section",
@@ -77,7 +78,7 @@ export const productUserRouteReject = [
   },
 ];
 
-export const productUserRoutes = [
+export const singleCategoryProductUserRoutes = [
   {
     path: "/jobs",
     component: JobScreen,

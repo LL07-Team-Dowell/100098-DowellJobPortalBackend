@@ -98,8 +98,8 @@ import AccountsInvoicePage from "./pages/AccountPage/views/Payments/AccountsInvo
 import ResearchAssociatePage2 from "./pages/CandidatePage/views/ResearchAssocatiePage2/ResearchAssociatePage2";
 import { publicUserRoutes } from "./routes/publicUserRoutes";
 import {
-  productUserRouteReject,
   productUserRoutes,
+  singleCategoryProductUserRoutes,
 } from "./routes/productUserRoutes";
 
 function App() {
@@ -199,7 +199,7 @@ function App() {
       return (
         <Routes>
           {React.Children.toArray(
-            productUserRoutes.map((productRoute) => {
+            singleCategoryProductUserRoutes.map((productRoute) => {
               return (
                 <Route
                   path={productRoute.path}
@@ -223,14 +223,25 @@ function App() {
     return (
       <Routes>
         {React.Children.toArray(
-          productUserRouteReject.map((productRoute) => {
+          productUserRoutes.map((productRoute) => {
             return (
               <Route
                 path={productRoute.path}
                 element={
                   <JobContextProvider>
                     <NewApplicationContextProvider>
-                      <productRoute.component />
+                      {
+                        productRoute?.hasProps === true ?
+                          <productRoute.component
+                            setHired={setCandidateHired}
+                            setAssignedProjects={setAssignedProjects}
+                            setCandidateShortListed={setCandidateShortListed}
+                            setshorlistedJob={setshorlistedJob}
+                            setRemoved={setCandidateRemoved}
+                          /> 
+                        :
+                        <productRoute.component />
+                      }
                     </NewApplicationContextProvider>
                   </JobContextProvider>
                 }
