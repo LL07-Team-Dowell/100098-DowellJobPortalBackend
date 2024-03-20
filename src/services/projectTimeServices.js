@@ -1,4 +1,4 @@
-import { currentBackendAxiosInstance } from "./axios";
+import { currentBackendAxiosInstance, getCommitsInstance } from "./axios";
 
 export const getProjectTime = async (companyId) => {
   return await currentBackendAxiosInstance.get(
@@ -28,4 +28,10 @@ export const getSingleProjectTime = async (documentId) => {
   return await currentBackendAxiosInstance.get(
     `get_project_time/${documentId}/`
   );
-}
+};
+
+export const getCommits = async () => {
+  return await getCommitsInstance.get(
+    `reports/get-statistics/6385c0f18eca0fb652c94561/`
+  );
+};

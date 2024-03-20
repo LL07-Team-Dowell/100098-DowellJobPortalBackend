@@ -19,6 +19,7 @@ const dowellMailApiBaseUrl = "https://100085.pythonanywhere.com/api/";
 const dowellTimeBaseUrl = "https://100009.pythonanywhere.com/";
 const internetSpeedTestUrl = "https://dowellresearch.com/";
 const workFlowUrl = "https://100094.pythonanywhere.com/v2/";
+const commitsUrl = "https://100045.pythonanywhere.com/";
 
 const formerBackendAxiosInstance = axios.create({
   withCredentials: true,
@@ -26,6 +27,10 @@ const formerBackendAxiosInstance = axios.create({
 });
 const workFlowAxiosInstance = axios.create({
   baseURL: workFlowUrl,
+});
+
+const getCommitsInstance = axios.create({
+  baseURL: commitsUrl,
 });
 
 const speedTestAxiosInstance = axios.create({
@@ -103,4 +108,5 @@ export {
   dowellTimeAxiosInstance,
   speedTestAxiosInstance,
   workFlowAxiosInstance,
+  getCommitsInstance,
 };

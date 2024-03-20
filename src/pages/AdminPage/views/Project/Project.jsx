@@ -8,7 +8,10 @@ import { useJobContext } from "../../../../contexts/Jobs";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { AddProjectPopup } from "../Add/Add";
 import { dowellProjects } from "../../../../utils/utils";
-import { getProjectTime } from "../../../../services/projectTimeServices";
+import {
+  getCommits,
+  getProjectTime,
+} from "../../../../services/projectTimeServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import SearchBar from "../../../../components/SearchBar/SearchBar";
@@ -27,26 +30,40 @@ const Project = ({ _id }) => {
   console.log(projectTime);
   const [searchValue, setSearchValue] = useState("");
   const [projectTimeLoading, setProjectTimeLoading] = useState(false);
+  const [commits, setCommits] = useState([]);
 
   useEffect(() => {
     if (state && state.showProject && state?.showProject === true) {
       setShowProjectsPop(true);
 
       // RESET STATE TO PREVENT PROJECT MODAL FROM POPPING UP AFTER EVERY RELOAD
-      window.history.replaceState({}, document.title, "/100098-DowellJobPortal/#/projects");
+      window.history.replaceState(
+        {},
+        document.title,
+        "/100098-DowellJobPortal/#/projects"
+      );
     }
 
     //Getting project time
     setProjectTimeLoading(true);
-    getProjectTime(currentUser.portfolio_info[0].org_id).then((res) => {
+
+    Promise.all([
+      getProjectTime(currentUser.portfolio_info[0].org_id),
+      getCommits(),
+    ]).then((res) => {
       setProjectTime(
-        res?.data?.data?.filter(
+        res[0]?.data?.data?.filter(
           (project) =>
             project?.data_type === currentUser.portfolio_info[0].data_type
         )
       );
+      //Get number of commits
+      const commitsData = res[1].data?.data;
+      setCommits(commitsData);
+
       setProjectTimeLoading(false);
       console.log(projectTime);
+      console.log(commits);
     });
 
     //Getting of Projects (Active/Inactive projects)
@@ -346,20 +363,29 @@ const Project = ({ _id }) => {
                             <p className={styles.project_time}>
                               Total time:{" "}
                               <>
-                                {
-                                  !foundProjectTimeDetail ? 0 
-                                  :
-                                  foundProjectTimeDetail?.is_continuous
-                                    ? "∞"
-                                  : 
-                                  Number(
-                                    foundProjectTimeDetail?.total_time
-                                  ).toLocaleString("en-US", {
-                                    maximumFractionDigits: 2,
-                                  })
-                                }
+                                {!foundProjectTimeDetail
+                                  ? 0
+                                  : foundProjectTimeDetail?.is_continuous
+                                  ? "∞"
+                                  : Number(
+                                      foundProjectTimeDetail?.total_time
+                                    ).toLocaleString("en-US", {
+                                      maximumFractionDigits: 2,
+                                    })}
                               </>
                               <span>Hours</span>
+                            </p>
+                            <p className={styles.project_time}>
+                              Commits:{" "}
+                              <>
+                                {commits.map((repo) =>
+                                  repo.repository_name ===
+                                  foundProjectTimeDetail?.repository_name
+                                    ? repo.metadata.length
+                                    : null
+                                )}
+                                <span>Commits</span>
+                              </>
                             </p>
                           </>
                         ) : null}
