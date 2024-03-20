@@ -27,7 +27,6 @@ import UserScreen from "./pages/CandidatePage/views/UserScreen/UserScreen";
 import AppliedScreen from "./pages/CandidatePage/views/AppliedPageScreen/AppliedScreen";
 import HrJobScreen from "./pages/HrPage/views/JobScreen/HrJobScreen";
 import Teamlead from "./pages/TeamleadPage/Teamlead";
-import AccountPage from "./pages/AccountPage/AccountPage";
 import { JobContextProvider } from "./contexts/Jobs";
 import AdminReports from "./pages/AdminPage/views/Reports/Reports";
 import RedirectPage from "./pages/Redirectpage/redirect";
@@ -53,7 +52,6 @@ import TeamScreenThreadCandidate from "./pages/CandidatePage/views/TeamScreenThr
 import JobLandingLayout from "./layouts/CandidateJobLandingLayout/LandingLayout";
 import TeamThread from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThread";
 import UserDetailNotFound from "./pages/UserDetailNotFound/UserDetailNotFound";
-import Payment from "./pages/AccountPage/views/Payments/Payment";
 import TeamThreadScreen from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThreadScreen";
 import GroupLeadTask from "./pages/GroupLeadPage/components/GroupLeadTask";
 import { PageUnderConstruction } from "./pages/UnderConstructionPage/ConstructionPage";
@@ -93,8 +91,6 @@ import UsersLogsScreen from "./common/screens/UserLogsScreen/UserLogsScreen";
 import TeamleadLogApprovalScreen from "./pages/TeamleadPage/views/LogApprovalScreen/TeamleadLogApprovalScreen";
 import GroupleadLogApprovalScreen from "./pages/GroupLeadPage/views/LogApprovalScreen/GroupleadLogApprovalScreen";
 import HRCompanyStructure from "./pages/HrPage/views/CompanyStructure/HrCompanyStructure";
-import PaymentLandingPage from "./pages/AccountPage/views/PaymentLandingPage/PaymentLandingPage";
-import AccountsInvoicePage from "./pages/AccountPage/views/Payments/AccountsInvoicePage";
 import ResearchAssociatePage2 from "./pages/CandidatePage/views/ResearchAssocatiePage2/ResearchAssociatePage2";
 import { publicUserRoutes } from "./routes/publicUserRoutes";
 import {
@@ -381,7 +377,7 @@ function App() {
   ) {
     return (
       <Routes>
-        {/* {
+        {
           React.Children.toArray(accountRoutesInfo.map(info => {
             return <Route 
               path={info?.path}
@@ -394,27 +390,7 @@ function App() {
               }
             />
           }))
-        } */}
-
-        <Route path="/logout" element={<Logout />} />
-        <Route path="/payments" element={<PaymentLandingPage />} />
-        <Route path="/payments/payment-records" element={<Payment />} />
-        <Route path="/payments/invoice" element={<AccountsInvoicePage />} />
-
-        <Route
-          path="/"
-          element={
-            <NavigationContextProvider>
-              <CandidateContextProvider>
-                <AccountPage />
-              </CandidateContextProvider>
-            </NavigationContextProvider>
-          }
-        >
-          <Route path=":section" element={<AccountPage />} />
-        </Route>
-
-        <Route path="*" element={<ErrorPage />} />
+        }
       </Routes>
     );
   }
