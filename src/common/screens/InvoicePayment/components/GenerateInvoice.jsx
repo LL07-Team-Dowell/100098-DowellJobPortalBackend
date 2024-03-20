@@ -78,43 +78,42 @@ const GenerateInvoice = ({
     const { month, year } = extractMonthandYear(paymentTo);
     console.log(month, year);
 
-    // getInvoiceRequest(currentUser.portfolio_info[0].org_id)
-    //   .then((res) => {
-    //     const invoiceRequest = res?.data?.response;
+    getInvoiceRequest(currentUser.portfolio_info[0].org_id)
+      .then((res) => {
+        const invoiceRequest = res?.data?.response;
 
-    //     const foundRequest = invoiceRequest.find(
-    //       (request) =>
-    //         request.username === currentUser.userinfo.username &&
-    //         request.portfolio_name ===
-    //           currentUser.portfolio_info[0].portfolio_name &&
-    //         request.user_id === currentUser.userinfo.userID &&
-    //         request.company_id === currentUser.portfolio_info[0].org_id &&
-    //         request.payment_month === month &&
-    //         request.payment_year === year &&
-    //         request.payment_from === paymentFrom &&
-    //         request.payment_to === paymentTo
-    //     );
+        const foundRequest = invoiceRequest.find(
+          (request) =>
+            request.username === currentUser.userinfo.username &&
+            request.portfolio_name ===
+              currentUser.portfolio_info[0].portfolio_name &&
+            request.user_id === currentUser.userinfo.userID &&
+            request.company_id === currentUser.portfolio_info[0].org_id &&
+            request.payment_month === month &&
+            request.payment_year === year &&
+            request.payment_from === paymentFrom &&
+            request.payment_to === paymentTo
+        );
 
-    //     // console.log(foundRequest);
+        console.log(foundRequest);
 
-    //     if (!foundRequest) {
-    //       setDataProcessing(false);
-    //       return toast.info(
-    //         "Contact HR to create an invoice request or reach out to team for assitance"
-    //       );
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     setDataProcessing(false);
-    //     toast.error(
-    //       err?.response ? err?.response?.data?.message : err?.message
-    //     );
-    //   });
+        if (!foundRequest) {
+          setDataProcessing(false);
+          return toast.info(
+            "Contact HR to create an invoice request or reach out to team for assitance"
+          );
+        }
+      })
+      .catch((err) => {
+        setDataProcessing(false);
+        toast.error(
+          err?.response ? err?.response?.data?.message : err?.message
+        );
+      });
 
     setDataProcessing(true);
 
     const requestsToMake = [
-      getInvoiceRequest(currentUser.portfolio_info[0].org_id),
       getLogsBetweenRange({
         start_date: paymentFrom,
         end_date: paymentTo,
@@ -137,33 +136,10 @@ const GenerateInvoice = ({
     Promise.all(requestsToMake)
       .then((res) => {
         console.log(res[0]?.data);
-        console.log(res[1]?.data);
         // console.log(res[2]);
+        console.log(res[1]?.data);
 
-        const invoiceRequest = res[0]?.data?.response;
-
-        const foundRequest = invoiceRequest.find(
-          (request) =>
-            request.username === currentUser.userinfo.username &&
-            request.portfolio_name ===
-              currentUser.portfolio_info[0].portfolio_name &&
-            request.user_id === currentUser.userinfo.userID &&
-            request.company_id === currentUser.portfolio_info[0].org_id &&
-            request.payment_month === month &&
-            request.payment_year === year &&
-            request.payment_from === paymentFrom &&
-            request.payment_to === paymentTo
-        );
-
-        // console.log(foundRequest);
-        if (!foundRequest) {
-          setDataProcessing(false);
-          return toast.info(
-            "Contact HR to create an invoice request or reach out to team for assitance"
-          );
-        }
-
-        const taskDetails = res[1]?.data?.task_details;
+        const taskDetails = res[0]?.data?.task_details;
 
         const approvedLogs = taskDetails.filter((log) => log.approved === true);
         const hours = calculateHoursOfLogs(approvedLogs);
