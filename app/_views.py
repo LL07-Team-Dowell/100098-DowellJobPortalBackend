@@ -15,105 +15,16 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .constant import *
 from .helper import (
-    get_event_id,
-    dowellconnection,
-    save_image,
-    set_finalize,
-    update_number,
-    update_string,
-    discord_invite,
-    get_guild_channels,
-    get_guild_members,
-    create_master_link,
-    send_mail,
-    interview_email,
-    targeted_population,
-    period_check,
-    validate_and_generate_times,
-    CustomValidationError,
-    set_date_format,
-    update_task_status,
-    valid_period,
-    validate_id,
-    get_positions,
-    get_month_details,
-    samanta_content_evaluator,
     datacube_data_insertion,
     datacube_data_retrival,
     datacube_add_collection,
     datacube_data_update,
-    get_subproject,
-    check_speed_test,
-    get_projects,
-    get_speed_test_data,
-    get_speed_test_result,
     datacube_data_retrival_function,
-    get_current_week_start_end_date,
-    speed_test_condition,
 )
 from .serializers import (
-    AccountSerializer,
-    RejectSerializer,
-    AdminSerializer,
-    TaskApprovedBySerializer,
-    TrainingSerializer,
-    UpdateQuestionSerializer,
-    CandidateSerializer,
-    HRSerializer,
-    LeadSerializer,
-    TaskSerializer,
-    SubmitResponseSerializer,
-    SettingUserProfileInfoSerializer,
-    UpdateSettingUserProfileInfoSerializer,
-    SettingUserProjectSerializer,
-    UpdateSettingUserProjectSerializer,
-    SettingUserProfileInfo,
-    UpdateuserSerializer,
-    UserProject,
-    CreatePublicLinkSerializer,
-    SendMailToPublicSerializer,
-    ThreadsSerializer,
-    CommentsSerializer,
-    PublicProductURLSerializer,
-    UpdatePaymentStatusSerializer,
-    TaskModuleSerializer,
-    GetCandidateTaskSerializer,
-    UpdateTaskByCandidateSerializer,
-    GetAllCandidateTaskSerializer,
-    settingUsersubProjectSerializer,
-    ReportSerializer,
-    ProjectWiseReportSerializer,
-    githubinfoserializer,
-    ProjectDeadlineSerializer,
-    RegionalAssociateSerializer,
-    TeamTaskSerializer,
-    DashBoardStatusSerializer,
-    DashBoardJobCategorySerializer,
-    GroupLeadAgendaSerializer,
-    TaskDetailsInputSerializer,
-    AddProjectTimeSerializer,
-    UpdateProjectTimeSerializer,
-    UpdateProjectSpentTimeSerializer,
-    UpdateProjectTimeEnabledSerializer,
-    GetWeeklyAgendaByIdSerializer,
-    GetWeeklyAgendasSerializer,
-    leaveapproveserializers,
-    AddCollectionSerializer,
-    agendaapproveserializer,
-    leaveapplyserializers,
-    SubprojectSerializer,
-    AttendanceSerializer,
-    Project_Update_Serializer,
-    WeeklyAgendaDateReportSerializer,
-    CompanyStructureAddCeoSerializer,
-    CompanyStructureUpdateCeoSerializer,
-    CompanyStructureAddProjectLeadSerializer,
-    CompanyStructureUpdateProjectLeadSerializer,
-    CompanyStructureProjectsSerializer,
-    WorklogsDateSerializer,
-    UpdateUserIdSerializer,
-    InsertPaymentInformation,
     PaymentProcessSerializer,
+    InvoiceRequestSerializer
+    
 )
 from .authorization import (
     verify_user_token,
@@ -175,6 +86,8 @@ class Invoice_module(APIView):
             return self.get_payment_records(request)
         elif type_request == "get-invoice":
             return self.invoice(request)
+        elif type_request == "get-requests":
+            return self.get_requests(request)
         else:
             return self.handle_error(request)
 
@@ -185,6 +98,8 @@ class Invoice_module(APIView):
             return self.save_payment_records(request)
         elif type_request == "process-payment":
             return self.process_payment(request)
+        elif type_request == "create-new-request":
+            return self.create_new_request(request)
         else:
             return self.handle_error(request)
 
@@ -474,7 +389,7 @@ class Invoice_module(APIView):
                     "success": False,
                     "message": f"Payment already processed for {payment_month} {payment_year}",
                 },
-                status=status.HTTP_400_BAD_REQUEST,
+                status=status.HTTP_409_CONFLICT,
             )
 
         if not json_existing_payment_record:
@@ -483,7 +398,7 @@ class Invoice_module(APIView):
                     "success": False,
                     "message": "User does not have a payment record yet",
                 },
-                status=status.HTTP_400_BAD_REQUEST,
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         else:
@@ -590,7 +505,7 @@ class Invoice_module(APIView):
                         "database_response": False,
                         "response": "",
                     },
-                    status=status.HTTP_404_NOT_FOUND,
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )
 
     def invoice(self, request):
@@ -740,6 +655,164 @@ class Invoice_module(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        
+
+    def create_new_request(self, request):
+        serializer = InvoiceRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {
+                    "success": False,
+                    "message": "Invalid data",
+                    "response": serializer.errors,
+                }
+            )
+        username = request.data.get("username")
+        portfolio_name = request.data.get("portfolio_name")
+        user_id = request.data.get("user_id")
+        company_id = request.data.get("company_id")
+        data_type = request.data.get("data_type")  
+        payment_month = request.data.get("payment_month")
+        payment_year = request.data.get("payment_year")
+        payment_from = request.data.get("payment_from")
+        payment_to = request.data.get("payment_to")
+
+        data = {
+            "username": username,
+            "portfolio_name": portfolio_name,
+            "user_id": user_id,
+            "company_id": company_id,
+            "data_type": data_type,
+            "payment_month": payment_month,
+            "payment_year": payment_year,
+            "payment_from": payment_from,
+            "payment_to": payment_to,
+        }
+
+        existing_record = datacube_data_retrival(
+            api_key=API_KEY,
+            database_name=DB_PAYMENT_RECORDS,
+            collection_name="invoice_requests",
+            data=data,
+            limit=1,
+            offset=0,
+        )
+
+        json_existing_record = json.loads(existing_record)
+        record_data = json_existing_record.get("data")
+
+        if record_data != []:
+            return Response(
+                {
+                    "success": False,
+                    "message": f"Request has already been created for {username} in {payment_month} {payment_year} for this period: {payment_from} to {payment_to}",
+                },
+                status=status.HTTP_409_CONFLICT,
+            )
+        
+        else:
+            insert_data = {
+                "username": username,
+                "portfolio_name": portfolio_name,
+                "user_id": user_id,
+                "company_id": company_id,
+                "payment_month": payment_month,
+                "data_type": data_type,
+                "payment_year": payment_year,
+                "payment_from": payment_from,
+                "payment_to": payment_to,
+            }
+            data_insert = datacube_data_insertion(
+                api_key=API_KEY,
+                database_name=DB_PAYMENT_RECORDS,
+                collection_name="invoice_requests",
+                data=insert_data,
+            )
+            response_data = json.loads(data_insert)
+            if response_data.get("success") == True:
+                inserted_data_id = response_data["data"]["inserted_id"]
+                inserted_data = datacube_data_retrival(
+                    api_key=API_KEY,
+                    database_name=DB_PAYMENT_RECORDS,
+                    collection_name="invoice_requests",
+                    data={"_id": inserted_data_id},
+                    limit=1,
+                    offset=0,
+                )
+                json_inserted_data = json.loads(inserted_data)
+                inserted_record_data = json_inserted_data.get("data")[0]
+                
+                return Response(
+                    {
+                        "success": True,
+                        "message": "invoice record created",
+                        "database_response": True,
+                        "inserted_data": inserted_record_data
+                    },
+                    status=status.HTTP_201_CREATED,
+                )
+            else:
+                return Response(
+                    {
+                        "success": False,
+                        "message": "Failed to create invoice record",
+                        "database_response": False,
+                        "response": "",
+                    },
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+            
+    def get_requests(self, request):
+        company_id = request.GET.get("company_id")
+
+        fetch_data = {"company_id": company_id}
+
+        result = datacube_data_retrival_function(
+            api_key=API_KEY,
+            database_name=DB_PAYMENT_RECORDS,
+            collection_name="invoice_requests",
+            data=fetch_data,
+            limit=0,
+            offset=0,
+            payment=False,
+        )
+
+        result_dict = json.loads(result)
+
+        if result_dict.get("success", False):
+            records = result_dict.get("data", [])
+            if records:
+                return Response(
+                    {
+                        "success": True,
+                        "message": f"invoice requests for {company_id}",
+                        "database_response": True,
+                        "response": records,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(
+                    {
+                        "success": False,
+                        "message": f"No invoice requests found for {company_id}",
+                        "database_response": False,
+                        "response": "",
+                    },
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+        else:
+            return Response(
+                {
+                    "success": False,
+                    "message": "Failed to fetch invoice requests",
+                    "database_response": False,
+                    "response": "",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        
 
     def handle_error(self, request):
         return Response(
