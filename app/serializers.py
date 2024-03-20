@@ -1051,5 +1051,48 @@ class PaymentProcessSerializer(serializers.Serializer):
             #     raise serializers.ValidationError(
             #         f"The month of payment_from and payment_to must match the payment_month ({payment_month})."
             #     )
+        return data
 
+class InvoiceRequestSerializer(serializers.Serializer):
+    PAYMENT_MONTH_CHOICE = (
+        ("January", "January"),
+        ("February", "February"),
+        ("March", "March"),
+        ("April", "April"),
+        ("May", "May"),
+        ("June", "June"),
+        ("July", "July"),
+        ("August", "August"),
+        ("September", "September"),
+        ("October", "October"),
+        ("November", "November"),
+        ("December", "December"),
+        )
+    username = serializers.CharField(max_length=100,allow_null=False)
+    portfolio_name = serializers.CharField(max_length=100, allow_null=False)
+    user_id = serializers.CharField(max_length=100, allow_null=False)
+    company_id = serializers.CharField(max_length=255, allow_null=False)
+    data_type = serializers.ChoiceField(
+        allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE
+    )
+    payment_month = serializers.ChoiceField(choices=PAYMENT_MONTH_CHOICE, allow_null=False)
+    payment_year = serializers.IntegerField(allow_null=False)
+    
+    payment_from = serializers.DateField(allow_null=False)
+    payment_to = serializers.DateField(allow_null=False)
+
+    def validate(self, data):
+        payment_from = data.get("payment_from")
+        payment_to = data.get("payment_to")
+
+        if payment_from and payment_to:
+            if payment_from >= payment_to:
+                raise serializers.ValidationError(
+                    "payment_from must be before payment_to."
+                )
+            elif (payment_to - payment_from).days != 6:
+                raise serializers.ValidationError(
+                    "The difference between payment_from and payment_to must be exactly 6 days."
+                )
+            
         return data
