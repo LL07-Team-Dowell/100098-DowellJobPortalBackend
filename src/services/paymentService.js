@@ -29,3 +29,9 @@ export const getInvoice = async (userID, year, month) => {
 export const workFlowdetails = async (data) => {
   return await workFlowAxiosInstance.post(`processes/invoice/`, data);
 };
+
+export const getInvoiceRequest = async (companyId) => {
+  return await currentBackendAxiosInstance.get(
+    `invoice_module/?type=get-requests&company_id=${companyId}`
+  );
+};

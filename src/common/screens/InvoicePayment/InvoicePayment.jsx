@@ -41,8 +41,12 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
         setDataLoading(false);
       })
       .catch((err) => {
-        console.log(err?.response ? err?.response?.data?.message : err?.message);
-        toast.error(err?.response ? err?.response?.data?.message : err?.message);
+        console.log(
+          err?.response ? err?.response?.data?.message : err?.message
+        );
+        toast.error(
+          err?.response ? err?.response?.data?.message : err?.message
+        );
         setDataLoading(false);
       });
   };
@@ -170,7 +174,7 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
                             <td>{item.approved_logs_count}</td>
                             <td>{item.requried_logs_count}</td>
                             <td style={{ color: "red" }}>{item.leave_days}</td>
-                            <td>{item.payment_approved}</td>
+                            <td>{item.payment_approved ? "Yes" : "No"}</td>
                             <td>{item.payment_approved_on}</td>
                           </tr>
                         ))}
