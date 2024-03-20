@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import Overlay from "../../../../components/Overlay";
 import { AiOutlineClose } from "react-icons/ai";
 import styles from "./styles.module.css";
-import Select from "react-select";
 import {
+  getInvoiceRequest,
   getLogsBetweenRange,
   getleaveDays,
   processPayment,
@@ -78,9 +78,43 @@ const GenerateInvoice = ({
     const { month, year } = extractMonthandYear(paymentTo);
     console.log(month, year);
 
+    // getInvoiceRequest(currentUser.portfolio_info[0].org_id)
+    //   .then((res) => {
+    //     const invoiceRequest = res?.data?.response;
+
+    //     const foundRequest = invoiceRequest.find(
+    //       (request) =>
+    //         request.username === currentUser.userinfo.username &&
+    //         request.portfolio_name ===
+    //           currentUser.portfolio_info[0].portfolio_name &&
+    //         request.user_id === currentUser.userinfo.userID &&
+    //         request.company_id === currentUser.portfolio_info[0].org_id &&
+    //         request.payment_month === month &&
+    //         request.payment_year === year &&
+    //         request.payment_from === paymentFrom &&
+    //         request.payment_to === paymentTo
+    //     );
+
+    //     // console.log(foundRequest);
+
+    //     if (!foundRequest) {
+    //       setDataProcessing(false);
+    //       return toast.info(
+    //         "Contact HR to create an invoice request or reach out to team for assitance"
+    //       );
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     setDataProcessing(false);
+    //     toast.error(
+    //       err?.response ? err?.response?.data?.message : err?.message
+    //     );
+    //   });
+
     setDataProcessing(true);
 
     const requestsToMake = [
+      getInvoiceRequest(currentUser.portfolio_info[0].org_id),
       getLogsBetweenRange({
         start_date: paymentFrom,
         end_date: paymentTo,
@@ -103,10 +137,33 @@ const GenerateInvoice = ({
     Promise.all(requestsToMake)
       .then((res) => {
         console.log(res[0]?.data);
-        // console.log(res[2]);
         console.log(res[1]?.data);
+        // console.log(res[2]);
 
-        const taskDetails = res[0]?.data?.task_details;
+        const invoiceRequest = res[0]?.data?.response;
+
+        const foundRequest = invoiceRequest.find(
+          (request) =>
+            request.username === currentUser.userinfo.username &&
+            request.portfolio_name ===
+              currentUser.portfolio_info[0].portfolio_name &&
+            request.user_id === currentUser.userinfo.userID &&
+            request.company_id === currentUser.portfolio_info[0].org_id &&
+            request.payment_month === month &&
+            request.payment_year === year &&
+            request.payment_from === paymentFrom &&
+            request.payment_to === paymentTo
+        );
+
+        // console.log(foundRequest);
+        if (!foundRequest) {
+          setDataProcessing(false);
+          return toast.info(
+            "Contact HR to create an invoice request or reach out to team for assitance"
+          );
+        }
+
+        const taskDetails = res[1]?.data?.task_details;
 
         const approvedLogs = taskDetails.filter((log) => log.approved === true);
         const hours = calculateHoursOfLogs(approvedLogs);
@@ -171,25 +228,30 @@ const GenerateInvoice = ({
         Promise.all([
           processPayment(dataForInvoice),
           workFlowdetails(dataForWorkflow),
-        ]).then((res) => {
-          const masterQrCodeDetails = res[1]?.data?.created_process.master_code;
-          const masterLinkDetails = res[1]?.data?.created_process.master_link;
+        ])
+          .then((res) => {
+            const masterQrCodeDetails =
+              res[1]?.data?.created_process.master_code;
+            const masterLinkDetails = res[1]?.data?.created_process.master_link;
 
-          setShowMasterCode(masterQrCodeDetails);
-          setShowMasterLink(masterLinkDetails);
+            setShowMasterCode(masterQrCodeDetails);
+            setShowMasterLink(masterLinkDetails);
 
-          setDataProcessing(false);
-          setShowInvoicePage(true);
-        }).catch(err => {
-          console.log(err?.response ? err?.response?.data : err?.message);
-          setDataProcessing(false);
-          toast.error('Invoice creation not successful. Please try again or contact team for assistance')
-        });
+            setDataProcessing(false);
+            setShowInvoicePage(true);
+          })
+          .catch((err) => {
+            console.log(err?.response ? err?.response?.data : err?.message);
+            setDataProcessing(false);
+            toast.error(
+              "Invoice creation not successful. Please try again or contact team for assistance"
+            );
+          });
       })
       .catch((err) => {
         console.log(err?.response ? err?.response?.data : err?.message);
         setDataProcessing(false);
-        toast.error('Invoice creation failed. Please try again')
+        toast.error("Invoice creation failed. Please try again");
       });
   };
 

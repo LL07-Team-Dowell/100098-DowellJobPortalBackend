@@ -63,7 +63,7 @@ const Project = ({ _id }) => {
 
       setProjectTimeLoading(false);
       console.log(projectTime);
-      console.log(commits);
+      console.log(commitsData);
     });
 
     //Getting of Projects (Active/Inactive projects)
@@ -375,18 +375,16 @@ const Project = ({ _id }) => {
                               </>
                               <span>Hours</span>
                             </p>
-                            <p className={styles.project_time}>
-                              Commits:{" "}
-                              <>
-                                {commits.map((repo) =>
-                                  repo.repository_name ===
-                                  foundProjectTimeDetail?.repository_name
-                                    ? repo.metadata.length
-                                    : null
-                                )}
-                                <span>Commits</span>
-                              </>
-                            </p>
+                            {commits.map((repo) =>
+                              repo?.repository_name ===
+                                foundProjectTimeDetail?.repository_name &&
+                              repo.metadata.length > 0 ? (
+                                <p className={styles.project_time}>
+                                  Commits: {repo.metadata.length}
+                                  <span>Commits</span>
+                                </p>
+                              ) : null
+                            )}
                           </>
                         ) : null}
                         <div
