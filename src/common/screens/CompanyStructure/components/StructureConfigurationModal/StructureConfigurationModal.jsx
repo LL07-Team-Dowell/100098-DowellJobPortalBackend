@@ -318,18 +318,18 @@ export default function StructureConfigurationModal ({
                                         </p>
                                         <Select 
                                             value={
-                                                copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead?.length < 1 ?
+                                                (
+                                                    !copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead ||
+                                                    copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead?.length < 1
+                                                ) ?
                                                     []
                                                 :
                                                 [
                                                     {
-                                                        label: copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead ?
-                                                            applications?.find(item => item?.username === copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject)?.team_lead) ?
-                                                                applications?.find(item => item?.username === copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject)?.team_lead)?.applicant
-                                                                :
-                                                                copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead
+                                                        label: applications?.find(item => item?.username === copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject)?.team_lead) ?
+                                                            applications?.find(item => item?.username === copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject)?.team_lead)?.applicant
                                                             :
-                                                        'Select teamlead'
+                                                            copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead
                                                         ,           
                                                         value: copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead
                                                     }
