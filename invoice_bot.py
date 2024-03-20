@@ -97,7 +97,6 @@ def settinguserposition(username, company_id):
     if response.status_code == 200:
         return response.json().get('data', {}).get('role')
     else:
-        # print("Failed to get user position. HTTP status code:", response.status_code)
         return None
 
 def get_userwise_attendance( username,monday_of_previous_week, friday_of_previous_week,company_id, project):

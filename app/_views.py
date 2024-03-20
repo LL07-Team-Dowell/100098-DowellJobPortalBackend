@@ -334,6 +334,11 @@ class Invoice_module(APIView):
             )
 
     def process_payment(self, request):
+        company_id = request.data.get("company_id")
+        company_name = request.data.get("company_name")
+        created_by = request.data.get("created_by")
+        portfolio = request.data.get("portfolio")
+        data_type = request.data.get("data_type")
         user_id = request.data.get("user_id")
         payment_month = request.data.get("payment_month")
         payment_year = request.data.get("payment_year")
@@ -342,6 +347,13 @@ class Invoice_module(APIView):
         total_logs_required = request.data.get("total_logs_required")
         payment_from = request.data.get("payment_from")
         payment_to = request.data.get("payment_to")
+
+        template_id = "64ece51ba57293efb539e5b7"
+        hr_username = "DummyHR"
+        hr_portfolio = "DummyHR_Portfolio"
+        accounts_username = "DummyAC"
+        accounts_portfolio = "DummyAC_Portfolio"
+
 
         serializer = PaymentProcessSerializer(data=request.data)
         if not serializer.is_valid():
@@ -420,8 +432,37 @@ class Invoice_module(APIView):
             if user_was_on_leave:
                 amount_to_pay = 0
 
+            def processes(company_id, company_name, template_id, created_by, portfolio, data_type, payment_month,payment_year,hr_username,hr_portfolio,accounts_username,accounts_portfolio):
+                url = "https://100094.pythonanywhere.com/v2/processes/invoice/"
+                payload = {
+                    "company_id": company_id,
+                    "company_name":company_name,
+                    "template_id": template_id,
+                    "created_by": created_by,
+                    "portfolio": portfolio,
+                    "data_type":data_type,
+                    "payment_month": payment_month,
+                    "payment_year": payment_year,
+                    "hr_username": hr_username,
+                    "hr_portfolio": hr_portfolio,
+                    "accounts_username": accounts_username,
+                    "accounts_portfolio":accounts_portfolio
+                }
+                headers = {"Content-Type": "application/json"}
+                response = requests.post(url, headers=headers, json=payload)
+                return response.json()
+            
+            masterlink_response = processes(company_id, company_name, template_id, created_by, portfolio, data_type, payment_month, payment_year, hr_username, hr_portfolio, accounts_username, accounts_portfolio)
+            created_process = masterlink_response.get('created_process', {})
+            master_link = created_process.get('master_link')
+ 
             insert_data = {
                 "db_record_type": "payment_detail",
+                "company_id": company_id,
+                "company_name": company_name,
+                "created_by": created_by,
+                "portfolio": portfolio,
+                "data_type": data_type,
                 "payment_month": payment_month,
                 "payment_year": payment_year,
                 "amount_paid": amount_to_pay,
@@ -434,6 +475,7 @@ class Invoice_module(APIView):
                 "payment_approved_on": None,
                 "payment_from": payment_from,
                 "payment_to": payment_to,
+                "master_link": master_link
             }
             data_insert = datacube_data_insertion(
                 api_key=API_KEY,
