@@ -115,9 +115,14 @@ def get_userwise_attendance( username,monday_of_previous_week, friday_of_previou
     res = response.json()
     return res.get('data', {}).get(username, [])
 
-def processpayment(user_id, payment_month, payment_year, approved_logs_count, total_logs_required, payment_from, payment_to):
+def processpayment(company_id,company_name,created_by,portfolio,data_type,user_id, payment_month, payment_year, approved_logs_count, total_logs_required, payment_from, payment_to):
     url = "https://100098.pythonanywhere.com/invoice_module/?type=process-payment"
     payload = {
+        "company_id": company_id,
+        "company_name": company_name,
+        "created_by": created_by,
+        "portfolio": portfolio,
+        "data_type": data_type,
         "user_id": user_id,
         "payment_month": payment_month,
         "payment_year": payment_year,
@@ -141,11 +146,16 @@ def calculate_hours(worklogs):
     return total_hours
 
 def create_invoice_bot():
+    if datetime.today().weekday() != 5: 
+        print("Invoice automation process not initiated because today is not Saturday.")
+        return
     previous_week_dates = getPreviousWeekDates()
     monday_of_previous_week = previous_week_dates["Monday"]
     friday_of_previous_week = previous_week_dates["Friday"]
     sunday_of_previous_week = previous_week_dates["Sunday"]
     company_id = "63a2b3fb2be81449d3a30d3f"
+    company_name="HR_Dowell Research"
+
     
     print(f'Getting all onboarded applications for company with id of {company_id}...')
 
@@ -156,7 +166,9 @@ def create_invoice_bot():
     for application in applications_with_user_id:
         print(f'Initiating invoice creation process for {application["username"]}.......')
         user_id = application["user_id"]
-
+        portfolio = application["portfolio_name"]
+        data_type = application["data_type"]
+    
         user_approved_logs = get_all_task_details(
             monday_of_previous_week,
             sunday_of_previous_week,    
@@ -208,6 +220,11 @@ def create_invoice_bot():
                     total_logs_required = 80
 
                 result = processpayment(
+                    company_id,
+                    company_name,
+                    application["username"],
+                    portfolio,
+                    data_type,
                     user_id,
                     payment_month,
                     payment_year,
@@ -247,6 +264,11 @@ def create_invoice_bot():
                 payment_year = sunday_of_previous_week_datetime.year
 
                 result = processpayment(
+                    company_id,
+                    company_name,
+                    application["username"],
+                    portfolio,
+                    data_type,
                     user_id,
                     payment_month,
                     payment_year,
