@@ -49,6 +49,8 @@ const JobLandingLayout = ({
   useCheckCurrentAuthStatus(currentUser, setCurrentAuthSessionExpired);
 
   useEffect(() => {
+    if (!currentUser) return;
+
     if (!currentUserHiredApplicationsLoaded) {
       try {
         const savedHiredApplications = JSON.parse(sessionStorage.getItem("user-hired-applications"));
@@ -62,10 +64,10 @@ const JobLandingLayout = ({
     }
 
     console.log(currentUserHiredApplicationsLoaded, currentUserHiredApplications);
-    if (currentUserHiredApplications.find(app => getDaysDifferenceBetweenDates(app.onboarded_on, new Date()) > 180)) {
+    if (currentUserHiredApplications?.find(app => getDaysDifferenceBetweenDates(app?.onboarded_on, new Date()) > 180)) {
       setLinkCopy([...afterSelectionLinks, candidateInternalJobRoute])
     }
-  }, [currentUserHiredApplicationsLoaded])
+  }, [currentUser, currentUserHiredApplicationsLoaded])
 
   useEffect(() => {
     if (location.pathname.includes("teams")) return setScreenTitle("Teams");
