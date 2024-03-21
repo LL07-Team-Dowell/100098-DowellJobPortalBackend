@@ -36,7 +36,9 @@ function JobScreen() {
     const [currentJobCategory, setCurrentJobCategory] = useState(null);
     const [jobsToDisplay, setJobsToDisplay] = useState([]);
     const { currentUser, isPublicUser, publicUserDetails, isProductUser, productUserDetails, } = useCurrentUserContext();
+    
     console.log(jobs);
+
     useEffect(() => {
         // console.log(jobs);
         // const findJobsMatchingCategory = (category) => jobs.filter(job => job.job_category.toLocaleLowerCase().includes(category.toLocaleLowerCase()) || category.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase()));
@@ -63,9 +65,11 @@ function JobScreen() {
             //     resolve(matchedJobs);
             // });
         }).filter(job => job);
+
         const jobCategoryParam = params.get('jobCategory');
         const currentJobStream = params.get('stream');
         // console.log(jobs);
+
         if (jobCategoryParam) {
             setCurrentCategory(jobCategoryParam);
             if (jobCategoryParam === "all") return setJobsMatchingCategory(jobs);
@@ -93,7 +97,7 @@ function JobScreen() {
 
             if (jobCategoryParam === "Research Associate") {
                 setJobSelectionCategories(["Full time", "Part time"])
-                const jobsToDisplayForCurrentCategory = matchedJobs.filter(job => job.others[jobKeys.othersResearchAssociateJobType] === currentJobCategory);
+                const jobsToDisplayForCurrentCategory = matchedJobs.filter(job => job.type_of_job === currentJobCategory);
                 // if (jobsToDisplayForCurrentCategory.length === 0) return setJobsToDisplay(jobs.filter(job => job.typeof.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.typeof.toLocaleLowerCase())))
                 setJobsToDisplay(jobsToDisplayForCurrentCategory);
             }
@@ -126,14 +130,14 @@ function JobScreen() {
         }
 
         if (currentCategory === "Employee") {
-            const matchedJobs = jobsMatchingCategory.filter(job => job.others[jobKeys.othersResearchAssociateJobType] === currentJobCategory);
+            const matchedJobs = jobsMatchingCategory.filter(job => job.type_of_job === currentJobCategory);
             // if (matchedJobs.length === 0) return setJobsToDisplay(jobs?.filter(job => job.typeof.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.typeof.toLocaleLowerCase())))
             setJobsToDisplay(matchedJobs);
         }
 
         if (currentCategory === "Research Associate") {
 
-            const matchedJobs = jobsMatchingCategory.filter(job => job.others[jobKeys.othersResearchAssociateJobType] === currentJobCategory);
+            const matchedJobs = jobsMatchingCategory.filter(job => job.type_of_job === currentJobCategory);
             // if (matchedJobs.length === 0) return setJobsToDisplay(jobs?.filter(job => job.typeof.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.typeof.toLocaleLowerCase())))
             setJobsToDisplay(matchedJobs);
 
@@ -392,28 +396,29 @@ function JobScreen() {
                                                         React.Children.toArray(jobsToDisplay.map(job => {
 
                                                             if (!job.is_active) return <></>
-                                                            return <><JobCard
-                                                                job={job}
-                                                                candidateViewJob={true}
-                                                                subtitle={currentCategory}
-                                                                disableActionBtn={
-                                                                    currentUser ?
-                                                                        candidateJobs.appliedJobs.find(appliedJob => appliedJob.job_number === job.job_number) == undefined ? false : true
-                                                                        :
-                                                                        isProductUser ?
-                                                                            productUserDetails?.jobsAppliedFor?.includes(job._id) ? true : false
-                                                                            : false
-                                                                }
-                                                                buttonText={
-                                                                    currentUser ?
-                                                                        candidateJobs.appliedJobs.find(appliedJob => appliedJob.job_number === job.job_number) == undefined ? "Apply" : "Applied"
-                                                                        :
-                                                                        isProductUser ?
-                                                                            productUserDetails?.jobsAppliedFor?.includes(job._id) ? "Applied" : 'Apply' :
-                                                                            "Apply"
-                                                                }
-                                                                handleBtnClick={(job) => handleApplyButtonClick(job)}
-                                                            />
+                                                            return <>
+                                                                <JobCard
+                                                                    job={job}
+                                                                    candidateViewJob={true}
+                                                                    subtitle={currentCategory}
+                                                                    disableActionBtn={
+                                                                        currentUser ?
+                                                                            candidateJobs.appliedJobs.find(appliedJob => appliedJob.job_number === job.job_number) == undefined ? false : true
+                                                                            :
+                                                                            isProductUser ?
+                                                                                productUserDetails?.jobsAppliedFor?.includes(job._id) ? true : false
+                                                                                : false
+                                                                    }
+                                                                    buttonText={
+                                                                        currentUser ?
+                                                                            candidateJobs.appliedJobs.find(appliedJob => appliedJob.job_number === job.job_number) == undefined ? "Apply" : "Applied"
+                                                                            :
+                                                                            isProductUser ?
+                                                                                productUserDetails?.jobsAppliedFor?.includes(job._id) ? "Applied" : 'Apply' :
+                                                                                "Apply"
+                                                                    }
+                                                                    handleBtnClick={(job) => handleApplyButtonClick(job)}
+                                                                />
                                                             </>
                                                         }))
                                         }
