@@ -183,6 +183,11 @@ const GenerateInvoice = ({
 
         const dataForInvoice = {
           user_id: currentUser.userinfo.userID,
+          company_id: currentUser.portfolio_info[0].org_id,
+          company_name: currentUser.portfolio_info[0].org_name,
+          created_by: currentUser.userinfo.username,
+          portfolio: currentUser.portfolio_info[0].portfolio_name,
+          data_type: currentUser.portfolio_info[0].data_type,
           payment_month: month,
           payment_year: year,
           payment_from: paymentFrom,
