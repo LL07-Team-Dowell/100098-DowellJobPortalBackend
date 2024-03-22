@@ -89,6 +89,7 @@ import {
   singleCategoryProductUserRoutes,
 } from "./routes/productUserRoutes";
 import { hrRoutesInfo } from "./routes/hrRoutes";
+import GithubReportContextProvider from "./contexts/GithubReportContext";
 
 function App() {
   // console.log = () => { };
@@ -408,7 +409,9 @@ function App() {
                   <JobContextProvider>
                     <CandidateTaskContextProvider>
                       <ValuesProvider>
-                        <info.component />
+                        <GithubReportContextProvider>
+                          <info.component />
+                        </GithubReportContextProvider>
                       </ValuesProvider>
                     </CandidateTaskContextProvider>
                   </JobContextProvider>
@@ -450,7 +453,9 @@ function App() {
                       <ValuesProvider>
                         <TeamProvider>
                           <CompanyStructureContextProvider>
-                            <info.component />
+                            <GithubReportContextProvider>
+                              <info.component />
+                            </GithubReportContextProvider>
                           </CompanyStructureContextProvider>
                         </TeamProvider>
                       </ValuesProvider>
