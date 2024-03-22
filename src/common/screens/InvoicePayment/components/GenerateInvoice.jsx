@@ -58,11 +58,11 @@ const GenerateInvoice = ({
 
   const handleProcessInvoice = async () => {
     if (!paymentFrom || !paymentTo)
-      return toast.info("Select a both start and end dates");
+      return toast.info("Please select both payment from and to dates");
 
     if (getDaysDifferenceBetweenDates(paymentFrom, paymentTo) !== 6) {
       return toast.info(
-        "Difference between start and end date should be equal to 6 days!"
+        "The difference between the payment from and to date should be equal to 6 days!"
       );
     }
 
@@ -173,7 +173,7 @@ const GenerateInvoice = ({
         if (
           !allAttendanceData
             .flat()
-            .find((item) => item.dates_present.length > 0)
+            .find((item) => item?.dates_present?.length > 0)
         ) {
           setDataProcessing(false);
           return toast.info("Invoice creation failed: No attendance data found for specified period");

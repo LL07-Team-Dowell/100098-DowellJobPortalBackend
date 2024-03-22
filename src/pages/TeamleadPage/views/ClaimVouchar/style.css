@@ -38,18 +38,19 @@ button.approve__button {
     z-index: 100;
     display: flex;
     justify-content: center;
-    /* align-items: center; */
+    align-items: center;
 }
 
 .form__data form {
     background-color: white;
-    width: 500px;
-    height: 320px;
+    /* width: 500px; */
+    width: 45%;
+    /* height: 320px; */
+    height: max-content;
     padding: 40px;
     border-radius: 10px;
     position: relative;
-    margin-top: 10rem;
-
+    /* margin-top: 10rem; */
 }
 
 .form__data label {
@@ -114,6 +115,7 @@ button.approve__button {
     padding: 20px;
     border-radius: 10px;
     text-align: center;
+    height: max-content;
 }
 
 .coupon__data p {

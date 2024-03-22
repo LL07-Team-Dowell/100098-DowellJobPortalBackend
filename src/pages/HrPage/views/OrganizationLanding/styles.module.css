@@ -1,0 +1,29 @@
+.wrapper {
+    width: 90%;
+    margin: 0 auto;
+    padding: 2.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+.wrapper h2 {
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    color: #005734;
+    letter-spacing: 0.05em;
+}
+
+.features__Wrap {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 3rem;
+}
+
+@media screen and (max-width: 767px) {
+    .wrapper {
+        width: 80%;
+        padding-bottom: 10rem;
+    }
+}

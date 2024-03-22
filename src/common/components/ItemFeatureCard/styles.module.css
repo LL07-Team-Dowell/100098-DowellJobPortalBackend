@@ -1,0 +1,37 @@
+.Create_Team {
+    width: 19rem;
+    min-height: 19rem;
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.Create_Team .icon__Wrap {
+    width: 3.75rem;
+    height: 3.75rem;
+    padding: 10px;
+    margin: auto;
+    margin-bottom: 20px;
+    background-color: rgba(225, 251, 226, 1);
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.Create_Team h4 {
+    font-size: large;
+    font-weight: bold;
+}
+
+.Create_Team p {
+    margin-top: 10px;
+    color: rgba(126, 126, 126, 1);
+    font-size: 15px;
+    line-height: 1.7;
+}

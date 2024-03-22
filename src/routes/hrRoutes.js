@@ -8,6 +8,7 @@ import AttendanceReport from "../pages/HrPage/views/AttendanceReport/AttendanceR
 import AttendanceUpdatePage from "../pages/HrPage/views/AttendanceReport/UpdateAttendance/UpdateAttendance";
 import HRCompanyStructure from "../pages/HrPage/views/CompanyStructure/HrCompanyStructure";
 import HrJobScreen from "../pages/HrPage/views/JobScreen/HrJobScreen";
+import HRorganisationLandingPage from "../pages/HrPage/views/OrganizationLanding/HRorganisationLandingPage";
 import Logout from "../pages/LogoutPage/Logout";
 
 export const hrRoutesInfo = [
@@ -46,6 +47,10 @@ export const hrRoutesInfo = [
     {
         path: "/company-structure",
         component: HRCompanyStructure,
+    },
+    {
+        path: "/organisation",
+        component: HRorganisationLandingPage,
     },
     {
         path: "/",
