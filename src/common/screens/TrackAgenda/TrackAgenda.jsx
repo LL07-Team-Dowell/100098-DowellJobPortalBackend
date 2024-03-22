@@ -41,7 +41,7 @@ const TrackAgendaPage = ({
     const [startSelectedDate, setStartSelectedDate] = useState(new Date());
     const firstRender = useRef(true);
     const [datesFetched, setDatesFetched] = useState(true);
-    const [isAgendaApproving, setIsAgendaApproving] = useState(false);
+    const [agendasBeingApproved, setAgendasBeingApproved] = useState([]);
 
     const handleAgendaDetailUpdate = (keyToUpdate, newVal) => {
         setAgendaDetails((prevDetails) => {
@@ -212,15 +212,41 @@ const TrackAgendaPage = ({
     }
 
     const approveAgenda = async (agenda_id, agendaSubproject) => {
-        setIsAgendaApproving(true);
-        await approveGroupLeadAgenda(agenda_id,agendaSubproject).then(() => {
+        const [
+            copyOfAgendasBeingApproved,
+            copyOfAgendas,
+        ] = [
+            agendasBeingApproved.slice(),
+            agendasFetched.slice()
+        ];
+
+        if (copyOfAgendasBeingApproved.find(item => item === agenda_id)) return;
+
+        copyOfAgendasBeingApproved.push(agenda_id);
+        setAgendasBeingApproved(copyOfAgendasBeingApproved);
+
+        try {
+            const res = (await approveGroupLeadAgenda(agenda_id, agendaSubproject)).data;
+            console.log(res);
             toast.success('Agenda approved successfully');
-        setIsAgendaApproving(false);
-        }).catch(err => {
-            console.log(err);
+
+            const foundUpdatedAgendaIndex = copyOfAgendas.findIndex(agenda => agenda._id === agenda_id);
+            if (foundUpdatedAgendaIndex !== -1) {
+                const currentAgendaItem = copyOfAgendas[foundUpdatedAgendaIndex];
+                copyOfAgendas[foundUpdatedAgendaIndex] = {
+                    ...currentAgendaItem,
+                    lead_approval: true,
+                }
+
+                setAgendasFetched(copyOfAgendas);
+            }
+
+            setAgendasBeingApproved(copyOfAgendasBeingApproved.filter(item => item !== agenda_id));
+        } catch (error) {
+            console.log(error?.response ? error?.response?.data : error?.message);
             toast.error('Failed to approve agenda, please try again later');
-        setIsAgendaApproving(false);
-        })
+            setAgendasBeingApproved(copyOfAgendasBeingApproved.filter(item => item !== agenda_id));
+        }
     }
     
     return <>
@@ -395,14 +421,28 @@ const TrackAgendaPage = ({
                                     </div>
                                     <div className={styles.approve_btn_}>
                                         {
-                                            (isTeamLead && !agenda.lead_approval)?
-                                            <button className={styles.approve_btn_btn}
-                                                onClick={() => approveAgenda(agenda._id, agenda.sub_project)}
-                                            >{isAgendaApproving ?
-                                                <LoadingSpinner width={20} height={20} /> :
-                                                'Approve'
-                                                }
-                                            </button>:<></>
+                                            (isTeamLead && !agenda.lead_approval) ?
+                                                <button 
+                                                    className={styles.track__Btn}
+                                                    onClick={
+                                                        () => approveAgenda(agenda._id, agenda.sub_project)
+                                                    }
+                                                    disabled={
+                                                        agendasBeingApproved.find(item => item === agenda._id) ?
+                                                            true
+                                                        :
+                                                        false
+                                                    }
+                                                >
+                                                    {
+                                                        agendasBeingApproved.find(item => item === agenda._id) ?
+                                                            <LoadingSpinner width={20} height={20} /> 
+                                                        :
+                                                        'Approve'
+                                                    }
+                                                </button>
+                                            :
+                                            <></>
                                         }
                                     </div>
                                 </div>
