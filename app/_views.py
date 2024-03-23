@@ -404,7 +404,7 @@ class Invoice_module(APIView):
                 status=status.HTTP_409_CONFLICT,
             )
 
-        if not json_existing_payment_record:
+        if len(json_existing_payment_record.get("data")) < 1:
             return Response(
                 {
                     "success": False,
@@ -414,6 +414,7 @@ class Invoice_module(APIView):
             )
 
         else:
+            print("json",json_existing_payment_record)
             weekly_payment_amount = json_existing_payment_record["data"][0][
                 "weekly_payment_amount"
             ]
