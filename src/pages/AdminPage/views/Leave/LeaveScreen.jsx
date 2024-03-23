@@ -78,9 +78,14 @@ const LeaveScreen = () => {
 
 
     const updatingAllCompanyApplications = (_id) => {
-        const index = allCompanyApplications.findIndex(application => application?.status === candidateStatuses?.ONBOARDING && application?.user_id === _id);
+        const copyOfAllCompanyApplications = allCompanyApplications.slice();
+        const index = copyOfAllCompanyApplications.findIndex(application => application?.status === candidateStatuses?.ONBOARDING && application?.user_id === _id);
         console.log('Index where condition is true:', index);
-        setAllCompanyApplications(allCompanyApplications[index].status = candidateStatuses?.LEAVE);
+        
+        if (index !== -1) {
+            copyOfAllCompanyApplications[index].status = candidateStatuses?.LEAVE;
+            setAllCompanyApplications(copyOfAllCompanyApplications);
+        }
     }
 
     const handleApproveApplication = async (_id, user_id) => {
@@ -154,7 +159,7 @@ const LeaveScreen = () => {
                                     />
                                     <div className={styles.info_leave}>
                                         <p><b>Applicant:</b> {application?.applicant}</p>
-                                        <p><b>Leave Startt:</b> {application?.leave_start_date}</p>
+                                        <p><b>Leave Start:</b> {application?.leave_start_date}</p>
                                         <p><b>Leave End:</b> {application?.leave_end_date}</p>
                                         {/* <p><b>Project:</b> {application?.project}</p> */}
                                         <p><b>Project:</b> {application && Array.isArray(application?.project) && application?.project.length > 0 ? application?.project.join(', ') : application?.project}</p>

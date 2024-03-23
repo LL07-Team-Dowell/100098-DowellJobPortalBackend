@@ -39,6 +39,7 @@ const AdminTeam = () => {
       TeamsSelected: data.TeamsSelected.filter((v) => v._id !== id),
     });
   };
+  
   useEffect(() => {
     getAllTeams(currentUser.portfolio_info[0].org_id)
       .then((resp) => {
@@ -61,8 +62,6 @@ const AdminTeam = () => {
         setresponse(true);
       });
   }, []);
-  console.log(searchValue);
-  console.log(data.TeamsSelected.length);
 
   if (data.TeamsSelected.length === 0 && !response)
     return (

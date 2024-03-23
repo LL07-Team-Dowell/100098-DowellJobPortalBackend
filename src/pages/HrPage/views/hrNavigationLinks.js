@@ -1,6 +1,7 @@
 import { FaUsers } from "react-icons/fa";
 import { FiHome } from "react-icons/fi";
 import { GiNotebook } from "react-icons/gi";
+import { GoOrganization } from "react-icons/go";
 import { ImStack } from "react-icons/im";
 import { IoCalendarOutline } from "react-icons/io5";
 import { PiTreeStructure } from "react-icons/pi";
@@ -12,21 +13,26 @@ export const hrNavigationLinks = [
         icon: <FiHome />,
         text: "Home",
     },
+    {
+        linkAddress: "/organisation",
+        icon: <GoOrganization />,
+        text: "Organisation",
+    },
     // {
     //     linkAddress: "/tasks",
     //     icon: <ImStack />,
     //     text: "Work logs"
     // },
-    {
-        linkAddress: "/hr-training",
-        icon: <GiNotebook />,
-        text: "Training"
-    },
-    {
-        linkAddress: "/all-users",
-        icon: <FaUsers />,
-        text: "Users",
-    },
+    // {
+    //     linkAddress: "/hr-training",
+    //     icon: <GiNotebook />,
+    //     text: "Training"
+    // },
+    // {
+    //     linkAddress: "/all-users",
+    //     icon: <FaUsers />,
+    //     text: "Users",
+    // },
     {
         linkAddress: "/agenda",
         icon: <TfiAgenda />,
@@ -42,9 +48,9 @@ export const hrNavigationLinks = [
         icon: <IoCalendarOutline />,
         text: "Attendance",
     },
-    {
-        linkAddress: "/company-structure",
-        icon: <PiTreeStructure />,
-        text: "Structure",
-    },
+    // {
+    //     linkAddress: "/company-structure",
+    //     icon: <PiTreeStructure />,
+    //     text: "Structure",
+    // },
 ]

@@ -395,6 +395,9 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
                   <b>Job:</b> {application.job_title}
                 </p>
                 <p>
+                  <b>Pay:</b> {application?.payment}
+                </p>
+                <p>
                   <b>Application Submitted On:</b> {`${new Date(application.application_submitted_on).toDateString()}`}
                 </p>
                 {

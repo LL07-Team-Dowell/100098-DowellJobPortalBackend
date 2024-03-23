@@ -1,0 +1,47 @@
+.wrapper {
+    width: 90%;
+    margin: 0 auto;
+    padding: 1rem 0 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+.icon__Wrap {
+    display: flex;
+    align-items: center;
+}
+
+.icon__Wrap h3 {
+    font-size: 25px;
+    font-family: "Poppins", sans-serif;
+    color: #005734;
+    font-weight: 500;
+    padding: 1px 13px;
+    margin: 0;
+}
+
+.back_icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0.2, 0.3);
+    cursor: pointer;
+}
+
+.features__Wrap {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 3rem;
+}
+
+@media screen and (max-width: 767px) {
+    .wrapper {
+        width: 80%;
+        padding-bottom: 10rem;
+    }
+}

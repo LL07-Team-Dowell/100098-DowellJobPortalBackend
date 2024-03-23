@@ -222,6 +222,7 @@ export const extractMonthandYear = (date) => {
 };
 
 export const formatDate = (date) => {
+  if (!date || new Date(date) == 'Invalid Date') return '';
   const options = {
     weekday: "short",
     month: "short",

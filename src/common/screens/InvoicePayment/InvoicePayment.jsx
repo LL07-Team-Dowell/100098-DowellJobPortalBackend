@@ -160,7 +160,7 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
                         <tr>
                           <th>Payment from</th>
                           <th>Payment to</th>
-                          <th>Amount paid</th>
+                          <th>Amount</th>
                           <th>Currency</th>
                           <th>Approved logs</th>
                           <th>Required log count</th>
@@ -184,9 +184,17 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
                             <td style={{ color: "red" }}>
                               {item.leave_days ? item.leave_days : "-"}
                             </td>
-                            <td>{item.payment_approved ? "Yes" : "No"}</td>
+                            <td
+                              style={{
+                                color: item.payment_approved
+                                  ? "#005734"
+                                  : "red",
+                              }}
+                            >
+                              {item.payment_approved ? "Yes" : "No"}
+                            </td>
                             <td>
-                              {item.payment_approved_on
+                              {formatDate(item.payment_approved_on)
                                 ? formatDate(item.payment_approved_on)
                                 : "-"}
                             </td>

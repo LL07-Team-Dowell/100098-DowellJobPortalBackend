@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react'
 import StaffJobLandingLayout from '../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout'
 import styles from './style.module.css';
 import Select from 'react-select';
-import { getAppliedJobs, getPaymentRecord, savePaymentRecord, updatePaymentRecord } from '../../../../services/candidateServices';
+import { getPaymentRecord, savePaymentRecord, updatePaymentRecord } from '../../../../services/candidateServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { PiNotePencilDuotone, PiSealWarningDuotone } from "react-icons/pi";
 import { IoAddCircleOutline, IoCloseSharp } from "react-icons/io5";
 import Overlay from '../../../../components/Overlay';
-import CreatableSelect from 'react-select/creatable';
-import { Toast, toast } from 'react-toastify';
+// import CreatableSelect from 'react-select/creatable';
+import { toast } from 'react-toastify';
 import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
 import { IoChevronBack } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
@@ -16,7 +16,11 @@ import { managementUpdateProject } from '../../../../services/accountServices';
 
 const Payment = () => {
   const navigate = useNavigate();
-  const { currentUser } = useCurrentUserContext();
+  const { 
+    currentUser,
+    allCompanyApplications,
+    userRemovalStatusChecked,
+  } = useCurrentUserContext();
   const currencyList = [
     { label: "US Dollar (USD)", value: "USD" },
     { label: "Nigerian Naira (NGN)", value: "NGN" },
@@ -52,32 +56,27 @@ const Payment = () => {
   const [usersOtherInfo, setUsersOtherInfo] = useState([]);
 
   useEffect(() => {
-    getAppliedJobs(currentUser?.portfolio_info[0].org_id).then(res => {
-      const data = res?.data?.response?.data;
-      // console.log('responseeeeeeeeeee', res?.data?.response?.data);
-      const filteredUsers = data
-        .filter(users => users.hasOwnProperty('user_id'))
-        .map(users => ({
-          label: users.applicant,
-          value: users._id,
-        }));
-      setAllUsers(filteredUsers);
+    if (!userRemovalStatusChecked) return;
 
-      const filteredOtherInfo = data
-        .filter(users => users.hasOwnProperty('user_id'))
-        .map(users => ({
-          user_id: users._id,
-          // name: users.applicant,
-          freelancePlatform: users.freelancePlatform,
-          payment: users.payment,
-          project: users.project,
-        }));
-      setUsersOtherInfo(filteredOtherInfo);
+    const filteredUsers = allCompanyApplications
+      .filter(users => users.hasOwnProperty('user_id'))
+      .map(users => ({
+        label: users.applicant,
+        value: users._id,
+      }));
+    setAllUsers(filteredUsers);
 
-    }).catch(err => {
-      console.log(err);
-    })
-  }, [])
+    const filteredOtherInfo = allCompanyApplications
+      .filter(users => users.hasOwnProperty('user_id'))
+      .map(users => ({
+        user_id: users._id,
+        // name: users.applicant,
+        freelancePlatform: users.freelancePlatform,
+        payment: users.payment,
+        project: users.project,
+      }));
+    setUsersOtherInfo(filteredOtherInfo);
+  }, [userRemovalStatusChecked])
 
   const handleGetRecordButtonClick = async () => {
     console.log(selectedUsers);
@@ -434,7 +433,7 @@ const Payment = () => {
           <Overlay>
             <div className={styles.add_edit_modal}>
               <div className={styles.close_icon}>
-                <IoCloseSharp fontSize="1.5em" onClick={closeModal} />
+                <IoCloseSharp fontSize="1.5em" onClick={closeModal} cursor={'pointer'} />
               </div>
               <div className={styles.edit_add_record}>
                 {
@@ -542,7 +541,7 @@ const Payment = () => {
           <Overlay>
             <div className={styles.add_edit_modal}>
               <div className={styles.close_icon}>
-                <IoCloseSharp fontSize="1.5em" onClick={closeUpdateModal} />
+                <IoCloseSharp fontSize="1.5em" onClick={closeUpdateModal} cursor={'pointer'} />
               </div>
               <div className={styles.edit_add_record}>
                 <div className={styles.select_input}>
@@ -600,7 +599,7 @@ const Payment = () => {
           <Overlay>
             <div className={styles.no_data_found_modal}>
               <div className={styles.close_icon}>
-                <IoCloseSharp fontSize="1.5em" onClick={closeNoDataFoundModal} />
+                <IoCloseSharp fontSize="1.5em" onClick={closeNoDataFoundModal} cursor={'pointer'} />
               </div>
               <div className={styles.warning_modal}>
                 <PiSealWarningDuotone fontSize='8em' color='#ac1616' />

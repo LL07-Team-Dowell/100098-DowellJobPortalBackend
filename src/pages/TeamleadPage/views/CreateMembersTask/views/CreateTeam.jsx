@@ -96,7 +96,8 @@ const CreateTeam = ({ isAdmin }) => {
     ) {
       if (!loading) {
         setLoading(true);
-        createTeam({
+
+        const newTeamData = {
           team_name: data.team_name,
           team_description: data.teamDiscription,
           company_id: currentUser.portfolio_info[0].org_id,
@@ -104,20 +105,25 @@ const CreateTeam = ({ isAdmin }) => {
           created_by: currentUser.userinfo.username,
           data_type: currentUser.portfolio_info[0].data_type,
           admin_team: isAdmin ? true : false,
-        })
+        };
+
+        createTeam(newTeamData)
           .then((resp) => {
             navigate(
-              `/team-screen-member/${resp.data.response.inserted_id}/team-tasks`
+              `/team-screen-member/${resp.data?.response?.inserted_id}/team-tasks`
             );
+
             setdata({
               ...data,
-              TeamsSelected: {
+              TeamsSelected: [
                 ...data.TeamsSelected,
-                team_name: data.team_name,
-                _id: resp.data.response.inserted_id,
-              },
+                {
+                  _id: resp.data?.response?.inserted_id,
+                  ...newTeamData,
+                }
+              ],
             });
-            toast.success("team created successfully !");
+            toast.success("New team created successfully !");
             setLoading(false);
           })
           .catch((err) => {
@@ -125,7 +131,7 @@ const CreateTeam = ({ isAdmin }) => {
           });
       }
     } else {
-      toast.error("some data are missing fill all the inputs");
+      toast.error("Some data is missing. Please fill in all the inputs");
       console.log(data.team_name, inputMembers, data.teamDiscription);
     }
   };

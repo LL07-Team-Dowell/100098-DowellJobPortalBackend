@@ -35,3 +35,17 @@ export const getInvoiceRequest = async (companyId) => {
     `invoice_module/?type=get-requests&company_id=${companyId}`
   );
 };
+
+export const createNewInvoiceRequest = async (data) => {
+  return await currentBackendAxiosInstance.post(
+    `invoice_module/?type=create-new-request`,
+    data
+  );
+};
+
+export const approveInvoice = async (data) => {
+  return await currentBackendAxiosInstance.patch(
+    `invoice_module/?type=update-payment-status`,
+    data
+  );
+};

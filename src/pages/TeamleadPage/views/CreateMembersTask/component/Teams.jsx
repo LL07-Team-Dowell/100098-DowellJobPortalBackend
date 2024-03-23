@@ -9,6 +9,7 @@ import { Tooltip } from "react-tooltip";
 import { MdDelete, MdVerified } from "react-icons/md";
 import DeleteConfirmationTeam from "../../../../../components/DeleteConfirmationTeam/DeleteConfirmationTeam";
 import EditTeamPopup from "./EditTeamPopup";
+
 const Teams = ({
   setChoosedTeam,
   searchValue,
@@ -23,9 +24,19 @@ const Teams = ({
   teamInfo,
   unShowEditTeam,
 }) => {
-  const [reversedTeams, setReversedTeams] = useState(
-    [...data.TeamsSelected].reverse()
+  
+  const [sortedTeams, setSortedTeams] = useState(
+    typeof data.TeamsSelected === 'object' ? 
+      Object.keys(data.TeamsSelected || {})
+      .map(key => data.TeamsSelected[key])
+      .sort((a, b) => a?.team_name?.localeCompare(b?.team_name))
+    :
+    Array.isArray(data.TeamsSelected) ?
+      [...data.TeamsSelected].sort((a, b) => a?.team_name?.localeCompare(b?.team_name))
+    :
+    []
   );
+
   const deleteFunction = () => {
     deleteTeam(teamId)
       .then((resp) => {
@@ -37,13 +48,14 @@ const Teams = ({
         console.log(err);
       });
   };
+
   return (
     <div className='teams_data'>
-      {reversedTeams.filter((e) => e.team_name.includes(searchValue)).length !==
+      {sortedTeams.filter((e) => e?.team_name?.includes(searchValue)).length !==
       0 ? (
         <div>
-          {reversedTeams
-            .filter((e) => e.team_name.includes(searchValue))
+          {sortedTeams
+            .filter((e) => e?.team_name?.includes(searchValue))
             .map((v) => (
               <Team
                 v={v}
@@ -51,7 +63,7 @@ const Teams = ({
                 setChoosedTeam={setChoosedTeam}
                 deleteTeamState={deleteTeamState}
                 showDeletePopupFunction={showDeletePopupFunction}
-                setReversedTeams={setReversedTeams}
+                setReversedTeams={setSortedTeams}
                 showEditPopupFunction={showEditPopupFunction}
               />
             ))}
@@ -67,7 +79,7 @@ const Teams = ({
               teamInfo={teamInfo}
               teamId={teamId}
               unShowEditTeam={unShowEditTeam}
-              setReversedTeams={setReversedTeams}
+              setReversedTeams={setSortedTeams}
             />
           )}
         </div>
