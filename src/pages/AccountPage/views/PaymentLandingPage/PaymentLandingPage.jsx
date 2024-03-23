@@ -6,6 +6,7 @@ import { MdOutlinePayments } from "react-icons/md";
 
 const PaymentLandingPage = () => {
     const navigate = useNavigate();
+    
     return (
         <StaffJobLandingLayout
             accountView={true}
@@ -29,13 +30,13 @@ const PaymentLandingPage = () => {
                 </div>
                 <div
                     className={styles.Create_Team}
-                    onClick={() => navigate("/payments/invoice")}
+                    onClick={() => navigate("/payments/invoice-landing")}
                 >
                     <div>
                         <div>
                             <LiaFileInvoiceDollarSolid className={styles.icon} />
                         </div>
-                        <h4>Invoice</h4>
+                        <h4>Invoices</h4>
                         <p>
                             Get insights into the invoices and monthly payments in your organization.
                         </p>

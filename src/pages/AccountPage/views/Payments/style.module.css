@@ -199,12 +199,13 @@
     font-size: 1.5rem;
     padding: 0px;
     font-weight: 500;
+    margin: 0;
 }
 
 .record_info .add_edit_info {
     font-size: 0.8rem;
     padding: 0px 4px;
-    text-align: center;
+    text-align: left;
 }
 
 .edit_icon {

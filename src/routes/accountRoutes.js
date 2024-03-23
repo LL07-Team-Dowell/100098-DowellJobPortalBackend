@@ -4,6 +4,8 @@ import ErrorPage from "../pages/ErrorPage/ErrorPage";
 import Logout from "../pages/LogoutPage/Logout";
 import PaymentLandingPage from "../pages/AccountPage/views/PaymentLandingPage/PaymentLandingPage";
 import AccountsInvoicePage from "../pages/AccountPage/views/Payments/AccountsInvoicePage";
+import AccountInvoiceLanding from "../pages/AccountPage/views/Payments/InvoiceLanding/InvoiceLanding";
+import AccountsInvoiceRequests from "../pages/AccountPage/views/Payments/InvoiceRequests/InvoiceRequests";
 
 export const accountRoutesInfo = [
     {
@@ -19,8 +21,16 @@ export const accountRoutesInfo = [
         component: Payment,
     },
     {
+        path: "/payments/invoice-landing",
+        component: AccountInvoiceLanding,
+    },
+    {
         path: "/payments/invoice",
         component: AccountsInvoicePage,
+    },
+    {
+        path: "/payments/invoice-requests",
+        component: AccountsInvoiceRequests,
     },
     {
         path: "/",
