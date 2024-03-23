@@ -552,7 +552,8 @@ class Invoice_module(APIView):
         payment_year = request.GET.get("payment_year")
         payment_month = request.GET.get("payment_month")
 
-        fetch_data = {"payment_year": payment_year}
+        fetch_data = {"db_record_type": "payment_detail","payment_year": int(payment_year)}
+
 
         if payment_month:
             fetch_data["payment_month"] = payment_month
@@ -562,7 +563,7 @@ class Invoice_module(APIView):
             database_name=DB_PAYMENT_RECORDS,
             collection_name=user_id,
             data=fetch_data,
-            limit=0,
+            limit=1000,
             offset=0,
             payment=False,
         )
