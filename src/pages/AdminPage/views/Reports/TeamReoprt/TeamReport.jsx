@@ -18,7 +18,7 @@ import LoadingSpinner from "../../../../../components/LoadingSpinner/LoadingSpin
 import { getAllTeams } from "../../../../../services/createMembersTasks";
 import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContext";
 import { toast } from "react-toastify";
-import { formatDateAndTime } from "../../../../../helpers/helpers";
+import { formatDateAndTime, formatDateForAPI } from "../../../../../helpers/helpers";
 import { AiOutlineClose } from "react-icons/ai";
 import LittleLoading from "../../../../CandidatePage/views/ResearchAssociatePage/littleLoading";
 import TeamReportChart from "./TeamReportChart";
@@ -54,8 +54,8 @@ export default function TeamReport({ isPublicReportUser, isProjectLead, subAdmin
         const data = {
             "report_type": "Team",
             "team_id": team_id,
-            "start_date": start_date,
-            "end_date": end_date
+            "start_date": formatDateForAPI(start_date),
+            "end_date": formatDateForAPI(end_date),
         }
         generateTeamReport(data)
             .then((resp) => {
