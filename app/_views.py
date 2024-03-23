@@ -414,7 +414,6 @@ class Invoice_module(APIView):
             )
 
         else:
-            print("json",json_existing_payment_record)
             weekly_payment_amount = json_existing_payment_record["data"][0][
                 "weekly_payment_amount"
             ]
