@@ -60,7 +60,10 @@ coverage.xml
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-
+discord.txt
+c_runner.py
+env
+.vscode/
 # Flask stuff:
 instance/
 .webassets-cache
@@ -103,6 +106,7 @@ celerybeat.pid
 
 # Environments
 .env
+env
 .venv
 env/
 venv/
@@ -127,3 +131,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+node_modules
+remover.py
+linkedlnscraper
+message.py
