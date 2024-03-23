@@ -1,21 +1,44 @@
-.time__Detail {
-    border: 1px solid #efefef;
-    width: 100%;
-    padding: 1rem;
-    border-radius: 5px;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+.time__Detail,
+.commit__Detail {
+  border: 1px solid #efefef;
+  width: 100%;
+  padding: 1rem;
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+
+.commit__Detail {
+  margin-top: 1rem;
+}
+
+.commit__Detail__title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.commit_detail_head {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.commit_detail_head span {
+  color: #a3a1a1;
+  font-size: 0.9rem;
+  margin-left: 0.3rem;
 }
 
 .hour__Info {
-    font-size: 1.2rem;
+  font-size: 1.2rem;
 }
 
 .hour__Label {
-    color: #808080;
-    font-size: 0.7rem;
+  color: #808080;
+  font-size: 0.7rem;
 }
 
 .listing {
-    margin-left: 1.2rem;
-    font-size: 0.85rem;
+  margin-left: 1.2rem;
+  font-size: 0.85rem;
 }
