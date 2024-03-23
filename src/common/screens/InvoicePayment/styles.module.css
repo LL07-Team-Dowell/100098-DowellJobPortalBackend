@@ -59,6 +59,11 @@
   margin-top: 0.8rem;
 }
 
+.invoice_details_select .invoice_details {
+  display: flex;
+  gap: 1.3rem;
+}
+
 .invoice_popup_details {
   width: 100%;
 }
@@ -123,7 +128,7 @@
   background-color: white;
   border-radius: 20px;
   padding: 1.3%;
-  margin: 2rem;
+  margin: 1rem;
 }
 
 .report_agenda_list h3 {
@@ -150,7 +155,7 @@
   background-color: white;
   border-bottom: 1px solid #ddd;
   color: #000;
-  min-width: 12rem;
+  min-width: 10rem;
   /* padding: 2%; */
 }
 
@@ -195,7 +200,7 @@
   max-width: 14rem;
 }
 
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 920px) {
   .wrapper_invoice {
     padding: 1.4rem 0rem 14rem;
   }
@@ -216,8 +221,12 @@
   }
 
   .invoice_details_select {
-    width: 170%;
+    width: 100%;
     flex-direction: column;
+  }
+
+  .invoice_details_select .invoice_details {
+    gap: 0.8rem;
   }
 
   .weekly_agenda_list_table_div {

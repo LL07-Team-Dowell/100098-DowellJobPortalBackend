@@ -16,8 +16,9 @@ import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import SearchBar from "../../../../components/SearchBar/SearchBar";
 import UserIconsInfo from "../../../../common/screens/CompanyStructure/components/UsersIconsInfo/UserIconsInfo";
+import { useGithubContext } from "../../../../contexts/GithubReportContext";
 
-const Project = ({ _id }) => {
+const Project = () => {
   const navigate = useNavigate();
   const [showProjectsPop, setShowProjectsPop] = useState(false);
   const { state } = useLocation();
@@ -27,10 +28,9 @@ const Project = ({ _id }) => {
   const [inactiveProjects, setInactiveProjects] = useState([]);
   const { currentUser } = useCurrentUserContext();
   const [projectTime, setProjectTime] = useState([]);
-  console.log(projectTime);
   const [searchValue, setSearchValue] = useState("");
   const [projectTimeLoading, setProjectTimeLoading] = useState(false);
-  const [commits, setCommits] = useState([]);
+  const { githubReports } = useGithubContext();
 
   useEffect(() => {
     if (state && state.showProject && state?.showProject === true) {
@@ -47,23 +47,15 @@ const Project = ({ _id }) => {
     //Getting project time
     setProjectTimeLoading(true);
 
-    Promise.all([
-      getProjectTime(currentUser.portfolio_info[0].org_id),
-      getCommits(),
-    ]).then((res) => {
+    getProjectTime(currentUser.portfolio_info[0].org_id).then((res) => {
       setProjectTime(
-        res[0]?.data?.data?.filter(
+        res?.data?.data?.filter(
           (project) =>
             project?.data_type === currentUser.portfolio_info[0].data_type
         )
       );
-      //Get number of commits
-      const commitsData = res[1].data?.data;
-      setCommits(commitsData);
 
       setProjectTimeLoading(false);
-      console.log(projectTime);
-      console.log(commitsData);
     });
 
     //Getting of Projects (Active/Inactive projects)
@@ -375,12 +367,12 @@ const Project = ({ _id }) => {
                               </>
                               <span>Hours</span>
                             </p>
-                            {commits.map((repo) =>
+                            {githubReports.map((repo) =>
                               repo?.repository_name ===
                                 foundProjectTimeDetail?.repository_name &&
                               repo.metadata.length > 0 ? (
                                 <p className={styles.project_time}>
-                                  Commits: {repo.metadata.length}
+                                  Total commits: {repo.metadata.length}
                                   <span>Commits</span>
                                 </p>
                               ) : null

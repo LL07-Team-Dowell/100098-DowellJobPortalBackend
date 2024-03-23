@@ -73,6 +73,11 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
 
   const options = generateOption();
 
+  const handleClick = (e, link) => {
+    e.preventDefault();
+    window.open(link, "_blank");
+  };
+
   return (
     <div className={styles.wrapper_invoice}>
       <section className={styles.nav_content}>
@@ -86,35 +91,37 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
         <label htmlFor="new_event">
           <span>Select Date</span>
           <div className={styles.invoice_details_select}>
-            <Select
-              options={[
-                { label: "January", value: "01" },
-                { label: "February", value: "02" },
-                { label: "March", value: "03" },
-                { label: "April", value: "04" },
-                { label: "May", value: "05" },
-                { label: "June", value: "06" },
-                { label: "July", value: "07" },
-                { label: "August", value: "08" },
-                { label: "September", value: "09" },
-                { label: "October", value: "10" },
-                { label: "November", value: "11" },
-                { label: "December", value: "12" },
-              ]}
-              onChange={(selectedOption) => {
-                setSelectedMonth(selectedOption);
-              }}
-              className={styles.invoice__select__date}
-              placeholder="Select month"
-            />
-            <Select
-              options={options}
-              onChange={(selectedOption) => {
-                setSelectedYear(selectedOption);
-              }}
-              className={styles.invoice__select__year}
-              placeholder="Select year"
-            />
+            <div className={styles.invoice_details}>
+              <Select
+                options={[
+                  { label: "January", value: "01" },
+                  { label: "February", value: "02" },
+                  { label: "March", value: "03" },
+                  { label: "April", value: "04" },
+                  { label: "May", value: "05" },
+                  { label: "June", value: "06" },
+                  { label: "July", value: "07" },
+                  { label: "August", value: "08" },
+                  { label: "September", value: "09" },
+                  { label: "October", value: "10" },
+                  { label: "November", value: "11" },
+                  { label: "December", value: "12" },
+                ]}
+                onChange={(selectedOption) => {
+                  setSelectedMonth(selectedOption);
+                }}
+                className={styles.invoice__select__date}
+                placeholder="Select month"
+              />
+              <Select
+                options={options}
+                onChange={(selectedOption) => {
+                  setSelectedYear(selectedOption);
+                }}
+                className={styles.invoice__select__year}
+                placeholder="Select year"
+              />
+            </div>
 
             <div className={styles.process_btn}>
               <button
@@ -160,6 +167,7 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
                           <th>Leave days</th>
                           <th>Payment approved</th>
                           <th>Payment approved date</th>
+                          <th>Master link</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -173,9 +181,29 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
                             <td>{item.currency_paid}</td>
                             <td>{item.approved_logs_count}</td>
                             <td>{item.requried_logs_count}</td>
-                            <td style={{ color: "red" }}>-</td>
-                            <td style={{ color: item.payment_approved ? "#005734" : "red" }}>{item.payment_approved ? "Yes" : "No"}</td>
-                            <td>{formatDate(item.payment_approved_on)}</td>
+                            <td style={{ color: "red" }}>
+                              {item.leave_days ? item.leave_days : "-"}
+                            </td>
+                            <td
+                              style={{
+                                color: item.payment_approved
+                                  ? "#005734"
+                                  : "red",
+                              }}
+                            >
+                              {item.payment_approved ? "Yes" : "No"}
+                            </td>
+                            <td>
+                              {formatDate(item.payment_approved_on)
+                                ? formatDate(item.payment_approved_on)
+                                : "-"}
+                            </td>
+                            <td
+                              onClick={(e) => handleClick(e, item.master_link)}
+                              style={{ cursor: "pointer" }}
+                            >
+                              {item.master_link}
+                            </td>
                           </tr>
                         ))}
                       </tbody>

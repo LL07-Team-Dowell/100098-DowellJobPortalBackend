@@ -82,9 +82,11 @@ const GenerateInvoice = ({
 
     // CHECK IF A VALID INVOICE REQUEST EXISTS FOR USER
     try {
-      const invoiceResponse = (await getInvoiceRequest(currentUser.portfolio_info[0].org_id)).data;
+      const invoiceResponse = (
+        await getInvoiceRequest(currentUser.portfolio_info[0].org_id)
+      ).data;
       const invoiceRequest = invoiceResponse?.response;
-      
+
       const foundRequest = invoiceRequest.find(
         (request) =>
           request?.username === currentUser.userinfo.username &&
@@ -107,13 +109,12 @@ const GenerateInvoice = ({
         );
         return;
       }
-
     } catch (error) {
       console.log(error?.response ? error?.response?.data : error?.message);
       setDataProcessing(false);
       toast.info(
         "Please contact HR to create an invoice request for you or reach out to the team for assistance"
-      );  
+      );
 
       return;
     }
@@ -147,17 +148,23 @@ const GenerateInvoice = ({
 
         const taskDetails = res[0]?.data?.task_details;
 
-        const approvedLogs = taskDetails.filter((log) => log?.approved || log?.aprroval === true);
+        const approvedLogs = taskDetails.filter(
+          (log) => log?.approved || log?.aprroval === true
+        );
         const hours = calculateHoursOfLogs(approvedLogs);
 
         if ((isGrouplead || isTeamlead) && hours < 40) {
           setDataProcessing(false);
-          return toast.info("Invoice creation failed: Total approved log hours is less than 40 hours");
+          return toast.info(
+            "Invoice creation failed: Total approved log hours is less than 40 hours"
+          );
         }
 
         if ((!isGrouplead || !isTeamlead) && hours < 20) {
           setDataProcessing(false);
-          return toast.info("Invoice creation failed: Total approved log hours is less than 20 hours");
+          return toast.info(
+            "Invoice creation failed: Total approved log hours is less than 20 hours"
+          );
         }
 
         let allAttendanceData = [];
@@ -176,7 +183,9 @@ const GenerateInvoice = ({
             .find((item) => item?.dates_present?.length > 0)
         ) {
           setDataProcessing(false);
-          return toast.info("Invoice creation failed: No attendance data found for specified period");
+          return toast.info(
+            "Invoice creation failed: No attendance data found for specified period"
+          );
         }
 
         const templateID = "64ece51ba57293efb539e5b7";
@@ -212,6 +221,7 @@ const GenerateInvoice = ({
           accounts_portfolio: "DummyAC_Portfolio",
         };
 
+        // PROCESSING INVOICE CREATION
         Promise.all([
           processPayment(dataForInvoice),
           workFlowdetails(dataForWorkflow),
