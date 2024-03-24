@@ -13,6 +13,7 @@ export default function CommitDetails({
   Repository,
 }) {
   const [selectedYear, setSelectedYear] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
   const { githubReports, githubReportsLoaded } = useGithubContext();
   const [pushersData, setPushersData] = useState([]);
 
@@ -46,7 +47,11 @@ export default function CommitDetails({
     // console.log(filteredData);
 
     const commits = filteredData?.metadata?.filter(
-      (item) => getFullYearFromDate(item.data) === selectedYear.label
+      (item) => {
+        if (item?.pusher === 'github-actions[bot]') return false;
+        if (selectedMonth.length < 1) return getFullYearFromDate(item.data) === selectedYear.label
+        return getFullYearFromDate(item.data) === selectedYear.label && new Date(item.data).getMonth() === Number(selectedMonth?.value);
+      }
     );
 
     const uniquePushers = [...new Set(commits.map((item) => item.pusher))];
@@ -60,7 +65,7 @@ export default function CommitDetails({
 
     console.log(pushersWithCommitCounts);
     setPushersData(pushersWithCommitCounts);
-  }, [githubReports, githubReportsLoaded, selectedYear]);
+  }, [githubReports, githubReportsLoaded, selectedYear, selectedMonth]);
 
   return (
     <div className={styles.commit__Detail}>
@@ -69,17 +74,53 @@ export default function CommitDetails({
       </p>
       <div className={styles.commit__Detail__title}>
         <h3 style={{ fontSize: "0.9rem" }}>{title}</h3>
-        <Select
-          options={options}
-          onChange={(selectedOption) => {
-            setSelectedYear(selectedOption);
-          }}
-          className={styles.invoice__select__year}
-          placeholder="Select year"
-        />
+        
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <Select
+            options={options}
+            onChange={(selectedOption) => {
+              setSelectedYear(selectedOption);
+            }}
+            className={styles.invoice__select__year}
+            placeholder="Select year"
+          />
+          <Select
+            value={
+              selectedMonth.length < 1 ? 
+                []
+              :
+              [
+                selectedMonth
+              ]
+            }
+            options={[
+              { label: "January", value: "01" },
+              { label: "February", value: "02" },
+              { label: "March", value: "03" },
+              { label: "April", value: "04" },
+              { label: "May", value: "05" },
+              { label: "June", value: "06" },
+              { label: "July", value: "07" },
+              { label: "August", value: "08" },
+              { label: "September", value: "09" },
+              { label: "October", value: "10" },
+              { label: "November", value: "11" },
+              { label: "December", value: "12" },
+            ]}
+            onChange={(selectedOption) => {
+              if (selectedOption.length < 1) return setSelectedMonth('');
+              setSelectedMonth(selectedOption?.slice(-1)[0]);
+            }}
+            isDisabled={selectedYear.length < 1}
+            className={styles.invoice__select__year}
+            placeholder="Select month"
+            isMulti={true}
+          />
+        </div>
+        
       </div>
-      <div>
-        {selectedYear && (
+      {selectedYear && (
+        <div style={{ width: 450, height: 450, margin: '0 auto' }}>
           <Pie
             data={{
               labels: pushersData.map((item) => item.pusher),
@@ -104,8 +145,8 @@ export default function CommitDetails({
               ],
             }}
           />
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

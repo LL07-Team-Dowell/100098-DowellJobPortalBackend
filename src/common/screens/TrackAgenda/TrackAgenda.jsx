@@ -18,7 +18,7 @@ const TrackAgendaPage = ({
     isTeamLead = false
 }) => {
     const navigate = useNavigate();
-    const { currentUser } = useCurrentUserContext();
+    const { currentUser, allCompanyApplications } = useCurrentUserContext();
 
     const [agendaDetails, setAgendaDetails] = useState({
         "project": '',
@@ -448,12 +448,24 @@ const TrackAgendaPage = ({
                                 </div>
                                 {
                                     React.Children.toArray(agenda.timeline.map(item => {
+                                        const userIDsOfAgendaAssignees = item?.assignees?.map(assignee => {
+                                            const foundApplication = allCompanyApplications.find(application => application.username === assignee && application.user_id);
+                                            
+                                            if (!foundApplication) return null;
+
+                                            return foundApplication.user_id;
+                                        })?.filter(item => item !== null);
+
                                         const hourFromWorklogs = calculateHoursOfLogs(
                                             taskDetailsForPeriod
                                                 .filter(
                                                     log =>
-                                                        formatDateForAPI(log.task_created_date) === formatDateForAPI(item.timeline_start) ||
-                                                        formatDateForAPI(log.task_created_date) === formatDateForAPI(item.timeline_end)
+                                                        userIDsOfAgendaAssignees?.includes(log.user_id) 
+                                                        &&
+                                                        (
+                                                            formatDateForAPI(log.task_created_date) === formatDateForAPI(item.timeline_start) ||
+                                                            formatDateForAPI(log.task_created_date) === formatDateForAPI(item.timeline_end)
+                                                        )
                                                 )
                                         );
 

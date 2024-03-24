@@ -319,7 +319,34 @@ const ProjectEdit = () => {
                       </div>
                       <div className={styles.project__Time__lead__Display}>
                         <Avatar
-                          name={projectTimeDetail.lead_name}
+                          name={
+                            applications?.find(
+                              (application) =>
+                                application.username ===
+                                  companyStructure?.project_leads
+                                  ?.find(item => item?.projects?.find(structure => structure?.project === params.get('project')))
+                                  ?.projects?.find(item => item.project === params.get('project'))
+                                  ?.team_lead
+                            )
+                            ? 
+                              applications?.find(
+                                (application) =>
+                                  application.username ===
+                                    companyStructure?.project_leads
+                                    ?.find(item => item?.projects?.find(structure => structure?.project === params.get('project')))
+                                    ?.projects?.find(item => item.project === params.get('project'))
+                                    ?.team_lead
+                              )?.applicant
+                            : 
+                            applications?.find(
+                              (application) =>
+                                application.username ===
+                                  companyStructure?.project_leads
+                                  ?.find(item => item?.projects?.find(structure => structure?.project === params.get('project')))
+                                  ?.projects?.find(item => item.project === params.get('project'))
+                                  ?.team_lead
+                            )
+                          }
                           round={true}
                           size="3.2rem"
                         />
@@ -328,14 +355,29 @@ const ProjectEdit = () => {
                             {applications?.find(
                               (application) =>
                                 application.username ===
-                                projectTimeDetail.lead_name
+                                  companyStructure?.project_leads
+                                  ?.find(item => item?.projects?.find(structure => structure?.project === params.get('project')))
+                                  ?.projects?.find(item => item.project === params.get('project'))
+                                  ?.team_lead
                             )
                               ? applications?.find(
                                   (application) =>
                                     application.username ===
-                                    projectTimeDetail.lead_name
+                                      companyStructure?.project_leads
+                                      ?.find(item => item?.projects?.find(structure => structure?.project === params.get('project')))
+                                      ?.projects?.find(item => item.project === params.get('project'))
+                                      ?.team_lead
                                 )?.applicant
-                              : projectTimeDetail.lead_name}
+                              : 
+                                applications?.find(
+                                  (application) =>
+                                    application.username ===
+                                      companyStructure?.project_leads
+                                      ?.find(item => item?.projects?.find(structure => structure?.project === params.get('project')))
+                                      ?.projects?.find(item => item.project === params.get('project'))
+                                      ?.team_lead
+                                )
+                              }
                           </p>
                           <span
                             className={styles.lead__Hightlight__Item}
@@ -560,7 +602,7 @@ const ProjectEdit = () => {
                       )}
                     </TimeDetails>
                   </div>
-                  {projectTimeDetail?.is_continuous === true ? (
+                  {!projectTimeDetail?.repository_name || projectTimeDetail?.repository_name?.length < 1 ? (
                     <></>
                   ) : (
                     <CommitDetails

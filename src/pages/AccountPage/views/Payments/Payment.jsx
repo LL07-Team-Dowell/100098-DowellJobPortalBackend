@@ -62,14 +62,14 @@ const Payment = () => {
       .filter(users => users.hasOwnProperty('user_id'))
       .map(users => ({
         label: users.applicant,
-        value: users._id,
+        value: users.user_id,
       }));
     setAllUsers(filteredUsers);
 
     const filteredOtherInfo = allCompanyApplications
       .filter(users => users.hasOwnProperty('user_id'))
       .map(users => ({
-        user_id: users._id,
+        user_id: users.user_id,
         // name: users.applicant,
         freelancePlatform: users.freelancePlatform,
         payment: users.payment,
@@ -217,7 +217,17 @@ const Payment = () => {
         updatedList.push({ label, value: userInfo.user_id });
 
         const currency = getCurrencyFromPayment(userInfo.payment);
-        updatedCurrencyList.push({ label: currency.label, value: currency.value });
+        updatedCurrencyList.push((!currency || currency.length < 1 || currency === 'Unknown Currency') ? 
+          {
+            label: "US Dollar (USD)", 
+            value: "USD"
+          } 
+          : 
+          { 
+            label: currency.label, 
+            value: currency.value 
+          }
+        );
 
         updatedPaymentMethodList.push({ label: userInfo.freelancePlatform, value: userInfo.user_id });
       }
@@ -368,7 +378,9 @@ const Payment = () => {
               Loading.isLoading ?
                 <LoadingSpinner
                   width={"1.2rem"}
-                  height={"1.2rem"} /> :
+                  height={"1.2rem"} 
+                  color={'white'}
+                /> :
                 'Get Record'
             }
           </button>
@@ -484,7 +496,25 @@ const Payment = () => {
                         <p className={styles.add_edit_info}>Weekly pay, Currency and Payment Method can only be updated after record is created.</p>
                       </div>
                       <div className={styles.select_input}>
-                        <p>Select User(s):</p>
+                        <p style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                          <span>Select User(s):</span>
+                          <label style={{ 
+                            display: 'flex',
+                            alignItems: 'center', 
+                            gap: '0.2rem',
+                            cursor: 'pointer',
+                            fontSize: '0.7rem',
+                          }}>
+                            <input
+                              type='checkbox'
+                              onChange={({ target }) => {
+                                if (target.checked === true) return handleAddUserChange(allUsers);
+                                handleAddUserChange([]);
+                              }}
+                            ></input>
+                            <span style={{ whiteSpace: 'nowrap' }}>Select all</span>
+                          </label>
+                        </p>
                         <Select
                           options={allUsers}
                           isMulti={true}
@@ -528,7 +558,9 @@ const Payment = () => {
                     Loading.isAddRecordLoading ?
                       <LoadingSpinner
                         width={"1.5rem"}
-                        height={"1.5rem"} /> :
+                        height={"1.5rem"} 
+                        color={'white'}
+                      /> :
                       'Add'
                   }
                 </button>

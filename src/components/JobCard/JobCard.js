@@ -118,13 +118,13 @@ const JobCard = ({
                 <div className="detail__Item">
                     <span className="dot"></span>
                     <span className="job__Highlight__Item">Duration: </span>
-                    <span>{job?.time_interval?.length > 20 ? job.time_interval.slice(0, 20) + "..." : job.time_interval}</span>
+                    <span>{job?.time_interval?.length > 20 ? job?.time_interval?.slice(0, 20) + "..." : job?.time_interval}</span>
                 </div>
                 <div className="vertical__Seperator"></div>
                 <div className="detail__Item">
                     <span className="dot"></span>
                     <span className="job__Highlight__Item">Skills: </span>
-                    <span>{job?.skills?.length > 18 ? job.skills.slice(0, 18) + "..." : job.skills}</span>
+                    <span>{job?.skills?.length > 18 ? job?.skills.slice(0, 18) + "..." : job?.skills}</span>
                 </div>
                 <div className="vertical__Seperator"></div>
                 <div className="detail__Item">
@@ -133,7 +133,7 @@ const JobCard = ({
                     <span>
                         {
                             job.payment ?
-                                `${job.payment}${job.paymentInterval ? ' / ' + job.paymentInterval : ""}`
+                                `${job?.payment}${job?.paymentInterval ? ' / ' + job?.paymentInterval : ""}`
                                 :
                                 "Not specified"
                         }
@@ -184,7 +184,7 @@ const JobCard = ({
                 <div className="detail__Item">
                     <span className="dot"></span>
                     <span className="job__Highlight__Item">Skills: </span>
-                    <span>{job.skills.length > 18 ? job.skills.slice(0, 18) + "..." : job.skills}</span>
+                    <span>{job?.skills?.length > 18 ? job?.skills?.slice(0, 18) + "..." : job?.skills}</span>
                 </div>
             </div>
         }
@@ -230,7 +230,7 @@ const JobCard = ({
             <div className="job__Details__Info task__View">
                 <div className="detail__Item">
                     <span className="job__Highlight__Item">Username: </span>
-                    <span>{candidateData.username ? candidateData.username.length > 42 ? candidateData.username.slice(0, 43) + "..." : candidateData.username : "Log"}</span>
+                    <span>{candidateData.username ? candidateData?.username?.length > 42 ? candidateData?.username?.slice(0, 43) + "..." : candidateData?.username : "Log"}</span>
                 </div>
                 <div className="detail__Item">
                     <span className="job__Highlight__Item">Onboarded on: </span>

@@ -4,24 +4,31 @@ import { useCurrentUserContext } from "../../../contexts/CurrentUserContext";
 import { AiOutlinePlus } from "react-icons/ai";
 import styles from "./styles.module.css";
 import GenerateInvoice from "./components/GenerateInvoice";
-import { getInvoice } from "../../../services/paymentService";
+import { approveInvoice, getInvoice } from "../../../services/paymentService";
 import Select from "react-select";
 import LoadingSpinner from "../../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
 import { formatDate } from "../../../helpers/helpers";
 
-const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
+const InvoicePayment = ({ isGrouplead, isTeamlead, header, isAccounts }) => {
   const [showInvoicePopup, setShowInvoicePopup] = useState(false);
-  const { currentUser } = useCurrentUserContext();
+  const { 
+    currentUser,
+    allCompanyApplications,
+  } = useCurrentUserContext();
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
+  const [selectedUser, setSelectedUser] = useState(null);
   const [dataLoading, setDataLoading] = useState(false);
   const [invoiceDetails, setInvoiceDetails] = useState([]);
   const [invoiceResults, setInvoiceResults] = useState(false);
+  const [invoicesApproving, setInvoicesApproving] = useState(false);
 
   const requiredLogCount = isGrouplead ? 160 : 80;
 
   const getInvoiceDetails = async () => {
+    if (isAccounts && !selectedUser) return toast.info("Select a user");
+
     if (!selectedMonth) return toast.info("Select Month");
 
     if (!selectedYear) return toast.info("Select Year");
@@ -30,7 +37,7 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
     setDataLoading(true);
 
     getInvoice(
-      currentUser.userinfo.userID,
+      isAccounts ? selectedUser : currentUser.userinfo.userID,
       selectedYear.label,
       selectedMonth.label
     )
@@ -78,16 +85,93 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
     window.open(link, "_blank");
   };
 
+  const handleApproveInvoice = async () => {
+
+    const [
+      invoicesToApprove,
+      copyOfInvoiceDetails,
+    ] = [
+      invoiceDetails?.filter(invoice => invoice?.payment_approved === false)?.map(item => item._id),
+      invoiceDetails?.slice()
+    ]
+
+    if (invoicesToApprove.length < 1 || invoicesApproving) return;
+
+    const promises = invoicesToApprove.map(invoiceId => approveInvoice({
+      user_id: selectedUser,
+      _id: invoiceId
+    }));
+
+    setInvoicesApproving(true);
+
+    try {
+      const res = (await Promise.all(promises)).length;
+
+      const updatedInvoiceDetails = copyOfInvoiceDetails.map(invoice => {
+        if (invoicesToApprove.includes(invoice._id)) return {
+          ...invoice,
+          payment_approved: true,
+          payment_approved_on: new Date(),
+        }
+
+        return invoice
+      });
+
+      setInvoiceDetails(updatedInvoiceDetails);
+      setInvoicesApproving(false);
+
+      toast.success(`Successfully approved ${res} ${res > 1 ? 'invoices' : 'invoice'}`);
+    } catch (error) {
+      console.log(error?.response?.data);
+
+      setInvoicesApproving(false);
+      toast.error('An error occured while trying to approve the invoices');
+    }
+  }
+
   return (
     <div className={styles.wrapper_invoice}>
       <section className={styles.nav_content}>
         <h2>{header ? "" : "Invoice"}</h2>
-        <button onClick={() => handleInvoicePopup()}>
-          <AiOutlinePlus />
-          <span>New</span>
-        </button>
+        {
+          isAccounts ?
+            <></>
+          :
+          <button onClick={() => handleInvoicePopup()}>
+            <AiOutlinePlus />
+            <span>New</span>
+          </button>
+        }
       </section>
-      <section className={styles.get_invoice_section}>
+      <section className={`${styles.get_invoice_section} ${isAccounts ? styles.accounts : ''}`}>
+        {
+          isAccounts ? 
+          <label>
+            <span>Select User</span>
+            <div className={styles.invoice_details_select}>
+              <div className={styles.invoice_details}>
+                <Select
+                  options={
+                    allCompanyApplications?.filter(application => application.user_id)
+                    ?.map(application => {
+                      return {
+                        label: application?.applicant,
+                        value: application?.user_id
+                      }
+                    })
+                  }
+                  onChange={(selectedOption) => {
+                    setSelectedUser(selectedOption.value);
+                  }}
+                  className={styles.invoice__select__date}
+                  placeholder="Select user"
+                />
+              </div>
+            </div>
+          </label>
+          :
+          <></>
+        }
         <label htmlFor="new_event">
           <span>Select Date</span>
           <div className={styles.invoice_details_select}>
@@ -153,7 +237,35 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
             <div className={styles.progress_main_div}>
               <div className={styles.agenda_report_wrap}>
                 <div className={styles.report_agenda_list}>
-                  <h3>Payment Details</h3>
+                  <h3 className={styles.title__Wrap__H}>
+                    <span>Payment Details</span>
+                    {
+                      isAccounts ? <>
+                        {
+                          invoiceDetails.find(invoice => invoice?.payment_approved === false) ?
+                            <button
+                              className={styles.approve__Btn}
+                              onClick={handleApproveInvoice}
+                              disabled={invoicesApproving}
+                            >
+                              {
+                                invoicesApproving ?
+                                  <LoadingSpinner 
+                                    width={'1.1rem'}
+                                    height={'1.1rem'}
+                                    color={'#005734'}
+                                  />
+                                :
+                                'Approve all'
+                              }
+                            </button>
+                          :
+                          <></>
+                        }
+                      </> :
+                      <></>
+                    }
+                  </h3>
                   <div className={styles.weekly_agenda_list_table_div}>
                     <table className={styles.weekly_agenda_list_table}>
                       <thead>
@@ -200,7 +312,7 @@ const InvoicePayment = ({ isGrouplead, isTeamlead, header }) => {
                             </td>
                             <td
                               onClick={(e) => handleClick(e, item.master_link)}
-                              style={{ cursor: "pointer" }}
+                              style={{ cursor: "pointer", color: "#005734" }}
                             >
                               {item.master_link}
                             </td>

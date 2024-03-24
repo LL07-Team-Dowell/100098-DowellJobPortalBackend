@@ -1,7 +1,6 @@
 import "./App.css";
 import "react-tooltip/dist/react-tooltip.css";
 import { Route, Routes } from "react-router-dom";
-import ResearchAssociatePage from "./pages/CandidatePage/views/ResearchAssociatePage/ResearchAssociatePage";
 import React, { useState } from "react";
 import useDowellLogin from "./hooks/useDowellLogin";
 import useTitle from "./hooks/useTitle";
@@ -14,17 +13,6 @@ import { CandidateTaskContextProvider } from "./contexts/CandidateTasksContext";
 import { CandidateJobsContextProvider } from "./contexts/CandidateJobsContext";
 import { useCurrentUserContext } from "./contexts/CurrentUserContext";
 import Logout from "./pages/LogoutPage/Logout";
-import JobApplicationScreen from "./pages/CandidatePage/views/JobApplicationScreen/JobApplicationScreen";
-import SingleJobScreen from "./pages/CandidatePage/views/JobApplicationScreen/SingleJobScreen";
-import JobScreen from "./pages/CandidatePage/components/Job/Job";
-import EmployeeJobScreen from "./pages/CandidatePage/views/JobsLandingScreens/EmployeeJobLandingScreen";
-import InternJobScreen from "./pages/CandidatePage/views/JobsLandingScreens/InternJobLandingScreen";
-import FreelancerJobScreen from "./pages/CandidatePage/views/JobsLandingScreens/FreelancerJobScreen";
-import CandidateHomeScreen from "./pages/CandidatePage/views/CandidateHomeScreen/CandidateHomeScreen";
-import AfterSelectionScreen from "./pages/CandidatePage/views/AfterSelectionScreen/AfterSelectionScreen";
-import AlertScreen from "./pages/CandidatePage/views/AlertsScreen/AlertScreen";
-import UserScreen from "./pages/CandidatePage/views/UserScreen/UserScreen";
-import AppliedScreen from "./pages/CandidatePage/views/AppliedPageScreen/AppliedScreen";
 import Teamlead from "./pages/TeamleadPage/Teamlead";
 import { JobContextProvider } from "./contexts/Jobs";
 import AdminReports from "./pages/AdminPage/views/Reports/Reports";
@@ -32,8 +20,6 @@ import RedirectPage from "./pages/Redirectpage/redirect";
 import { testingRoles } from "./utils/testingRoles";
 import LoadingPage from "./pages/LoadingPage/LoadingPage";
 import { HrJobScreenAllTasksContextProvider } from "./contexts/HrJobScreenAllTasks";
-import CandidateTranningScreen from "./pages/CandidatePage/views/CandidateTranningScreen/CandidateTranningScreen";
-import TraningProgress from "./pages/CandidatePage/views/TraningProgress.js/TraningProgress";
 import { ResponsesContextProvider } from "./contexts/Responses";
 import Index from "./pages/TeamleadPage/views/CreateMembersTask/Index";
 import { ValuesProvider } from "./pages/TeamleadPage/views/CreateMembersTask/context/Values";
@@ -45,10 +31,6 @@ import TeamScreenMembers from "./pages/TeamleadPage/views/CreateMembersTask/view
 import ProvertionPeriod from "./pages/CandidatePage/views/ProvertionPeriod/ProvertionPeriod";
 import { CandidateValuesProvider } from "./contexts/CandidateTeamsContext";
 import { TeamCandidateProvider } from "./pages/CandidatePage/views/TeamsScreen/useTeams";
-import TeamScreenMembersCandidate from "./pages/CandidatePage/views/TeamScreenMember/TeamScreenMember";
-import TeamScreenTasksCandidate from "./pages/CandidatePage/views/TeamsScreenTasks/TeamsScreenTasks";
-import TeamScreenThreadCandidate from "./pages/CandidatePage/views/TeamScreenThread/TeamScreenThread";
-import JobLandingLayout from "./layouts/CandidateJobLandingLayout/LandingLayout";
 import TeamThread from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThread";
 import UserDetailNotFound from "./pages/UserDetailNotFound/UserDetailNotFound";
 import TeamThreadScreen from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThreadScreen";
@@ -59,11 +41,9 @@ import TaskReports from "./pages/AdminPage/views/Reports/TaskReports";
 import TeamReport from "./pages/AdminPage/views/Reports/TeamReoprt/TeamReport";
 import { reportOptionsPermitted } from "./components/ShareJobModal/ShareJobModal";
 import LeaderboardReport from "./pages/AdminPage/views/Reports/LeaderboardReport/LeaderboardReport";
-import WorkLogRequestCandidate from "./pages/CandidatePage/views/WorkLogRequest/WorkLogRequest";
 import { teamManagementProductName } from "./utils/utils";
 import LogRequest from "./pages/TeamleadPage/views/WorkLogRequest/LogRequestNav";
 import TeamScreenInfoAdminTeamLead from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamScreenInfo";
-import TeamInfoCandidate from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamInfoCandidate/TeamInfoCandidate";
 import CandidateRemovedScreen from "./pages/CandidatePage/views/CandidateRemovedScreen/CandidateRemovedScreen";
 import WorkLogRequestGrouplead from "./pages/GroupLeadPage/views/WorklogRequests/WorkLogRequest";
 import LogRequestLanding from "./pages/TeamleadPage/views/WorkLogRequest/LogRequestLanding";
@@ -82,7 +62,6 @@ import { accountRoutesInfo } from "./routes/accountRoutes";
 import UsersLogsScreen from "./common/screens/UserLogsScreen/UserLogsScreen";
 import TeamleadLogApprovalScreen from "./pages/TeamleadPage/views/LogApprovalScreen/TeamleadLogApprovalScreen";
 import GroupleadLogApprovalScreen from "./pages/GroupLeadPage/views/LogApprovalScreen/GroupleadLogApprovalScreen";
-import ResearchAssociatePage2 from "./pages/CandidatePage/views/ResearchAssocatiePage2/ResearchAssociatePage2";
 import { publicUserRoutes } from "./routes/publicUserRoutes";
 import {
   productUserRoutes,
@@ -90,6 +69,7 @@ import {
 } from "./routes/productUserRoutes";
 import { hrRoutesInfo } from "./routes/hrRoutes";
 import GithubReportContextProvider from "./contexts/GithubReportContext";
+import { candidateHiredRoutes, candidateShortlistedRoutes, defaultCandidateRoutes } from "./routes/candidateRoutes";
 
 function App() {
   // console.log = () => { };
@@ -1030,222 +1010,38 @@ function App() {
   ) {
     return (
       <Routes>
-        <Route
-          path="/"
-          element={
-            <NavigationContextProvider>
-              <CandidateJobsContextProvider>
-                <JobContextProvider>
-                  <ProvertionPeriod>
-                    <CandidateHomeScreen
-                      setHired={setCandidateHired}
-                      setAssignedProjects={setAssignedProjects}
-                      setCandidateShortListed={setCandidateShortListed}
-                      setshorlistedJob={setshorlistedJob}
-                      setRemoved={setCandidateRemoved}
-                    />
-                  </ProvertionPeriod>
-                </JobContextProvider>
-              </CandidateJobsContextProvider>
-            </NavigationContextProvider>
-          }
-        >
-          <Route
-            path=":section"
-            element={
-              <NavigationContextProvider>
-                <JobContextProvider>
+        {
+          React.Children.toArray(defaultCandidateRoutes.map(route => {
+            return <Route 
+              path={route.path}
+              element={
+                <NavigationContextProvider>
                   <CandidateJobsContextProvider>
-                    <ProvertionPeriod>
-                      <CandidateHomeScreen />
-                    </ProvertionPeriod>
+                    <JobContextProvider>
+                      <NewApplicationContextProvider>
+                        <ProvertionPeriod>
+                          {
+                            route.hasProps ?
+                              <route.component 
+                                setHired={setCandidateHired}
+                                setAssignedProjects={setAssignedProjects}
+                                setCandidateShortListed={setCandidateShortListed}
+                                setshorlistedJob={setshorlistedJob}
+                                setRemoved={setCandidateRemoved}
+                                setRenewContract={setRenewContract}
+                              />
+                            :
+                            <route.component />
+                          }
+                        </ProvertionPeriod>
+                      </NewApplicationContextProvider>
+                    </JobContextProvider>
                   </CandidateJobsContextProvider>
-                </JobContextProvider>
-              </NavigationContextProvider>
-            }
-          />
-        </Route>
-
-        <Route path="/jobs">
-          <Route
-            index
-            element={
-              <JobContextProvider>
-                <CandidateJobsContextProvider>
-                  <ProvertionPeriod>
-                    <JobScreen />
-                  </ProvertionPeriod>
-                </CandidateJobsContextProvider>
-              </JobContextProvider>
-            }
-          />
-          <Route
-            path=":jobTitle"
-            element={
-              <JobContextProvider>
-                <CandidateJobsContextProvider>
-                  <ProvertionPeriod>
-                    <SingleJobScreen />
-                  </ProvertionPeriod>
-                </CandidateJobsContextProvider>
-              </JobContextProvider>
-            }
-          />
-          <Route
-            exact
-            path="c/research-associate"
-            element={
-              <ProvertionPeriod>
-                <ResearchAssociatePage />
-              </ProvertionPeriod>
-            }
-          />
-          <Route
-            exact
-            path="c/employee"
-            element={
-              <JobContextProvider>
-                <CandidateJobsContextProvider>
-                  <ProvertionPeriod>
-                    <EmployeeJobScreen />
-                  </ProvertionPeriod>
-                </CandidateJobsContextProvider>
-              </JobContextProvider>
-            }
-          />
-          <Route
-            exact
-            path="c/intern"
-            element={
-              <JobContextProvider>
-                <CandidateJobsContextProvider>
-                  <ProvertionPeriod>
-                    <InternJobScreen />
-                  </ProvertionPeriod>
-                </CandidateJobsContextProvider>
-              </JobContextProvider>
-            }
-          />
-          <Route
-            exact
-            path="c/freelancer"
-            element={
-              <JobContextProvider>
-                <CandidateJobsContextProvider>
-                  <ProvertionPeriod>
-                    <FreelancerJobScreen />
-                  </ProvertionPeriod>
-                </CandidateJobsContextProvider>
-              </JobContextProvider>
-            }
-          />
-        </Route>
-
-        <Route
-          path="/logout"
-          element={
-            <JobContextProvider>
-              <CandidateJobsContextProvider>
-                <ProvertionPeriod>
-                  <Logout />
-                </ProvertionPeriod>
-              </CandidateJobsContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path="/alerts"
-          element={
-            <JobContextProvider>
-              <CandidateJobsContextProvider>
-                <ProvertionPeriod>
-                  <AlertScreen />
-                </ProvertionPeriod>
-              </CandidateJobsContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path="/user"
-          element={
-            <JobContextProvider>
-              <CandidateJobsContextProvider>
-                <ProvertionPeriod>
-                  <UserScreen candidateSelected={false} />
-                </ProvertionPeriod>
-              </CandidateJobsContextProvider>
-            </JobContextProvider>
-          }
-        />
-
-        <Route
-          path="/applied"
-          element={
-            <NavigationContextProvider>
-              <JobContextProvider>
-                <CandidateJobsContextProvider>
-                  <ProvertionPeriod>
-                    <AppliedScreen />
-                  </ProvertionPeriod>
-                </CandidateJobsContextProvider>
-              </JobContextProvider>
-            </NavigationContextProvider>
-          }
-        >
-          <Route
-            path=":section"
-            element={
-              <NavigationContextProvider>
-                <JobContextProvider>
-                  <CandidateJobsContextProvider>
-                    <ProvertionPeriod>
-                      <AppliedScreen />
-                    </ProvertionPeriod>
-                  </CandidateJobsContextProvider>
-                </JobContextProvider>
-              </NavigationContextProvider>
-            }
-          />
-        </Route>
-
-        <Route
-          path="/apply/job/:id"
-          element={
-            <NewApplicationContextProvider>
-              <JobContextProvider>
-                <CandidateJobsContextProvider>
-                  <ProvertionPeriod>
-                    <JobApplicationScreen />
-                  </ProvertionPeriod>
-                </CandidateJobsContextProvider>
-              </JobContextProvider>
-            </NewApplicationContextProvider>
-          }
-        >
-          <Route
-            path=":section"
-            element={
-              <NewApplicationContextProvider>
-                <JobContextProvider>
-                  <CandidateJobsContextProvider>
-                    <ProvertionPeriod>
-                      <JobApplicationScreen />
-                    </ProvertionPeriod>
-                  </CandidateJobsContextProvider>
-                </JobContextProvider>
-              </NewApplicationContextProvider>
-            }
-          />
-        </Route>
-
-        <Route
-          path="*"
-          element={
-            <ProvertionPeriod>
-              <ErrorPage />
-            </ProvertionPeriod>
-          }
-        />
+                </NavigationContextProvider>
+              }
+            />
+          }))
+        }
       </Routes>
     );
   }
@@ -1261,335 +1057,99 @@ function App() {
     </Routes>
   ) : candidateHired || currentUser.candidateIsHired ? (
     <Routes>
-      <Route
-        path="/team-screen-member/:id/team-tasks"
-        element={
-          <NavigationContextProvider>
-            <CandidateTaskContextProvider>
-              <TeamCandidateProvider>
-                <CandidateValuesProvider>
-                  <JobLandingLayout user={currentUser} afterSelection={true}>
-                    <TeamScreenTasksCandidate />
-                  </JobLandingLayout>
-                </CandidateValuesProvider>
-              </TeamCandidateProvider>
-            </CandidateTaskContextProvider>
-          </NavigationContextProvider>
-        }
-      />
-      <Route
-        path="/work-log-request"
-        element={
-          <ResponsesContextProvider>
-            <candidateValuesProvider>
-              <WorkLogRequestCandidate />
-            </candidateValuesProvider>
-          </ResponsesContextProvider>
-        }
-      />
-      <Route
-        path="/team-screen-member/:id/team-members"
-        element={
-          <NavigationContextProvider>
-            <CandidateTaskContextProvider>
-              <TeamCandidateProvider>
-                <CandidateValuesProvider>
-                  <JobLandingLayout user={currentUser} afterSelection={true}>
-                    <TeamScreenMembersCandidate />
-                  </JobLandingLayout>
-                </CandidateValuesProvider>
-              </TeamCandidateProvider>
-            </CandidateTaskContextProvider>
-          </NavigationContextProvider>
-        }
-      />
-      <Route
-        path="/team-screen-member/:id/team-info"
-        element={
-          <NavigationContextProvider>
-            <CandidateTaskContextProvider>
-              <TeamCandidateProvider>
-                <CandidateValuesProvider>
-                  <JobLandingLayout user={currentUser} afterSelection={true}>
-                    <TeamInfoCandidate />
-                  </JobLandingLayout>
-                </CandidateValuesProvider>
-              </TeamCandidateProvider>
-            </CandidateTaskContextProvider>
-          </NavigationContextProvider>
-        }
-      />
-
-      <Route
-        path="/team-screen-member/:id/team-issues"
-        element={
-          <NavigationContextProvider>
-            <CandidateTaskContextProvider>
-              <TeamCandidateProvider>
-                <CandidateValuesProvider>
-                  <JobLandingLayout user={currentUser} afterSelection={true}>
-                    <TeamScreenThreadCandidate />
-                  </JobLandingLayout>
-                </CandidateValuesProvider>
-              </TeamCandidateProvider>
-            </CandidateTaskContextProvider>
-          </NavigationContextProvider>
-        }
-      />
-      <Route
-        path="/"
-        element={
-          <NavigationContextProvider>
-            <CandidateTaskContextProvider>
-              <CandidateJobsContextProvider>
-                <JobContextProvider>
-                  <CandidateValuesProvider>
-                    {/* <PageUnderConstruction showProductView={true} /> */}
-                    <AfterSelectionScreen assignedProjects={assignedProjects} />
-                  </CandidateValuesProvider>
-                </JobContextProvider>
-              </CandidateJobsContextProvider>
-            </CandidateTaskContextProvider>
-          </NavigationContextProvider>
-        }
-      >
-        <Route
-          path=":section"
-          element={
-            // <PageUnderConstruction showProductView={true} />
-            <AfterSelectionScreen assignedProjects={assignedProjects} />
-          }
-        />
-      </Route>
-      <Route path="/logout" element={<Logout />} />
-      <Route path="*" element={<ErrorPage />} />
+      {
+        React.Children.toArray(candidateHiredRoutes.map(route => {
+          return <>
+            <Route 
+              path={route.path}
+              element={
+                <NavigationContextProvider>
+                  <CandidateTaskContextProvider>
+                    <TeamCandidateProvider>
+                      <CandidateJobsContextProvider>
+                        <JobContextProvider>
+                          <CandidateValuesProvider>
+                            <ResponsesContextProvider>
+                              {
+                                route.hasProps ?
+                                  <route.component 
+                                    currentUser={currentUser}
+                                    assignedProjects={assignedProjects}
+                                  />
+                                :
+                                <route.component />
+                              }
+                            </ResponsesContextProvider>
+                          </CandidateValuesProvider>
+                        </JobContextProvider>
+                      </CandidateJobsContextProvider>
+                    </TeamCandidateProvider>
+                  </CandidateTaskContextProvider>
+                </NavigationContextProvider>
+              }
+            />
+          </>
+        }))
+      }
     </Routes>
   ) : candidateShortListed ? (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <ResponsesContextProvider>
-            <CandidateValuesProvider>
-              <CandidateTranningScreen shorlistedJob={shorlistedJob} />
-            </CandidateValuesProvider>
-          </ResponsesContextProvider>
-        }
-      ></Route>
-      <Route
-        path="/traning"
-        element={
-          <ResponsesContextProvider>
-            <candidateValuesProvider>
-              <TraningProgress shorlistedJob={shorlistedJob} />
-            </candidateValuesProvider>
-          </ResponsesContextProvider>
-        }
-      />
-
-      <Route
-        path="/logout"
-        element={
-          <ResponsesContextProvider>
-            <Logout />{" "}
-          </ResponsesContextProvider>
-        }
-      />
-
-      <Route
-        path="*"
-        element={
-          <ResponsesContextProvider>
-            <ErrorPage />
-          </ResponsesContextProvider>
-        }
-      />
+      {
+        React.Children.toArray(candidateShortlistedRoutes.map(route => {
+          return <>
+            <Route 
+              path={route.path}
+              element={
+                <ResponsesContextProvider>
+                  <CandidateValuesProvider>
+                    {
+                      route.hasProps ?
+                        <route.component 
+                          shorlistedJob={shorlistedJob}
+                        />
+                      :
+                      <route.component />
+                    }
+                  </CandidateValuesProvider>
+                </ResponsesContextProvider>
+              }
+            />
+          </>
+        }))
+      }
     </Routes>
   ) : (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <NavigationContextProvider>
-            <CandidateJobsContextProvider>
-              <JobContextProvider>
-                <CandidateHomeScreen
-                  setHired={setCandidateHired}
-                  setAssignedProjects={setAssignedProjects}
-                  setCandidateShortListed={setCandidateShortListed}
-                  setshorlistedJob={setshorlistedJob}
-                  setRemoved={setCandidateRemoved}
-                  setRenewContract={setRenewContract}
-                />
-              </JobContextProvider>
-            </CandidateJobsContextProvider>
-          </NavigationContextProvider>
-        }
-      >
-        <Route
-          path=":section"
-          element={
-            <NavigationContextProvider>
-              <JobContextProvider>
+      {
+        React.Children.toArray(defaultCandidateRoutes.map(route => {
+          return <Route 
+            path={route.path}
+            element={
+              <NavigationContextProvider>
                 <CandidateJobsContextProvider>
-                  <CandidateHomeScreen />
+                  <JobContextProvider>
+                    <NewApplicationContextProvider>
+                      {
+                        route.hasProps ?
+                          <route.component 
+                            setHired={setCandidateHired}
+                            setAssignedProjects={setAssignedProjects}
+                            setCandidateShortListed={setCandidateShortListed}
+                            setshorlistedJob={setshorlistedJob}
+                            setRemoved={setCandidateRemoved}
+                            setRenewContract={setRenewContract}
+                          />
+                        :
+                        <route.component />
+                      }
+                    </NewApplicationContextProvider>
+                  </JobContextProvider>
                 </CandidateJobsContextProvider>
-              </JobContextProvider>
-            </NavigationContextProvider>
-          }
-        />
-      </Route>
-
-      <Route path="/jobs">
-        <Route
-          index
-          element={
-            <JobContextProvider>
-              <CandidateJobsContextProvider>
-                <JobScreen />
-              </CandidateJobsContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path=":jobTitle"
-          element={
-            <JobContextProvider>
-              <CandidateJobsContextProvider>
-                <SingleJobScreen />
-              </CandidateJobsContextProvider>
-            </JobContextProvider>
-          }
-        />
-        {/*<Route
-          exact
-          path="c/research-associate"
-          element={<ResearchAssociatePage />}
-        />*/}
-        <Route
-          exact
-          path="c/research-associate-2"
-          element={<ResearchAssociatePage2 />}
-        />
-        <Route
-          exact
-          path="c/employee"
-          element={
-            <JobContextProvider>
-              <CandidateJobsContextProvider>
-                <EmployeeJobScreen />
-              </CandidateJobsContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          exact
-          path="c/intern"
-          element={
-            <JobContextProvider>
-              <CandidateJobsContextProvider>
-                <InternJobScreen />
-              </CandidateJobsContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          exact
-          path="c/freelancer"
-          element={
-            <JobContextProvider>
-              <CandidateJobsContextProvider>
-                <FreelancerJobScreen />
-              </CandidateJobsContextProvider>
-            </JobContextProvider>
-          }
-        />
-      </Route>
-
-      <Route
-        path="/logout"
-        element={
-          <JobContextProvider>
-            <CandidateJobsContextProvider>
-              <Logout />
-            </CandidateJobsContextProvider>
-          </JobContextProvider>
-        }
-      />
-      <Route
-        path="/alerts"
-        element={
-          <JobContextProvider>
-            <CandidateJobsContextProvider>
-              <AlertScreen />
-            </CandidateJobsContextProvider>
-          </JobContextProvider>
-        }
-      />
-      <Route
-        path="/user"
-        element={
-          <JobContextProvider>
-            <CandidateJobsContextProvider>
-              <UserScreen candidateSelected={false} />
-            </CandidateJobsContextProvider>
-          </JobContextProvider>
-        }
-      />
-
-      <Route
-        path="/applied"
-        element={
-          <NavigationContextProvider>
-            <JobContextProvider>
-              <CandidateJobsContextProvider>
-                <AppliedScreen />
-              </CandidateJobsContextProvider>
-            </JobContextProvider>
-          </NavigationContextProvider>
-        }
-      >
-        <Route
-          path=":section"
-          element={
-            <NavigationContextProvider>
-              <JobContextProvider>
-                <CandidateJobsContextProvider>
-                  <AppliedScreen />
-                </CandidateJobsContextProvider>
-              </JobContextProvider>
-            </NavigationContextProvider>
-          }
-        />
-      </Route>
-
-      <Route
-        path="/apply/job/:id"
-        element={
-          <NewApplicationContextProvider>
-            <JobContextProvider>
-              <CandidateJobsContextProvider>
-                <JobApplicationScreen />
-              </CandidateJobsContextProvider>
-            </JobContextProvider>
-          </NewApplicationContextProvider>
-        }
-      >
-        <Route
-          path=":section"
-          element={
-            <NewApplicationContextProvider>
-              <JobContextProvider>
-                <CandidateJobsContextProvider>
-                  <JobApplicationScreen />
-                </CandidateJobsContextProvider>
-              </JobContextProvider>
-            </NewApplicationContextProvider>
-          }
-        />
-      </Route>
-
-      <Route path="*" element={<ErrorPage />} />
+              </NavigationContextProvider>
+            }
+          />
+        }))
+      }
     </Routes>
   );
 }

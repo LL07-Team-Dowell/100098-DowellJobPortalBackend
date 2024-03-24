@@ -17,6 +17,10 @@
   align-items: center;
 }
 
+.commit__Detail__title h3 {
+  margin: 0;
+}
+
 .commit_detail_head {
   margin-bottom: 0.5rem;
   font-size: 1rem;

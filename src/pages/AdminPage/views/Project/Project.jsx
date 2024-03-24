@@ -372,7 +372,7 @@ const Project = () => {
                                 foundProjectTimeDetail?.repository_name &&
                               repo.metadata.length > 0 ? (
                                 <p className={styles.project_time}>
-                                  Total commits: {repo.metadata.length}
+                                  Total commits: {Number(repo.metadata.length).toLocaleString()}
                                   <span>Commits</span>
                                 </p>
                               ) : null

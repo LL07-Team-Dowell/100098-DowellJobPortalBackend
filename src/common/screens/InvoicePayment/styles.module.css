@@ -51,6 +51,11 @@
   margin-left: 1.2rem;
 }
 
+.get_invoice_section.accounts {
+  flex-direction: row;
+  gap: 3.5rem;
+}
+
 .invoice_details_select {
   display: flex;
   gap: 1.3rem;
@@ -198,6 +203,29 @@
 .invoice__select__year {
   min-width: 10rem;
   max-width: 14rem;
+}
+
+.title__Wrap__H {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.approve__Btn {
+  border: 1px solid #005734;
+  background: none;
+  outline: none;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  transition: 0.3s ease-in-out;
+}
+
+.approve__Btn:not(:disabled):hover {
+  background-color: #005734;
+  color: #fff;
 }
 
 @media screen and (max-width: 920px) {
