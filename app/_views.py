@@ -203,7 +203,7 @@ class Invoice_module(APIView):
                     "database_response": False,
                     "response": "",
                 },
-                status=status.HTTP_400_BAD_REQUEST,
+                status=status.HTTP_204_NO_CONTENT,
             )
         else:
             data_to_add = datacube_add_collection(
