@@ -69,7 +69,13 @@ import {
 } from "./routes/productUserRoutes";
 import { hrRoutesInfo } from "./routes/hrRoutes";
 import GithubReportContextProvider from "./contexts/GithubReportContext";
-import { candidateHiredRoutes, candidateShortlistedRoutes, defaultCandidateRoutes } from "./routes/candidateRoutes";
+import {
+  candidateHiredRoutes,
+  candidateShortlistedRoutes,
+  defaultCandidateRoutes,
+} from "./routes/candidateRoutes";
+import { teamleadRouteInfo } from "./routes/teamleadRoutes";
+import { groupleadRouteInfo } from "./routes/groupleadRoutes";
 
 function App() {
   // console.log = () => { };
@@ -199,18 +205,17 @@ function App() {
                 element={
                   <JobContextProvider>
                     <NewApplicationContextProvider>
-                      {
-                        productRoute?.hasProps === true ?
-                          <productRoute.component
-                            setHired={setCandidateHired}
-                            setAssignedProjects={setAssignedProjects}
-                            setCandidateShortListed={setCandidateShortListed}
-                            setshorlistedJob={setshorlistedJob}
-                            setRemoved={setCandidateRemoved}
-                          /> 
-                        :
+                      {productRoute?.hasProps === true ? (
+                        <productRoute.component
+                          setHired={setCandidateHired}
+                          setAssignedProjects={setAssignedProjects}
+                          setCandidateShortListed={setCandidateShortListed}
+                          setshorlistedJob={setshorlistedJob}
+                          setRemoved={setCandidateRemoved}
+                        />
+                      ) : (
                         <productRoute.component />
-                      }
+                      )}
                     </NewApplicationContextProvider>
                   </JobContextProvider>
                 }
@@ -350,20 +355,22 @@ function App() {
   ) {
     return (
       <Routes>
-        {
-          React.Children.toArray(accountRoutesInfo.map(info => {
-            return <Route 
-              path={info?.path}
-              element={
-                <NavigationContextProvider>
-                  <CandidateContextProvider>
-                    <info.component />  
-                  </CandidateContextProvider>
-                </NavigationContextProvider>
-              }
-            />
-          }))
-        }
+        {React.Children.toArray(
+          accountRoutesInfo.map((info) => {
+            return (
+              <Route
+                path={info?.path}
+                element={
+                  <NavigationContextProvider>
+                    <CandidateContextProvider>
+                      <info.component />
+                    </CandidateContextProvider>
+                  </NavigationContextProvider>
+                }
+              />
+            );
+          })
+        )}
       </Routes>
     );
   }
@@ -459,26 +466,28 @@ function App() {
   ) {
     return (
       <Routes>
-        {
-          React.Children.toArray(hrRoutesInfo.map(route => {
-            return <Route
-              path={route?.path}
-              element={
-                <NavigationContextProvider>
-                  <HrJobScreenAllTasksContextProvider>
-                    <ValuesProvider>
+        {React.Children.toArray(
+          hrRoutesInfo.map((route) => {
+            return (
+              <Route
+                path={route?.path}
+                element={
+                  <NavigationContextProvider>
+                    <HrJobScreenAllTasksContextProvider>
+                      <ValuesProvider>
                         <HrCandidateContextProvider>
                           <CandidateTaskContextProvider>
                             <route.component />
                           </CandidateTaskContextProvider>
                         </HrCandidateContextProvider>
-                    </ValuesProvider>
-                  </HrJobScreenAllTasksContextProvider>
-                </NavigationContextProvider>
-              }
-            />
-          }))
-        }
+                      </ValuesProvider>
+                    </HrJobScreenAllTasksContextProvider>
+                  </NavigationContextProvider>
+                }
+              />
+            );
+          })
+        )}
       </Routes>
     );
   }
@@ -493,212 +502,26 @@ function App() {
     return (
       <Routes>
         <Route path="/logout" element={<Logout />} />
-
-        <Route
-          path="/"
-          element={
-            <NavigationContextProvider>
-              <CandidateContextProvider>
-                <CandidateTaskContextProvider>
-                  <ValuesProvider>
-                    <Teamlead />
-                  </ValuesProvider>
-                </CandidateTaskContextProvider>
-              </CandidateContextProvider>
-            </NavigationContextProvider>
-          }
-        >
-          <Route
-            path=":section"
-            element={
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <Teamlead />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            }
-          />
-        </Route>
-
-        <Route
-          path="/logs-approval-screen"
-          element={
-            <CandidateTaskContextProvider>
-              <ValuesProvider>
-                <TeamleadLogApprovalScreen />
-              </ValuesProvider>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path="/agenda"
-          element={
-            <CandidateTaskContextProvider>
-              <ValuesProvider>
-                <TeamLeadAgendaPage />
-              </ValuesProvider>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path="/request"
-          element={
-            <CandidateTaskContextProvider>
-              <ValuesProvider>
-                <LogRequestLanding />
-              </ValuesProvider>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path="/log-requests"
-          element={
-            <CandidateTaskContextProvider>
-              <ValuesProvider>
-                <LogRequest />
-              </ValuesProvider>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path="/lead-log-requests"
-          element={
-            <CandidateTaskContextProvider>
-              <ValuesProvider>
-                <WorkLogRequestTeamLead />
-              </ValuesProvider>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path="/create-task"
-          element={
-            <CandidateTaskContextProvider>
-              <ValuesProvider>
-                <Index />
-              </ValuesProvider>
-            </CandidateTaskContextProvider>
-          }
-        />
-
-        <Route
-          path="/create-task/create-new-team/"
-          element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
-                <ValuesProvider>
-                  <CreateTeam />
-                </ValuesProvider>
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
-          }
-        />
-
-        <Route
-          path="/team-screen-member/:id/team-members"
-          element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
-                <TeamProvider>
-                  <ValuesProvider>
-                    <TeamScreenMembers />
-                  </ValuesProvider>
-                </TeamProvider>
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
-          }
-        />
-
-        <Route
-          path="/team-screen-member/:id/team-info"
-          element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
-                <TeamProvider>
-                  <ValuesProvider>
-                    <TeamScreenInfoAdminTeamLead />
-                  </ValuesProvider>
-                </TeamProvider>
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
-          }
-        />
-
-        <Route
-          path="/team-screen-member/:id/team-tasks"
-          element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
-                <TeamProvider>
-                  <ValuesProvider>
-                    <TeamScreenTasks />
-                  </ValuesProvider>
-                </TeamProvider>
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path="/team-screen-member/:id/team-issues"
-          element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
-                <TeamProvider>
-                  <ValuesProvider>
-                    {/* create a component here */}
-                    <TeamThreadScreen />
-                  </ValuesProvider>
-                </TeamProvider>
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path="/team-screen-member/:id/issue-inprogress"
-          element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
-                <TeamProvider>
-                  <ValuesProvider>
-                    {/* create a component here */}
-                    <TeamThread />
-                  </ValuesProvider>
-                </TeamProvider>
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path="/team-screen-member/:id/issue-completed"
-          element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
-                <TeamProvider>
-                  <ValuesProvider>
-                    {/* create a component here */}
-                    <TeamThread />
-                  </ValuesProvider>
-                </TeamProvider>
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path="/team-screen-member/:id/issue-resolved"
-          element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
-                <TeamProvider>
-                  <ValuesProvider>
-                    {/* create a component here */}
-                    <TeamThread />
-                  </ValuesProvider>
-                </TeamProvider>
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route path="*" element={<ErrorPage />} />
+        {React.Children.toArray(
+          teamleadRouteInfo.map((route) => {
+            return (
+              <Route
+                path={route?.path}
+                element={
+                  <NavigationContextProvider>
+                    <CandidateContextProvider>
+                      <CandidateTaskContextProvider>
+                        <ValuesProvider>
+                          <route.component />
+                        </ValuesProvider>
+                      </CandidateTaskContextProvider>
+                    </CandidateContextProvider>
+                  </NavigationContextProvider>
+                }
+              />
+            );
+          })
+        )}
       </Routes>
     );
   }
@@ -713,259 +536,26 @@ function App() {
     return (
       <Routes>
         <Route path="/logout" element={<Logout />} />
-
-        <Route
-          path="/"
-          element={
-            <NavigationContextProvider>
-              <CandidateContextProvider>
-                <CandidateTaskContextProvider>
-                  <ValuesProvider>
-                    <Teamlead isGrouplead={true} />
-                  </ValuesProvider>
-                </CandidateTaskContextProvider>
-              </CandidateContextProvider>
-            </NavigationContextProvider>
-          }
-        >
-          <Route
-            path=":section"
-            element={
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <Teamlead isGrouplead={true} />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            }
-          />
-        </Route>
-
-        <Route
-          path="/logs-approval-screen"
-          element={
-            <CandidateTaskContextProvider>
-              <ValuesProvider>
-                <GroupleadLogApprovalScreen />
-              </ValuesProvider>
-            </CandidateTaskContextProvider>
-          }
-        />
-
-        <Route
-          path="/grouplead-tasks"
-          element={
-            <NavigationContextProvider>
-              <CandidateContextProvider>
-                <CandidateTaskContextProvider>
-                  <ValuesProvider>
-                    <GroupLeadTask />
-                  </ValuesProvider>
-                </CandidateTaskContextProvider>
-              </CandidateContextProvider>
-            </NavigationContextProvider>
-          }
-        />
-
-        <Route
-          path="/create-task"
-          element={
-            <CandidateTaskContextProvider>
-              <ValuesProvider>
-                <Index isGrouplead={true} />
-              </ValuesProvider>
-            </CandidateTaskContextProvider>
-          }
-        />
-
-        <Route
-          path="/log-requests"
-          element={
-            <CandidateContextProvider>
-              <ValuesProvider>
-                <WorkLogRequestGrouplead />
-              </ValuesProvider>
-            </CandidateContextProvider>
-          }
-        />
-
-        <Route
-          path="/agenda"
-          element={
-            <CandidateContextProvider>
-              <ValuesProvider>
-                <GroupleadAgendaLanding />
-              </ValuesProvider>
-            </CandidateContextProvider>
-          }
-        />
-
-        <Route
-          path="/new-agenda"
-          element={
-            <CandidateContextProvider>
-              <ValuesProvider>
-                <NewGroupleadAgenda />
-              </ValuesProvider>
-            </CandidateContextProvider>
-          }
-        />
-
-        <Route
-          path="/track-agenda"
-          element={
-            <CandidateContextProvider>
-              <ValuesProvider>
-                <GroupleadTrackAgenda />
-              </ValuesProvider>
-            </CandidateContextProvider>
-          }
-        />
-
-        <Route
-          path="/create-task/create-new-team/"
-          element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout
-                teamleadView={true}
-                isGrouplead={true}
-                hideSearchBar={true}
-              >
-                <ValuesProvider>
-                  <CreateTeam />
-                </ValuesProvider>
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
-          }
-        />
-
-        <Route
-          path="/team-screen-member/:id/team-members"
-          element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout
-                teamleadView={true}
-                hideSearchBar={true}
-                isGrouplead={true}
-              >
-                <TeamProvider>
-                  <ValuesProvider>
-                    <TeamScreenMembers />
-                  </ValuesProvider>
-                </TeamProvider>
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
-          }
-        />
-
-        <Route
-          path="/team-screen-member/:id/team-tasks"
-          element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout
-                teamleadView={true}
-                hideSearchBar={true}
-                isGrouplead={true}
-              >
-                <TeamProvider>
-                  <ValuesProvider>
-                    <TeamScreenTasks />
-                  </ValuesProvider>
-                </TeamProvider>
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path="/team-screen-member/:id/team-issues"
-          element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout
-                teamleadView={true}
-                hideSearchBar={true}
-                isGrouplead={true}
-              >
-                <TeamProvider>
-                  <ValuesProvider>
-                    {/* create a component here */}
-                    <TeamThreadScreen />
-                  </ValuesProvider>
-                </TeamProvider>
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path="/team-screen-member/:id/issue-inprogress"
-          element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout
-                teamleadView={true}
-                hideSearchBar={true}
-                isGrouplead={true}
-              >
-                <TeamProvider>
-                  <ValuesProvider>
-                    {/* create a component here */}
-                    <TeamThread />
-                  </ValuesProvider>
-                </TeamProvider>
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path="/team-screen-member/:id/issue-completed"
-          element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout
-                teamleadView={true}
-                hideSearchBar={true}
-                isGrouplead={true}
-              >
-                <TeamProvider>
-                  <ValuesProvider>
-                    {/* create a component here */}
-                    <TeamThread />
-                  </ValuesProvider>
-                </TeamProvider>
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path="/team-screen-member/:id/issue-resolved"
-          element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout
-                teamleadView={true}
-                hideSearchBar={true}
-                isGrouplead={true}
-              >
-                <TeamProvider>
-                  <ValuesProvider>
-                    {/* create a component here */}
-                    <TeamThread />
-                  </ValuesProvider>
-                </TeamProvider>
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
-          }
-        />
-
-        <Route
-          path="/user-tasks"
-          element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true} isGrouplead={true}>
-                <UsersLogsScreen
-                  className={"group__Lead__User__Logs"}
-                  isLeadUser={true}
-                />
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route path="*" element={<ErrorPage />} />
+        {React.Children.toArray(
+          groupleadRouteInfo.map((route) => {
+            return (
+              <Route
+                path={route?.path}
+                element={
+                  <NavigationContextProvider>
+                    <CandidateContextProvider>
+                      <CandidateTaskContextProvider>
+                        <ValuesProvider>
+                          <route.component />
+                        </ValuesProvider>
+                      </CandidateTaskContextProvider>
+                    </CandidateContextProvider>
+                  </NavigationContextProvider>
+                }
+              />
+            );
+          })
+        )}
       </Routes>
     );
   }
@@ -1010,38 +600,41 @@ function App() {
   ) {
     return (
       <Routes>
-        {
-          React.Children.toArray(defaultCandidateRoutes.map(route => {
-            return <Route 
-              path={route.path}
-              element={
-                <NavigationContextProvider>
-                  <CandidateJobsContextProvider>
-                    <JobContextProvider>
-                      <NewApplicationContextProvider>
-                        <ProvertionPeriod>
-                          {
-                            route.hasProps ?
-                              <route.component 
+        {React.Children.toArray(
+          defaultCandidateRoutes.map((route) => {
+            return (
+              <Route
+                path={route.path}
+                element={
+                  <NavigationContextProvider>
+                    <CandidateJobsContextProvider>
+                      <JobContextProvider>
+                        <NewApplicationContextProvider>
+                          <ProvertionPeriod>
+                            {route.hasProps ? (
+                              <route.component
                                 setHired={setCandidateHired}
                                 setAssignedProjects={setAssignedProjects}
-                                setCandidateShortListed={setCandidateShortListed}
+                                setCandidateShortListed={
+                                  setCandidateShortListed
+                                }
                                 setshorlistedJob={setshorlistedJob}
                                 setRemoved={setCandidateRemoved}
                                 setRenewContract={setRenewContract}
                               />
-                            :
-                            <route.component />
-                          }
-                        </ProvertionPeriod>
-                      </NewApplicationContextProvider>
-                    </JobContextProvider>
-                  </CandidateJobsContextProvider>
-                </NavigationContextProvider>
-              }
-            />
-          }))
-        }
+                            ) : (
+                              <route.component />
+                            )}
+                          </ProvertionPeriod>
+                        </NewApplicationContextProvider>
+                      </JobContextProvider>
+                    </CandidateJobsContextProvider>
+                  </NavigationContextProvider>
+                }
+              />
+            );
+          })
+        )}
       </Routes>
     );
   }
@@ -1057,81 +650,81 @@ function App() {
     </Routes>
   ) : candidateHired || currentUser.candidateIsHired ? (
     <Routes>
-      {
-        React.Children.toArray(candidateHiredRoutes.map(route => {
-          return <>
-            <Route 
-              path={route.path}
-              element={
-                <NavigationContextProvider>
-                  <CandidateTaskContextProvider>
-                    <TeamCandidateProvider>
-                      <CandidateJobsContextProvider>
-                        <JobContextProvider>
-                          <CandidateValuesProvider>
-                            <ResponsesContextProvider>
-                              {
-                                route.hasProps ?
-                                  <route.component 
+      {React.Children.toArray(
+        candidateHiredRoutes.map((route) => {
+          return (
+            <>
+              <Route
+                path={route.path}
+                element={
+                  <NavigationContextProvider>
+                    <CandidateTaskContextProvider>
+                      <TeamCandidateProvider>
+                        <CandidateJobsContextProvider>
+                          <JobContextProvider>
+                            <CandidateValuesProvider>
+                              <ResponsesContextProvider>
+                                {route.hasProps ? (
+                                  <route.component
                                     currentUser={currentUser}
                                     assignedProjects={assignedProjects}
                                   />
-                                :
-                                <route.component />
-                              }
-                            </ResponsesContextProvider>
-                          </CandidateValuesProvider>
-                        </JobContextProvider>
-                      </CandidateJobsContextProvider>
-                    </TeamCandidateProvider>
-                  </CandidateTaskContextProvider>
-                </NavigationContextProvider>
-              }
-            />
-          </>
-        }))
-      }
+                                ) : (
+                                  <route.component />
+                                )}
+                              </ResponsesContextProvider>
+                            </CandidateValuesProvider>
+                          </JobContextProvider>
+                        </CandidateJobsContextProvider>
+                      </TeamCandidateProvider>
+                    </CandidateTaskContextProvider>
+                  </NavigationContextProvider>
+                }
+              />
+            </>
+          );
+        })
+      )}
     </Routes>
   ) : candidateShortListed ? (
     <Routes>
-      {
-        React.Children.toArray(candidateShortlistedRoutes.map(route => {
-          return <>
-            <Route 
-              path={route.path}
-              element={
-                <ResponsesContextProvider>
-                  <CandidateValuesProvider>
-                    {
-                      route.hasProps ?
-                        <route.component 
-                          shorlistedJob={shorlistedJob}
-                        />
-                      :
-                      <route.component />
-                    }
-                  </CandidateValuesProvider>
-                </ResponsesContextProvider>
-              }
-            />
-          </>
-        }))
-      }
+      {React.Children.toArray(
+        candidateShortlistedRoutes.map((route) => {
+          return (
+            <>
+              <Route
+                path={route.path}
+                element={
+                  <ResponsesContextProvider>
+                    <CandidateValuesProvider>
+                      {route.hasProps ? (
+                        <route.component shorlistedJob={shorlistedJob} />
+                      ) : (
+                        <route.component />
+                      )}
+                    </CandidateValuesProvider>
+                  </ResponsesContextProvider>
+                }
+              />
+            </>
+          );
+        })
+      )}
     </Routes>
   ) : (
     <Routes>
-      {
-        React.Children.toArray(defaultCandidateRoutes.map(route => {
-          return <Route 
-            path={route.path}
-            element={
-              <NavigationContextProvider>
-                <CandidateJobsContextProvider>
-                  <JobContextProvider>
-                    <NewApplicationContextProvider>
-                      {
-                        route.hasProps ?
-                          <route.component 
+      {React.Children.toArray(
+        defaultCandidateRoutes.map((route) => {
+          return (
+            <Route
+              path={route.path}
+              element={
+                <NavigationContextProvider>
+                  <CandidateJobsContextProvider>
+                    <JobContextProvider>
+                      <NewApplicationContextProvider>
+                        {route.hasProps ? (
+                          <route.component
                             setHired={setCandidateHired}
                             setAssignedProjects={setAssignedProjects}
                             setCandidateShortListed={setCandidateShortListed}
@@ -1139,17 +732,18 @@ function App() {
                             setRemoved={setCandidateRemoved}
                             setRenewContract={setRenewContract}
                           />
-                        :
-                        <route.component />
-                      }
-                    </NewApplicationContextProvider>
-                  </JobContextProvider>
-                </CandidateJobsContextProvider>
-              </NavigationContextProvider>
-            }
-          />
-        }))
-      }
+                        ) : (
+                          <route.component />
+                        )}
+                      </NewApplicationContextProvider>
+                    </JobContextProvider>
+                  </CandidateJobsContextProvider>
+                </NavigationContextProvider>
+              }
+            />
+          );
+        })
+      )}
     </Routes>
   );
 }
