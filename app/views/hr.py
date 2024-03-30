@@ -8,8 +8,8 @@ class hr_shortlisted_candidate(APIView):
         success_message = "candidate has been shortlisted successfully"
         if not data:
             return Response(success=False, message=error_message, response="'request' parameters are not valid, they are None",status=status.HTTP_400_BAD_REQUEST)
-        serializer = HRSerializer(data=data)
         
+        serializer = ShortlistSerializer(data=data)
         if not serializer.is_valid():
             error = {field_name: field_errors[0] if isinstance(field_errors, list) else [field_errors] for field_name, field_errors in serializer.errors.items()}
             return Response(success=False, message=error_message, response=error,status=status.HTTP_400_BAD_REQUEST)
@@ -32,8 +32,6 @@ class hr_shortlisted_candidate(APIView):
             "shortlisted_on": data.get("shortlisted_on"),
         }
 
-        
-        
         c_r = []
         h_r = []
 
@@ -75,7 +73,7 @@ class hr_selected_candidate(APIView):
         if not data:
             return Response(success=False, message=error_message, response="'request' parameters are not valid, they are None",status=status.HTTP_400_BAD_REQUEST)
         
-        serializer = HRShortlistSerializer(data=data)
+        serializer = SelectSerializer(data=data)
         if not serializer.is_valid():
             error = {field_name: field_errors[0] if isinstance(field_errors, list) else [field_errors] for field_name, field_errors in serializer.errors.items()}
             return Response(success=False, message=error_message, response=error,status=status.HTTP_400_BAD_REQUEST)
@@ -146,7 +144,7 @@ class hr_reject_candidate(APIView):
         if not data:
             return Response(success=False, message=error_message, response="'request' parameters are not valid, they are None",status=status.HTTP_400_BAD_REQUEST)
         
-        serializer=HRRejectSerializer(data=request.data)
+        serializer=RejectSerializer(data=request.data)
         if not serializer.is_valid():
             error = {field_name: field_errors[0] if isinstance(field_errors, list) else [field_errors] for field_name, field_errors in serializer.errors.items()}
             return Response(success=False, message=error_message, response=error,status=status.HTTP_400_BAD_REQUEST)

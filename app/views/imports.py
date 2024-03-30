@@ -66,8 +66,9 @@ from ..serializers import (
     TrainingSerializer,
     UpdateQuestionSerializer,
     CandidateSerializer,
-    HRSerializer,
-    LeadSerializer,
+    ShortlistSerializer,
+    SelectSerializer,
+    HireSerializer,
     TaskSerializer,
     SubmitResponseSerializer,
     SettingUserProfileInfoSerializer,
@@ -125,9 +126,7 @@ from ..serializers import (
     UpdateEventSerializer,
     GetEventSerializer,
     UpdateAttendanceSerializer,
-    GetEventAttendanceSerializer,
-    HRRejectSerializer,
-    HRShortlistSerializer
+    GetEventAttendanceSerializer
 )
 from ..authorization import (
     verify_user_token,
