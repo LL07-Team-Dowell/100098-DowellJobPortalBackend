@@ -39,21 +39,19 @@ urlpatterns = [
     path("get_all_hired_candidates/<str:company_id>/",get_all_hired_candidate.as_view()),
     path("get_all_renew_contract_candidates/<str:company_id>/",get_all_renew_contract_candidate.as_view()),
     
-
     # hr management--------------------------------------------------
     path("hr_shortlisted_candidate/", hr_shortlisted_candidate.as_view()),
     path("hr_selected_candidate/", hr_selected_candidate.as_view()),
     path("hr_reject_candidate/", hr_reject_candidate.as_view()),
 
-
-
-
-
-
     # lead management------------------------------------------------
     path("lead_hire_candidate/", lead_hire_candidate.as_view()),
     path("lead_rehire_candidate/", lead_rehire_candidate.as_view()),
     path("lead_reject_candidate/", lead_reject_candidate.as_view()),
+
+
+
+
     # task management------------------------------------------------
     path("create_task/", create_task.as_view()),
     path("get_task/<str:company_id>/", get_task.as_view()),
