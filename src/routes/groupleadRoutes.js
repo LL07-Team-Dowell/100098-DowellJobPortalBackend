@@ -87,7 +87,7 @@ export const groupleadRouteInfo = [
     },
   },
   {
-    path: "//team-screen-member/:id/team-tasks",
+    path: "/team-screen-member/:id/team-tasks",
     component: () => {
       return (
         <StaffJobLandingLayout
