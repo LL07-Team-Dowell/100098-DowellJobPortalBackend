@@ -98,6 +98,8 @@
 .add_edit_modal {
     width: 45%;
     height: max-content;
+    max-height: 70%;
+    overflow-y: auto;
     background-color: white;
     position: absolute;
     top: 50%;
