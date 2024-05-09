@@ -33,7 +33,9 @@ const Payment = () => {
     { label: 'Truelancer', value: 'Truelancer' },
     { label: 'Wise', value: 'Wise' },
     { label: 'Paypal', value: 'Paypal' },
-    { label: 'Payoneer', value: 'Payoneer' }
+    { label: 'Payoneer', value: 'Payoneer' },
+    { label: 'Direct Bank Transfer', value: 'Direct Bank Transfer' },
+    { label: 'Virtual Account', value: 'Virtual Account' },
   ];
   const [allUsers, setAllUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
