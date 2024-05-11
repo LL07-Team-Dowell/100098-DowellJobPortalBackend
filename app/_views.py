@@ -478,6 +478,7 @@ class Invoice_module(APIView):
             masterlink_response = processes(company_id, company_name, template_id, created_by, portfolio, data_type, payment_month, payment_year, hr_username, hr_portfolio, accounts_username, accounts_portfolio, step_document_map)
             created_process = masterlink_response.get('created_process', {})
             master_link = created_process.get('master_link')
+            master_code = created_process.get('master_code')
  
             insert_data = {
                 "db_record_type": "payment_detail",
@@ -495,7 +496,8 @@ class Invoice_module(APIView):
                 "payment_approved_on": None,
                 "payment_from": payment_from,
                 "payment_to": payment_to,
-                "master_link": master_link
+                "master_link": master_link,
+                "master_code": master_code,
             }
             data_insert = datacube_data_insertion(
                 api_key=API_KEY,
