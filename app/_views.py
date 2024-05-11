@@ -348,11 +348,33 @@ class Invoice_module(APIView):
         payment_from = request.data.get("payment_from")
         payment_to = request.data.get("payment_to")
 
-        template_id = "64ece51ba57293efb539e5b7"
+        template_id = "663fa0b34732cb33c75856ce"
         hr_username = "DummyHR"
         hr_portfolio = "DummyHR_Portfolio"
         accounts_username = "DummyAC"
         accounts_portfolio = "DummyAC_Portfolio"
+        step_document_map = {
+            'step_one': [
+                {"content": "t1", "required": False, "page": 1},
+                {"content": "t2", "required": False, "page": 1},
+                {"content": "t3", "required": False, "page": 1},
+                {"content": "t4", "required": False, "page": 1},
+                {"content": "t5", "required": False, "page": 1},
+                {"content": "t6", "required": False, "page": 1},
+                {"content": "s1", "required": False, "page": 1},
+                {"content": "d1", "required": False, "page": 1},
+                {"content": "d2", "required": False, "page": 1},
+                {"content": "d3", "required": False, "page": 1},
+            ],
+            'step_two': [
+                {"content": "d4", "required": False, "page": 2},
+                {"content": "s2", "required": False, "page": 2},
+            ],
+            'step_three': [
+                {"content": "d5", "required": False, "page": 2},
+                {"content": "s3", "required": False, "page": 2},
+            ],
+        }
 
 
         serializer = PaymentProcessSerializer(data=request.data)
@@ -432,7 +454,7 @@ class Invoice_module(APIView):
             if user_was_on_leave:
                 amount_to_pay = 0
 
-            def processes(company_id, company_name, template_id, created_by, portfolio, data_type, payment_month,payment_year,hr_username,hr_portfolio,accounts_username,accounts_portfolio):
+            def processes(company_id, company_name, template_id, created_by, portfolio, data_type, payment_month,payment_year,hr_username,hr_portfolio,accounts_username,accounts_portfolio, step_document_map):
                 url = "https://100094.pythonanywhere.com/v2/processes/invoice/"
                 payload = {
                     "company_id": company_id,
@@ -446,13 +468,14 @@ class Invoice_module(APIView):
                     "hr_username": hr_username,
                     "hr_portfolio": hr_portfolio,
                     "accounts_username": accounts_username,
-                    "accounts_portfolio":accounts_portfolio
+                    "accounts_portfolio":accounts_portfolio,
+                    "step_document_map": step_document_map,
                 }
                 headers = {"Content-Type": "application/json"}
                 response = requests.post(url, headers=headers, json=payload)
                 return response.json()
             
-            masterlink_response = processes(company_id, company_name, template_id, created_by, portfolio, data_type, payment_month, payment_year, hr_username, hr_portfolio, accounts_username, accounts_portfolio)
+            masterlink_response = processes(company_id, company_name, template_id, created_by, portfolio, data_type, payment_month, payment_year, hr_username, hr_portfolio, accounts_username, accounts_portfolio, step_document_map)
             created_process = masterlink_response.get('created_process', {})
             master_link = created_process.get('master_link')
  
