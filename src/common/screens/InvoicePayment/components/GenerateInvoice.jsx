@@ -188,7 +188,7 @@ const GenerateInvoice = ({
           );
         }
 
-        const templateID = "64ece51ba57293efb539e5b7";
+        // const templateID = "64ece51ba57293efb539e5b7";
 
         const dataForInvoice = {
           user_id: currentUser.userinfo.userID,
@@ -206,30 +206,30 @@ const GenerateInvoice = ({
           user_was_on_leave: false,
         };
 
-        const dataForWorkflow = {
-          company_id: currentUser.portfolio_info[0].org_id,
-          company_name: currentUser.portfolio_info[0].org_name,
-          template_id: templateID,
-          created_by: currentUser.userinfo.username,
-          portfolio: currentUser.portfolio_info[0].portfolio_name,
-          data_type: currentUser.portfolio_info[0].data_type,
-          payment_month: month,
-          payment_year: year,
-          hr_username: "DummyHR",
-          hr_portfolio: "DummyHR_Portfolio",
-          accounts_username: "DummyAC",
-          accounts_portfolio: "DummyAC_Portfolio",
-        };
+        // const dataForWorkflow = {
+        //   company_id: currentUser.portfolio_info[0].org_id,
+        //   company_name: currentUser.portfolio_info[0].org_name,
+        //   template_id: templateID,
+        //   created_by: currentUser.userinfo.username,
+        //   portfolio: currentUser.portfolio_info[0].portfolio_name,
+        //   data_type: currentUser.portfolio_info[0].data_type,
+        //   payment_month: month,
+        //   payment_year: year,
+        //   hr_username: "DummyHR",
+        //   hr_portfolio: "DummyHR_Portfolio",
+        //   accounts_username: "DummyAC",
+        //   accounts_portfolio: "DummyAC_Portfolio",
+        // };
 
         // PROCESSING INVOICE CREATION
-        Promise.all([
-          processPayment(dataForInvoice),
-          workFlowdetails(dataForWorkflow),
-        ])
+        processPayment(dataForInvoice)
           .then((res) => {
-            const masterQrCodeDetails =
-              res[1]?.data?.created_process.master_code;
-            const masterLinkDetails = res[1]?.data?.created_process.master_link;
+            // const masterQrCodeDetails =
+            //   res[1]?.data?.created_process.master_code;
+            // const masterLinkDetails = res[1]?.data?.created_process.master_link;
+
+            const masterQrCodeDetails = res.data?.response?.master_code;
+            const masterLinkDetails = res.data?.response?.master_link 
 
             setShowMasterCode(masterQrCodeDetails);
             setShowMasterLink(masterLinkDetails);
