@@ -349,10 +349,10 @@ class Invoice_module(APIView):
         payment_to = request.data.get("payment_to")
 
         template_id = "663fa0b34732cb33c75856ce"
-        hr_username = "DummyHR"
-        hr_portfolio = "DummyHR_Portfolio"
-        accounts_username = "DummyAC"
-        accounts_portfolio = "DummyAC_Portfolio"
+        hr_username = "ZoyaDowell_4849"
+        hr_portfolio = "Dowell_ZoyaaaRasheed "
+        accounts_username = "gokuljayanthan"
+        accounts_portfolio = "Dowell_Gokul"
         step_document_map = {
             'step_one': [
                 {"content": "t1", "required": False, "page": 1},
