@@ -292,7 +292,7 @@ def create_invoice_bot():
             else:
                 print(f'Invoice not created for {application["username"]} because user was not present for at least one meeting last week') 
     
-    print(f'Total invoices created: {invoices_created}')
+    print(f'\n\nTotal invoices created: {invoices_created}')
     print(f'Shutting down bot=====================================================')
 
 run = create_invoice_bot()

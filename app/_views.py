@@ -441,6 +441,13 @@ class Invoice_module(APIView):
             ]
             currency_paid = json_existing_payment_record["data"][0]["payment_currency"]
             amount_to_pay = weekly_payment_amount
+            records_last_payment_date = json_existing_payment_record["data"][0]["last_payment_date"]
+            records_last_payment_date_iso = None
+            
+            if len(records_last_payment_date) > 0:
+                records_last_payment_date_iso = datetime.strptime(
+                    records_last_payment_date, "%Y-%m-%dT%H:%M:%S.%f"
+                ).isoformat()
 
             if approved_logs_count < total_logs_required:
                 return Response(
@@ -510,9 +517,12 @@ class Invoice_module(APIView):
             # update_date = datetime.now().isoformat()
             last_payment_date = datetime.strptime(payment_to, "%Y-%m-%d").isoformat()
             insert_query = {"_id": record_data[0]["_id"]}
-            update_date = {
-                "last_payment_date": last_payment_date
-            }
+            update_date = {}
+
+            if not records_last_payment_date_iso or (records_last_payment_date_iso is not None and records_last_payment_date_iso < last_payment_date):
+                update_date = {
+                    "last_payment_date": last_payment_date
+                }
             
             update_data = datacube_data_update(
                 api_key=API_KEY,
