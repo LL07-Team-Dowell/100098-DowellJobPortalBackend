@@ -45,6 +45,7 @@ def dowellconnection(
 
 
 def getPreviousWeekDates():
+    # current_date = datetime.strptime("2024-03-09", "%Y-%m-%d") # to run the bot on a custom date
     current_date = datetime.now()
     weekday = current_date.weekday()
     monday = current_date - timedelta(days=weekday+7)
@@ -160,7 +161,7 @@ def create_invoice_bot():
     company_id = "6385c0f18eca0fb652c94561"
     company_name="HR_Dowell Research"
 
-    
+    print(f'Starting up the invoice bot to generate invoices from {monday_of_previous_week} to {sunday_of_previous_week}...\n===============================================')
     print(f'Getting all onboarded applications for company with id of {company_id}...')
 
     all_applications = get_all_onboarded_candidate(company_id=company_id)
