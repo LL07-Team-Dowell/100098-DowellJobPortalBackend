@@ -149,6 +149,8 @@ def create_invoice_bot():
     if datetime.today().weekday() != 5: 
         print("Invoice automation process not initiated because today is not Saturday.")
         return
+    
+    current_day = datetime.now()
     previous_week_dates = getPreviousWeekDates()
     monday_of_previous_week = previous_week_dates["Monday"]
     friday_of_previous_week = previous_week_dates["Friday"]
@@ -177,8 +179,9 @@ def create_invoice_bot():
         )
 
         logs = user_approved_logs.get("task_details")
-        
-        user_approved_logs = [log for log in logs if log.get("approval") == True or log.get("approved") == True]
+
+        # check for approved logs and also count logs that have passed the 14-day approval window
+        user_approved_logs = [log for log in logs if log.get("approval") == True or log.get("approved") == True or (current_day - datetime.strptime(log.get("task_created_date"), "%Y-%m-%d")).days > 14]
         
         hours = calculate_hours(user_approved_logs)
         print(f'Total approved log hours for {application["username"]}: {hours}')     
