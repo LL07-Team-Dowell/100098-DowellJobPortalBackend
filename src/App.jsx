@@ -4,7 +4,6 @@ import { Route, Routes } from "react-router-dom";
 import React, { useState } from "react";
 import useDowellLogin from "./hooks/useDowellLogin";
 import useTitle from "./hooks/useTitle";
-import ErrorPage from "./pages/ErrorPage/ErrorPage";
 import { NavigationContextProvider } from "./contexts/NavigationContext";
 import { NewApplicationContextProvider } from "./contexts/NewApplicationContext";
 import { CandidateContextProvider } from "./contexts/CandidatesContext";
@@ -12,8 +11,6 @@ import { HrCandidateContextProvider } from "./contexts/HrCandidateContext";
 import { CandidateTaskContextProvider } from "./contexts/CandidateTasksContext";
 import { CandidateJobsContextProvider } from "./contexts/CandidateJobsContext";
 import { useCurrentUserContext } from "./contexts/CurrentUserContext";
-import Logout from "./pages/LogoutPage/Logout";
-import Teamlead from "./pages/TeamleadPage/Teamlead";
 import { JobContextProvider } from "./contexts/Jobs";
 import AdminReports from "./pages/AdminPage/views/Reports/Reports";
 import RedirectPage from "./pages/Redirectpage/redirect";
@@ -21,20 +18,12 @@ import { testingRoles } from "./utils/testingRoles";
 import LoadingPage from "./pages/LoadingPage/LoadingPage";
 import { HrJobScreenAllTasksContextProvider } from "./contexts/HrJobScreenAllTasks";
 import { ResponsesContextProvider } from "./contexts/Responses";
-import Index from "./pages/TeamleadPage/views/CreateMembersTask/Index";
 import { ValuesProvider } from "./pages/TeamleadPage/views/CreateMembersTask/context/Values";
-import StaffJobLandingLayout from "./layouts/StaffJobLandingLayout/StaffJobLandingLayout";
-import CreateTeam from "./pages/TeamleadPage/views/CreateMembersTask/views/CreateTeam";
 import { TeamProvider } from "./pages/TeamleadPage/views/CreateMembersTask/context/Team";
-import TeamScreenTasks from "./pages/TeamleadPage/views/CreateMembersTask/views/TeamScreenTasks";
-import TeamScreenMembers from "./pages/TeamleadPage/views/CreateMembersTask/views/TeamScreenMembers";
 import ProvertionPeriod from "./pages/CandidatePage/views/ProvertionPeriod/ProvertionPeriod";
 import { CandidateValuesProvider } from "./contexts/CandidateTeamsContext";
 import { TeamCandidateProvider } from "./pages/CandidatePage/views/TeamsScreen/useTeams";
-import TeamThread from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThread";
 import UserDetailNotFound from "./pages/UserDetailNotFound/UserDetailNotFound";
-import TeamThreadScreen from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThreadScreen";
-import GroupLeadTask from "./pages/GroupLeadPage/components/GroupLeadTask";
 import { PageUnderConstruction } from "./pages/UnderConstructionPage/ConstructionPage";
 import DetailedIndividual from "./pages/AdminPage/views/Reports/detailedIndividual/DetailedIndividual";
 import TaskReports from "./pages/AdminPage/views/Reports/TaskReports";
@@ -42,26 +31,14 @@ import TeamReport from "./pages/AdminPage/views/Reports/TeamReoprt/TeamReport";
 import { reportOptionsPermitted } from "./components/ShareJobModal/ShareJobModal";
 import LeaderboardReport from "./pages/AdminPage/views/Reports/LeaderboardReport/LeaderboardReport";
 import { teamManagementProductName } from "./utils/utils";
-import LogRequest from "./pages/TeamleadPage/views/WorkLogRequest/LogRequestNav";
-import TeamScreenInfoAdminTeamLead from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamScreenInfo";
 import CandidateRemovedScreen from "./pages/CandidatePage/views/CandidateRemovedScreen/CandidateRemovedScreen";
-import WorkLogRequestGrouplead from "./pages/GroupLeadPage/views/WorklogRequests/WorkLogRequest";
-import LogRequestLanding from "./pages/TeamleadPage/views/WorkLogRequest/LogRequestLanding";
-import WorkLogRequestTeamLead from "./pages/TeamleadPage/views/WorkLogRequest/WorklogRequestTeamLead";
-import GroupleadAgendaLanding from "./pages/GroupLeadPage/views/Agenda/AgendaLanding";
-import NewGroupleadAgenda from "./pages/GroupLeadPage/views/Agenda/NewAgenda";
-import GroupleadTrackAgenda from "./pages/GroupLeadPage/views/Agenda/TrackAgenda";
 import CandidateRenewContract from "./pages/CandidatePage/views/CandidateRenewContract/CandidateRenewContract";
-import TeamLeadAgendaPage from "./pages/TeamleadPage/views/Agenda/TeamLeadAgendaPage";
 import CompanyStructureContextProvider from "./contexts/CompanyStructureContext";
 import { mainAdminRoutesInfo } from "./routes/adminRoutes";
 import { projectLeadRoutesInfo } from "./routes/projectLeadRoutes";
 import { subAdminRoutesInfo } from "./routes/subAdminRoutes";
 import useUpdateUserId from "./hooks/useUpdateUserId";
 import { accountRoutesInfo } from "./routes/accountRoutes";
-import UsersLogsScreen from "./common/screens/UserLogsScreen/UserLogsScreen";
-import TeamleadLogApprovalScreen from "./pages/TeamleadPage/views/LogApprovalScreen/TeamleadLogApprovalScreen";
-import GroupleadLogApprovalScreen from "./pages/GroupLeadPage/views/LogApprovalScreen/GroupleadLogApprovalScreen";
 import { publicUserRoutes } from "./routes/publicUserRoutes";
 import {
   productUserRoutes,
@@ -501,7 +478,6 @@ function App() {
   ) {
     return (
       <Routes>
-        <Route path="/logout" element={<Logout />} />
         {React.Children.toArray(
           teamleadRouteInfo.map((route) => {
             return (
@@ -512,7 +488,9 @@ function App() {
                     <CandidateContextProvider>
                       <CandidateTaskContextProvider>
                         <ValuesProvider>
-                          <route.component />
+                          <TeamProvider>
+                            <route.component />
+                          </TeamProvider>
                         </ValuesProvider>
                       </CandidateTaskContextProvider>
                     </CandidateContextProvider>
@@ -535,7 +513,6 @@ function App() {
   ) {
     return (
       <Routes>
-        <Route path="/logout" element={<Logout />} />
         {React.Children.toArray(
           groupleadRouteInfo.map((route) => {
             return (
@@ -546,7 +523,9 @@ function App() {
                     <CandidateContextProvider>
                       <CandidateTaskContextProvider>
                         <ValuesProvider>
-                          <route.component />
+                          <TeamProvider>
+                            <route.component />
+                          </TeamProvider>
                         </ValuesProvider>
                       </CandidateTaskContextProvider>
                     </CandidateContextProvider>

@@ -101,6 +101,8 @@
         color: black;
         height: max-content;
         max-height: 50%;
+        overflow-y: auto;
+        scrollbar-width: thin;
     }
     
     .switch__Views__Modal.new__Side ul {

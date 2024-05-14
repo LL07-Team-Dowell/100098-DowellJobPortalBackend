@@ -7,6 +7,7 @@ import NewGroupleadAgenda from "../pages/GroupLeadPage/views/Agenda/NewAgenda";
 import GroupleadTrackAgenda from "../pages/GroupLeadPage/views/Agenda/TrackAgenda";
 import GroupleadLogApprovalScreen from "../pages/GroupLeadPage/views/LogApprovalScreen/GroupleadLogApprovalScreen";
 import WorkLogRequestGrouplead from "../pages/GroupLeadPage/views/WorklogRequests/WorkLogRequest";
+import Logout from "../pages/LogoutPage/Logout";
 import Teamlead from "../pages/TeamleadPage/Teamlead";
 import Index from "../pages/TeamleadPage/views/CreateMembersTask/Index";
 import CreateTeam from "../pages/TeamleadPage/views/CreateMembersTask/views/CreateTeam";
@@ -168,6 +169,10 @@ export const groupleadRouteInfo = [
         </StaffJobLandingLayout>
       );
     },
+  },
+  {
+    path: "/logout",
+    component: Logout,
   },
   {
     path: "*",

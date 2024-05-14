@@ -1,5 +1,6 @@
 import StaffJobLandingLayout from "../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import ErrorPage from "../pages/ErrorPage/ErrorPage";
+import Logout from "../pages/LogoutPage/Logout";
 import Teamlead from "../pages/TeamleadPage/Teamlead";
 import TeamLeadAgendaPage from "../pages/TeamleadPage/views/Agenda/TeamLeadAgendaPage";
 import Index from "../pages/TeamleadPage/views/CreateMembersTask/Index";
@@ -126,6 +127,10 @@ export const teamleadRouteInfo = [
         </StaffJobLandingLayout>
       );
     },
+  },
+  {
+    path: "/logout",
+    component: Logout,
   },
   {
     path: "*",

@@ -406,6 +406,7 @@
         width: 100%;
         min-height: 6.5rem;
         height: max-content;
+        z-index: 99;
     }
 }
 @media(width >=1200px){

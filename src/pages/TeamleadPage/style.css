@@ -81,7 +81,7 @@
 
   .jobs-container > *,
   .tasks-container > .job__Card__Container {
-    width: calc(94% / 2);
+    width: calc(94% / 2) !important;
     display: inline-block;
     margin-right: 4%;
     margin-bottom: 4%;
