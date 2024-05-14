@@ -507,9 +507,13 @@ class Invoice_module(APIView):
             )
             response_data = json.loads(data_insert)
 
-            update_date = datetime.now().isoformat()
+            # update_date = datetime.now().isoformat()
+            last_payment_date = datetime.strptime(payment_to, "%Y-%m-%d").isoformat()
             insert_query = {"_id": record_data[0]["_id"]}
-            update_date = {"last_payment_date": update_date}
+            update_date = {
+                "last_payment_date": last_payment_date
+            }
+            
             update_data = datacube_data_update(
                 api_key=API_KEY,
                 db_name=DB_PAYMENT_RECORDS,
