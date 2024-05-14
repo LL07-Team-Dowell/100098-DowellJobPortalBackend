@@ -167,6 +167,9 @@ def create_invoice_bot():
     all_applications = get_all_onboarded_candidate(company_id=company_id)
     applications = all_applications.get("response")["data"]
     applications_with_user_id = [application for application in applications if "user_id" in application]
+    invoices_created = 0
+
+    print(f'Total applications to create invoice for: {len(applications_with_user_id)}\n')
 
     for application in applications_with_user_id:
         print(f'Initiating invoice creation process for {application["username"]}.......')
@@ -240,6 +243,7 @@ def create_invoice_bot():
                     sunday_of_previous_week
                 )
                 print(f"status of invoice created for {application['username']} : {result}")
+                invoices_created += 1
             else:
                 print(f'Invoice not created for {application["username"]} because user was not present for at least one meeting last week') 
         else:   
@@ -284,9 +288,13 @@ def create_invoice_bot():
                     sunday_of_previous_week
                 )
                 print(f"status of invoice created for {application['username']} : {result}")
+                invoices_created += 1
             else:
                 print(f'Invoice not created for {application["username"]} because user was not present for at least one meeting last week') 
     
+    print(f'Total invoices created: {invoices_created}')
+    print(f'Shutting down bot=====================================================')
+
 run = create_invoice_bot()
 
 
