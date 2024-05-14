@@ -1,0 +1,12 @@
+.logs__Wrap {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    width: 100%;
+}
+
+@media screen and (max-width: 767px) {
+    .logs__Wrap {
+        flex-direction: column;
+    }
+}

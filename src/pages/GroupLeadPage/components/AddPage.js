@@ -19,6 +19,7 @@ const AddPage = ({
     handleViewIndividualTaskBtn,
     handleViewTeamTaskBtn,
     logRequestDate,
+    handleViewRequestsBtnClick = () => {}
 }) => {
     const { currentUser } = useCurrentUserContext();
     const { setUserTasks } = useCandidateTaskContext();
@@ -99,6 +100,7 @@ const AddPage = ({
                 isTeamlead={isTeamlead}
                 handleViewIndividualTaskBtn={handleViewIndividualTaskBtn}
                 handleViewTeamTaskBtn={handleViewTeamTaskBtn}
+                handleViewRequestsBtnClick={handleViewRequestsBtnClick}
             />
         </div>
     )

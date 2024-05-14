@@ -34,7 +34,7 @@ const WorklogsLandingPage = () => {
                             className={styles.icon}
                         />
                     </div>
-                    <h4>Log Request</h4>
+                    <h4>Log Requests</h4>
                     <p>
                         Track the progress and status of worklog requests you made
                     </p>

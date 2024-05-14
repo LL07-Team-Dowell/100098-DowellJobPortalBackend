@@ -10,6 +10,12 @@
 .center__Text{
   text-align: center;
 }
+.new__Worklogs__Wrapper__Container {
+  width: 100%;
+}
+.new__Worklogs__Wrapper__Container .title__Navigation__Bar__Container {
+  width: 100% !important;
+}
 
 
 @media screen and (min-width: 992px) {
@@ -17,4 +23,8 @@
     width: 84%;
     margin: 2rem auto;
   } 
+  .new__Worklogs__Wrapper__Container {
+    width: 80%;
+    margin: 0 auto;
+  }
 }

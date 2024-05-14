@@ -1,5 +1,7 @@
+import { useMediaQuery } from "@mui/material";
 import React, { useState } from "react";
 import { AiOutlineAim, AiOutlinePlusCircle } from "react-icons/ai";
+import { RiFileList3Line } from "react-icons/ri";
 
 
 const NewAddTaskScreen = ({ 
@@ -8,7 +10,10 @@ const NewAddTaskScreen = ({
   isTeamlead,
   handleViewIndividualTaskBtn,
   handleViewTeamTaskBtn,
+  handleViewRequestsBtnClick = () => {},
 }) => {
+  const isSmallScreen = useMediaQuery('(max-width: 767px)');
+
   return (
     <>
       <div className="new__task__container">
@@ -16,7 +21,7 @@ const NewAddTaskScreen = ({
           !isTeamlead && 
           <h1 style={{ color: "#005734", fontSize: "1.6rem" }}>Add New Item</h1> 
         }
-        <div style={{ position: "relative", display: "flex", gap: "3rem" }} className="child-task-create">
+        <div style={{ position: "relative", display: "flex", gap: "3rem", flexWrap: 'wrap', marginBottom: isSmallScreen ? 0 : '14rem' }} className="child-task-create">
           {
             !isTeamlead && <div style={{ marginTop: 30 }} className="Create_Team" onClick={handleAddIssueBtnClick}>
               <div>
@@ -64,18 +69,33 @@ const NewAddTaskScreen = ({
 
               <div style={{ marginTop: 30 }} className="Create_Team" onClick={handleViewTeamTaskBtn}>
                 <div>
-                    <div>
-                        <AiOutlineAim
-                          className="icon"
-                          style={{ fontSize: "2rem" }}
-                        />
-                    </div>
-                    <h4>View team's work logs</h4>
-                    <p>
-                      View, approve work logs added by your members in your team.
-                    </p>
+                  <div>
+                      <AiOutlineAim
+                        className="icon"
+                        style={{ fontSize: "2rem" }}
+                      />
+                  </div>
+                  <h4>View team's work logs</h4>
+                  <p>
+                    View, approve work logs added by your members in your team.
+                  </p>
                 </div>
-            </div>
+              </div>
+
+              <div style={{ marginTop: 30 }} className="Create_Team" onClick={handleViewRequestsBtnClick}>
+                <div>
+                  <div>
+                      <RiFileList3Line
+                        className="icon"
+                        style={{ fontSize: "2rem" }}
+                      />
+                  </div>
+                  <h4>View log requests</h4>
+                  <p>
+                    View, approve work log requests added by you and your members in your team.
+                  </p>
+                </div>
+              </div>
             </>
           }
         </div>

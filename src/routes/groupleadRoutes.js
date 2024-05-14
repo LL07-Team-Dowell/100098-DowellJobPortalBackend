@@ -1,4 +1,7 @@
+import InvoicePayment from "../common/screens/InvoicePayment/InvoicePayment";
 import UsersLogsScreen from "../common/screens/UserLogsScreen/UserLogsScreen";
+import WorklogsCommonLandingPage from "../common/screens/WorklogsLandingPage/WorklogsCommonLandingPage";
+import TitleNavigationBar from "../components/TitleNavigationBar/TitleNavigationBar";
 import StaffJobLandingLayout from "../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import ErrorPage from "../pages/ErrorPage/ErrorPage";
 import GroupLeadTask from "../pages/GroupLeadPage/components/GroupLeadTask";
@@ -30,6 +33,30 @@ export const groupleadRouteInfo = [
     },
   },
   {
+    path: "/logs-landing",
+    component: () => {
+      return (
+        <StaffJobLandingLayout 
+          teamleadView={true} 
+          isGrouplead={true}
+          hideSearchBar={true}
+        >
+          <div className='new__Worklogs__Wrapper__Container'>
+            <TitleNavigationBar
+              title={'Work Logs'}
+              useDefaultBehavior={true}
+              hideBackBtn={true}
+            />
+            <WorklogsCommonLandingPage
+              logRoute="/grouplead-tasks"
+              logRequestRoute="/log-requests"
+            />
+          </div>
+        </StaffJobLandingLayout>
+      );
+    },
+  },
+  {
     path: "/logs-approval-screen",
     component: GroupleadLogApprovalScreen,
   },
@@ -58,6 +85,22 @@ export const groupleadRouteInfo = [
   {
     path: "/track-agenda",
     component: GroupleadTrackAgenda,
+  },
+  {
+    path: "/invoice",
+    component: () => {
+      return (
+        <StaffJobLandingLayout 
+          teamleadView={true} 
+          hideSearchBar={true}
+          isGrouplead={true}
+        >
+          <InvoicePayment
+            isGrouplead={true}
+          />
+        </StaffJobLandingLayout>
+      );
+    },
   },
   {
     path: "/create-task/create-new-team/",

@@ -4,6 +4,7 @@ import { GiTeamIdea } from "react-icons/gi";
 import { AiOutlinePlus } from "react-icons/ai";
 import { RiFileList3Line } from "react-icons/ri";
 import { TfiAgenda } from "react-icons/tfi";
+import { LiaFileInvoiceSolid } from "react-icons/lia";
 
 export const teamleadNavigationLinks = [
   {
@@ -16,11 +17,11 @@ export const teamleadNavigationLinks = [
     icon: <ImStack />,
     text: "Work logs",
   },
-  {
-    linkAddress: "/request",
-    icon: <RiFileList3Line />,
-    text: "Log requests",
-  },
+  // {
+  //   linkAddress: "/request",
+  //   icon: <RiFileList3Line />,
+  //   text: "Log requests",
+  // },
   {
     linkAddress: "/agenda",
     icon: <TfiAgenda />,
@@ -30,6 +31,11 @@ export const teamleadNavigationLinks = [
     linkAddress: "/create-task",
     icon: <GiTeamIdea />,
     text: "Teams",
+  },
+  {
+    icon: <LiaFileInvoiceSolid />,
+    linkAddress: "/invoice",
+    text: "Invoice",
   },
   // {
   //   linkAddress: "/user",
@@ -45,15 +51,15 @@ export const groupLeadNavigationLinks = [
     text: "Add",
   },
   {
-    linkAddress: "/grouplead-tasks",
+    linkAddress: "/logs-landing",
     icon: <ImStack />,
     text: "Work logs",
   },
-  {
-    linkAddress: "/log-requests",
-    icon: <RiFileList3Line />,
-    text: "Log requests",
-  },
+  // {
+  //   linkAddress: "/log-requests",
+  //   icon: <RiFileList3Line />,
+  //   text: "Log requests",
+  // },
   {
     linkAddress: "/create-task",
     icon: <GiTeamIdea />,
@@ -63,6 +69,11 @@ export const groupLeadNavigationLinks = [
     linkAddress: "/agenda",
     icon: <TfiAgenda />,
     text: "Agenda",
+  },
+  {
+    icon: <LiaFileInvoiceSolid />,
+    linkAddress: "/invoice",
+    text: "Invoice",
   },
   // {
   //   linkAddress: "/user",

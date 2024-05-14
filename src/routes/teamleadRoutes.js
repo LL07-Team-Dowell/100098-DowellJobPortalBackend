@@ -1,3 +1,4 @@
+import InvoicePayment from "../common/screens/InvoicePayment/InvoicePayment";
 import StaffJobLandingLayout from "../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import ErrorPage from "../pages/ErrorPage/ErrorPage";
 import Logout from "../pages/LogoutPage/Logout";
@@ -43,6 +44,21 @@ export const teamleadRouteInfo = [
   {
     path: "/lead-log-requests",
     component: WorkLogRequestTeamLead,
+  },
+  {
+    path: "/invoice",
+    component: () => {
+      return (
+        <StaffJobLandingLayout 
+          teamleadView={true} 
+          hideSearchBar={true}
+        >
+          <InvoicePayment 
+            isTeamlead={true}
+          />
+        </StaffJobLandingLayout>
+      );
+    },
   },
   {
     path: "/create-task",

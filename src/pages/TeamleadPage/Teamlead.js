@@ -1138,6 +1138,7 @@ const Teamlead = ({ isGrouplead }) => {
                       isTeamlead={true}
                       handleViewIndividualTaskBtn={() => navigate('/user-tasks')}
                       handleViewTeamTaskBtn={() => navigate('/all-tasks')}
+                      handleViewRequestsBtnClick={() => navigate('/request')}
                       logRequestDate={logRequestDate}
                     />
                 )
