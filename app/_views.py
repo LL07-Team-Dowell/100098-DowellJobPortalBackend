@@ -445,9 +445,17 @@ class Invoice_module(APIView):
             records_last_payment_date_iso = None
             
             if len(records_last_payment_date) > 0:
-                records_last_payment_date_iso = datetime.strptime(
-                    records_last_payment_date, "%Y-%m-%dT%H:%M:%S.%f"
-                ).isoformat()
+                try:
+                    records_last_payment_date_iso = datetime.strptime(
+                        records_last_payment_date, "%Y-%m-%dT%H:%M:%S.%f"
+                    ).isoformat()
+                except ValueError:
+                    try:
+                        records_last_payment_date_iso = datetime.strptime(
+                            records_last_payment_date, "%Y-%m-%dT%H:%M:%S"
+                        ).isoformat()
+                    except ValueError:
+                        print('Last records date could not be parsed: ', records_last_payment_date)
 
             if approved_logs_count < total_logs_required:
                 return Response(
