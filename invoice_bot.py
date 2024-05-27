@@ -202,21 +202,24 @@ def create_invoice_bot():
                 )
                 continue
 
-            user_present_at_least_once = False  
+            user_present_at_least_once = True
 
-            for project in application['project']:
-                if user_present_at_least_once == True:
-                    continue
+            # THE ATTENDANCE CHECKING FUNCTIONALITY WAS COMMENTED FOR NOW
+            # user_present_at_least_once = False  
 
-                sample_attendance_res = get_userwise_attendance(
-                        application["username"],
-                        monday_of_previous_week,
-                        friday_of_previous_week,
-                        company_id,
-                        project
-                    )
+            # for project in application['project']:
+            #     if user_present_at_least_once == True:
+            #         continue
+
+            #     sample_attendance_res = get_userwise_attendance(
+            #             application["username"],
+            #             monday_of_previous_week,
+            #             friday_of_previous_week,
+            #             company_id,
+            #             project
+            #         )
                      
-                user_present_at_least_once = any('dates_present' in attendance_detail and len(attendance_detail['dates_present']) > 0 for attendance_detail in sample_attendance_res)
+            #     user_present_at_least_once = any('dates_present' in attendance_detail and len(attendance_detail['dates_present']) > 0 for attendance_detail in sample_attendance_res)
 
             if user_present_at_least_once:
                 sunday_of_previous_week_datetime = datetime.strptime(sunday_of_previous_week, "%Y-%m-%d")
@@ -253,20 +256,23 @@ def create_invoice_bot():
                 )
                 continue
 
-            user_present_at_least_once = False  
+            user_present_at_least_once = True
 
-            for project in application['project']:
-                if user_present_at_least_once == True:
-                    continue
-                sample_attendance_res = get_userwise_attendance(
-                        application["username"],
-                        monday_of_previous_week,
-                        friday_of_previous_week,
-                        company_id,
-                        project
-                    )
+            # THE ATTENDANCE CHECKING FUNCTIONALITY WAS COMMENTED FOR NOW
+            # user_present_at_least_once = False  
+
+            # for project in application['project']:
+            #     if user_present_at_least_once == True:
+            #         continue
+            #     sample_attendance_res = get_userwise_attendance(
+            #             application["username"],
+            #             monday_of_previous_week,
+            #             friday_of_previous_week,
+            #             company_id,
+            #             project
+            #         )
                             
-                user_present_at_least_once = any('dates_present' in attendance_detail and len(attendance_detail['dates_present']) > 0 for attendance_detail in sample_attendance_res)
+            #     user_present_at_least_once = any('dates_present' in attendance_detail and len(attendance_detail['dates_present']) > 0 for attendance_detail in sample_attendance_res)
                    
             if user_present_at_least_once:
                 sunday_of_previous_week_datetime = datetime.strptime(sunday_of_previous_week, "%Y-%m-%d")
