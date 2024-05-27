@@ -127,29 +127,29 @@ const GenerateInvoice = ({
         user_id: currentUser.userinfo.userID,
         company_id: currentUser.portfolio_info[0].org_id,
       }),
-      ...attendanceProjects.map((project) => {
-        return getUserWiseAttendance({
-          usernames: [currentUser.userinfo.username],
-          start_date: formatDateForAPI(monday),
-          end_date: formatDateForAPI(friday),
-          company_id: currentUser.portfolio_info[0].org_id,
-          limit: "0",
-          offset: "0",
-          project: project,
-        });
-      }),
+      // ...attendanceProjects.map((project) => {
+      //   return getUserWiseAttendance({
+      //     usernames: [currentUser.userinfo.username],
+      //     start_date: formatDateForAPI(monday),
+      //     end_date: formatDateForAPI(friday),
+      //     company_id: currentUser.portfolio_info[0].org_id,
+      //     limit: "0",
+      //     offset: "0",
+      //     project: project,
+      //   });
+      // }),
     ];
 
     Promise.all(requestsToMake)
       .then((res) => {
         console.log(res[0]?.data);
         // console.log(res[2]);
-        console.log(res[1]?.data);
+        // console.log(res[1]?.data);
 
         const taskDetails = res[0]?.data?.task_details;
 
         const approvedLogs = taskDetails.filter(
-          (log) => log?.approved || log?.aprroval === true
+          (log) => log?.approved || log?.approval === true || getDaysDifferenceBetweenDates(new Date(log?.task_created_date), new Date()) > 14
         );
         const hours = calculateHoursOfLogs(approvedLogs);
 
@@ -167,26 +167,26 @@ const GenerateInvoice = ({
           );
         }
 
-        let allAttendanceData = [];
+        // let allAttendanceData = [];
 
-        for (let i = 1; i <= 1 + (attendanceProjects.length - 1); i++) {
-          allAttendanceData.push(
-            res[i]?.data?.data[`${currentUser.userinfo.username}`]
-          );
-        }
+        // for (let i = 1; i <= 1 + (attendanceProjects.length - 1); i++) {
+        //   allAttendanceData.push(
+        //     res[i]?.data?.data[`${currentUser.userinfo.username}`]
+        //   );
+        // }
 
-        console.log(allAttendanceData);
+        // console.log(allAttendanceData);
 
-        if (
-          !allAttendanceData
-            .flat()
-            .find((item) => item?.dates_present?.length > 0)
-        ) {
-          setDataProcessing(false);
-          return toast.info(
-            "Invoice creation failed: No attendance data found for specified period"
-          );
-        }
+        // if (
+        //   !allAttendanceData
+        //     .flat()
+        //     .find((item) => item?.dates_present?.length > 0)
+        // ) {
+        //   setDataProcessing(false);
+        //   return toast.info(
+        //     "Invoice creation failed: No attendance data found for specified period"
+        //   );
+        // }
 
         // const templateID = "64ece51ba57293efb539e5b7";
 
