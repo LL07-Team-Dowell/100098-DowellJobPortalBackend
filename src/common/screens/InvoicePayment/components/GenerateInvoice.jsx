@@ -149,7 +149,13 @@ const GenerateInvoice = ({
         const taskDetails = res[0]?.data?.task_details;
 
         const approvedLogs = taskDetails.filter(
-          (log) => log?.approved || log?.approval === true || getDaysDifferenceBetweenDates(new Date(log?.task_created_date), new Date()) > 14
+          (log) =>
+            log?.approved ||
+            log?.approval === true ||
+            getDaysDifferenceBetweenDates(
+              new Date(log?.task_created_date),
+              new Date()
+            ) > 14
         );
         const hours = calculateHoursOfLogs(approvedLogs);
 
@@ -204,6 +210,7 @@ const GenerateInvoice = ({
           approved_logs_count: approvedLogs.length,
           total_logs_required: requiredLogCount,
           user_was_on_leave: false,
+          creator_name: currentUserHiredApplications[0]?.applicant,
         };
 
         // const dataForWorkflow = {
@@ -229,7 +236,7 @@ const GenerateInvoice = ({
             // const masterLinkDetails = res[1]?.data?.created_process.master_link;
 
             const masterQrCodeDetails = res.data?.response?.master_code;
-            const masterLinkDetails = res.data?.response?.master_link 
+            const masterLinkDetails = res.data?.response?.master_link;
 
             setShowMasterCode(masterQrCodeDetails);
             setShowMasterLink(masterLinkDetails);
