@@ -116,7 +116,7 @@ def get_userwise_attendance( username,monday_of_previous_week, friday_of_previou
     res = response.json()
     return res.get('data', {}).get(username, [])
 
-def processpayment(company_id,company_name,created_by,portfolio,data_type,user_id, payment_month, payment_year, approved_logs_count, total_logs_required, payment_from, payment_to):
+def processpayment(company_id,company_name,created_by,portfolio,data_type,user_id, payment_month, payment_year, approved_logs_count, total_logs_required, payment_from, payment_to, creator_name):
     url = "https://100098.pythonanywhere.com/invoice_module/?type=process-payment"
     payload = {
         "company_id": company_id,
@@ -132,6 +132,7 @@ def processpayment(company_id,company_name,created_by,portfolio,data_type,user_i
         "total_logs_required": total_logs_required,
         "payment_from": payment_from,
         "payment_to": payment_to,
+        "creator_name": creator_name,
     }
     headers = {"Content-Type": "application/json"}
     response = requests.post(url, headers=headers, json=payload)
@@ -243,7 +244,8 @@ def create_invoice_bot():
                     len(user_approved_logs),
                     total_logs_required,
                     monday_of_previous_week,
-                    sunday_of_previous_week
+                    sunday_of_previous_week,
+                    application["applicant"]
                 )
                 print(f"status of invoice created for {application['username']} : {result}")
                 invoices_created += 1
@@ -291,7 +293,8 @@ def create_invoice_bot():
                     len(user_approved_logs),
                     80,
                     monday_of_previous_week,
-                    sunday_of_previous_week
+                    sunday_of_previous_week,
+                    application["applicant"]
                 )
                 print(f"status of invoice created for {application['username']} : {result}")
                 invoices_created += 1

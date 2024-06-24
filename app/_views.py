@@ -347,6 +347,7 @@ class Invoice_module(APIView):
         total_logs_required = request.data.get("total_logs_required")
         payment_from = request.data.get("payment_from")
         payment_to = request.data.get("payment_to")
+        freelancer_name = request.data.get("creator_name")
 
         template_id = "663fa0b34732cb33c75856ce"
         hr_username = "ZoyaDowell_4849"
@@ -443,6 +444,7 @@ class Invoice_module(APIView):
             amount_to_pay = weekly_payment_amount
             records_last_payment_date = json_existing_payment_record["data"][0]["last_payment_date"]
             records_last_payment_date_iso = None
+            payment_platform = json_existing_payment_record["data"][0]["payment_method"]
             
             if len(records_last_payment_date) > 0:
                 try:
@@ -469,7 +471,7 @@ class Invoice_module(APIView):
             if user_was_on_leave:
                 amount_to_pay = 0
 
-            def processes(company_id, company_name, template_id, created_by, portfolio, data_type, payment_month,payment_year,hr_username,hr_portfolio,accounts_username,accounts_portfolio, step_document_map):
+            def processes():
                 url = "https://100094.pythonanywhere.com/v2/processes/invoice/"
                 payload = {
                     "company_id": company_id,
@@ -480,6 +482,11 @@ class Invoice_module(APIView):
                     "data_type":data_type,
                     "payment_month": payment_month,
                     "payment_year": payment_year,
+                    "payment_platform": payment_platform,
+                    "payment_amount": weekly_payment_amount,
+                    "payment_from": payment_from,
+                    "payment_to": payment_to,
+                    "freelancer_name": freelancer_name,
                     "hr_username": hr_username,
                     "hr_portfolio": hr_portfolio,
                     "accounts_username": accounts_username,
@@ -490,7 +497,7 @@ class Invoice_module(APIView):
                 response = requests.post(url, headers=headers, json=payload)
                 return response.json()
             
-            masterlink_response = processes(company_id, company_name, template_id, created_by, portfolio, data_type, payment_month, payment_year, hr_username, hr_portfolio, accounts_username, accounts_portfolio, step_document_map)
+            masterlink_response = processes()
             created_process = masterlink_response.get('created_process', {})
             master_link = created_process.get('master_link')
             master_code = created_process.get('master_code')
