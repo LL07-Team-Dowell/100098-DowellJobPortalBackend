@@ -2728,6 +2728,7 @@ class task_module(APIView):
 
     #@verify_user_token
     def add_task(self,request):
+        print("add_task",request.data)
         if not (request.data or 'payload' in request.data.keys()):
             return Response(
                                 {
@@ -2742,7 +2743,7 @@ class task_module(APIView):
             return Response(
                                 {
                                     "success": False,
-                                    "message": "Invalid Payload",
+                                    "message": "Invalid Payload...",
                                 },
                                 status.HTTP_400_BAD_REQUEST,
                             )
@@ -2960,9 +2961,10 @@ class task_module(APIView):
                 status=status.HTTP_204_NO_CONTENT,
             )
 
-    @verify_user_token
-    def update_candidate_task(self, request, user):
+    # @verify_user_token
+    def update_candidate_task(self, request):
         data = request.data
+        print("--------",data)
         if not (request.data or 'payload' in request.data.keys()):
             return Response(
                                 {
@@ -2973,6 +2975,7 @@ class task_module(APIView):
                             )
         try:
             data =  decode_payload(request.data['payload'], SALT_KEY, SALT_INDEX)
+            print("---->>",data)
         except Exception as e:
             return Response(
                                 {
